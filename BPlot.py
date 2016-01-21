@@ -3,8 +3,6 @@
 from astropy.io import fits
 import numpy as np
 import matplotlib.pyplot as plt
-import os
-os.chdir("Programing/PHY-2002")
 # TODO  figure out how to get directorys working
 
 ############################
