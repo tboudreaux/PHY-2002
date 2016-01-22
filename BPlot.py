@@ -1,16 +1,29 @@
 # Echel Spectra viewer
 # Paddy Clancy and Thomas Boudreaux
+print('Importing Packages')
 from astropy.io import fits
 import numpy as np
 import matplotlib.pyplot as plt
+import platform
 # TODO  figure out how to get directorys working
-
+print('Packeges OK')
 ############################
 #        Pre-Code          #
 ############################
 # General Use Verriable Section
 
 # General Yes no menu funtion
+
+operatingS = platform.system()
+
+print('Checking Operating System')
+if operatingS == 'Windows':
+    print('Program does not run on Windows machines, please use a UNIX Like system to run program')
+    exit()
+else:
+    print('OS OK')
+
+print('Loading Functions')
 
 
 def yesno(question):
@@ -26,6 +39,7 @@ def yesno(question):
         else:
             print('Please enter either Y or n')
     return response
+print ('Functions OK')
 
 # General Section Dedicated to Keeping questions for functions organized
 StackQuestion = "Would you like to stack orders?"
@@ -50,6 +64,7 @@ if ynstack is True:
     for i in range(stackNum):
         name = pathArray[i]
         name = name[:-1]
+        print name
         sp = fits.open(name)
         hdu = sp[0].header
 
@@ -68,7 +83,7 @@ if ynstack is True:
         tempWave = tempWave[i*ords:(i*ords)+ords]
         tempFlux = fluxarray
         tempFlux = tempFlux[i*ords:(i*ords)+ords]
-        plt.scatter(tempWave, tempFlux, label = objName)
+        plt.scatter(tempWave, tempFlux, label=objName)
     plt.show()
 
 elif ynstack is False:
