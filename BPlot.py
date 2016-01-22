@@ -8,6 +8,7 @@ import sys
 import os
 from PyQt4 import QtGui
 from basicgui import Ui_Header
+from astropy.modeling import models, fitting
 
 operatings = platform.system()
 print('Checking Operating System')
@@ -59,9 +60,9 @@ class Plotter(object):
 
     @staticmethod
     def nstackplot(name, start):
-
+        filename = str(name)
         # opens file as a fits file using the fits function set from astropy
-        sp = fits.open(name)
+        sp = fits.open(filename)
 
         # Opens the Header file as a object hdu
         hdu = sp[0].header
@@ -143,6 +144,7 @@ class MyForm(QtGui.QMainWindow):
             Plotter.stackplot(pathfilename, useArray[1], numToStack, order)
         else:
             filename = self.ui.singleFileInput.toPlainText()
+            print filename
             order = self.ui.startOrd.value()
             Plotter.nstackplot(filename, order)
 
