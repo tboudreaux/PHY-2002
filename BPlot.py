@@ -1,18 +1,77 @@
 # Echel Spectra viewer
 # Paddy Clancy and Thomas Boudreaux
-print('Importing Packages')
 from astropy.io import fits
 import numpy as np
 import matplotlib.pyplot as plt
 import platform
-# TODO  figure out how to get directorys working
-print('Packeges OK')
+import sys, os
+from PyQt4 import QtGui, QtCore
+from basicgui import Ui_Header
+from Bsort import Generate
+# TODO  figure out how to get directories working
+
+
+class MyForm(QtGui.QMainWindow):
+    def __init__(self, parent=None):
+        QtGui.QWidget.__init__(self, parent)
+        self.ui = Ui_Header()
+        self.ui.setupUi(self)
+
+        self.ui.generatePathFiles.clicked.connect(self.search)
+        #self.ui.generatePathFiles.connect(self.search)
+
+    def helloworld(self):
+        self.ui.singleFileInput.setText("Single File Input")
+        print("Hello world again")
+
+    def search(self):
+        pathArray = []
+        nameArray = []
+        pathList = open('PathList', 'w')
+        for root, dirs, files in os.walk('.', topdown=True):
+            for file in files:
+                if 'achi' in file:
+                    filename = os.path.join(root, file)
+                    sp = fits.open(filename)
+                    hdu = sp[0].header
+                    objName = (hdu['OBJECT'])
+                    if objName not in nameArray:
+                        nameArray.append(objName)
+        printArray = []
+        for i in range(len(nameArray)):
+            starName = nameArray[i]
+            print starName, 'StarName'
+            nameforFile = 'PathTo' + starName
+            printList = open(nameforFile, 'w')
+            for root, dirs, files in os.walk('.', topdown=True):
+                for file in files:
+                    if 'achi' in file:
+                        name = os.path.join(root, file)
+                        sp = fits.open(name)
+                        hdu = sp[0].header
+                        objName1 = (hdu['OBJECT'])
+                        if starName in objName1:
+                            print >>printList, name
+        self.ui.generatePathFiles.setStyleSheet("background-color: green")
+
+if __name__ == "__main__":
+    app=QtGui.QApplication(sys.argv)
+    myapp = MyForm()
+    myapp.show()
+    sys.exit(app.exec_())
+
+print('Packages OK')
 ############################
 #        Pre-Code          #
 ############################
-# General Use Verriable Section
+# General Use Variable Section
 
-# General Yes no menu funtion
+# General Yes no menu function
+app = QtGui.QApplication(sys.argv[0])
+window = QtGui.QWidget()
+
+window.show()
+
 
 operatingS = platform.system()
 
@@ -44,6 +103,9 @@ print ('Functions OK')
 # General Section Dedicated to Keeping questions for functions organized
 StackQuestion = "Would you like to stack orders?"
 StackAll = "Would you like to stack all the images?"
+
+
+
 # Options
 ynstack = yesno(StackQuestion)
 
