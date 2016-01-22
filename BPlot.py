@@ -7,7 +7,7 @@ import platform
 import sys
 import os
 from PyQt4 import QtGui
-from basicgui import Ui_Header
+from SecondGui import Ui_Header
 from astropy.modeling import models, fitting
 
 operatings = platform.system()
