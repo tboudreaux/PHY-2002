@@ -1,115 +1,162 @@
 # Echel Spectra viewer
 # Paddy Clancy and Thomas Boudreaux
-print('Importing Packages')
 from astropy.io import fits
 import numpy as np
 import matplotlib.pyplot as plt
 import platform
-# TODO  figure out how to get directorys working
-print('Packeges OK')
-############################
-#        Pre-Code          #
-############################
-# General Use Verriable Section
+import sys
+import os
+from PyQt4 import QtGui, QtCore
+from basicgui import Ui_Header
 
-# General Yes no menu funtion
-
-operatingS = platform.system()
-
+operatings = platform.system()
 print('Checking Operating System')
-if operatingS == 'Windows':
+if operatings == 'Windows':
     print('Program does not run on Windows machines, please use a UNIX Like system to run program')
     exit()
 else:
     print('OS OK')
 
-print('Loading Functions')
+inputArray = []
+useArray = [False, False]
 
 
-def yesno(question):
-    cont = True
-    while cont is True:
-        ask = raw_input(question + ' [Y/n]: ')
-        if ask == 'y' or ask == 'Y':
-            response = True
-            cont = False
-        elif ask == 'n' or ask == 'N':
-            response = False
-            cont = False
+class Plotter(object):
+
+    @staticmethod
+    def stackplot(stackfile, allimages, num, start):
+        pathList = open(stackfile, 'rb')
+        pathArray = []
+        for line in pathList:
+            pathArray.append(line)
+        if allimages is True:
+            stackNum = len(pathArray)
         else:
-            print('Please enter either Y or n')
-    return response
-print ('Functions OK')
+            if num > len(pathArray):
+                num = len(pathArray)
+            stackNum = num
+        wavearray = []
+        fluxarray = []
+        ords = 62
+        for i in range(stackNum):
+            name = pathArray[i]
+            name = name[:-1]
+            print name
+            sp = fits.open(name)
+            hdu = sp[0].header
 
-# General Section Dedicated to Keeping questions for functions organized
-StackQuestion = "Would you like to stack orders?"
-StackAll = "Would you like to stack all the images?"
-# Options
-ynstack = yesno(StackQuestion)
+            ordernum = start
 
-if ynstack is True:
-    stackfile = raw_input("Please Enter the name of the file with the paths to the images to stack: ")
-    pathList = open(stackfile, 'rb')
-    pathArray = []
-    for line in pathList:
-        pathArray.append(line)
-    allimages = yesno(StackAll)
-    if allimages is True:
-        stackNum = len(pathArray)
-    else:
-        stackNum = input('How Many images would you like to stack?: ')
-    wavearray = []
-    fluxarray = []
-    ords = 62
-    for i in range(stackNum):
-        name = pathArray[i]
-        name = name[:-1]
-        print name
+            dateobs = (hdu['DATE-OBS'])
+            objName = (hdu['OBJECT'])
+            wavelength = np.float64(sp[0].data[ordernum, :, 0])
+            flux = np.float64(sp[0].data[ordernum, :, 1])
+
+            wavearray.append(wavelength)
+            fluxarray.append(flux)
+
+        for i in range(stackNum):
+            tempWave = wavearray
+            tempWave = tempWave[i*ords:(i*ords)+ords]
+            tempFlux = fluxarray
+            tempFlux = tempFlux[i*ords:(i*ords)+ords]
+            plt.scatter(tempWave, tempFlux, label=objName)
+        plt.show()
+
+    @staticmethod
+    def nstackplot(name, start):
+
+        # opens file as a fits file using the fits function set from astropy
         sp = fits.open(name)
+
+        # Opens the Header file as a object hdu
         hdu = sp[0].header
 
-        ordernum = 0
-
+        # Order number Changer (Change this to look at different orders)
+        ordernum = start
+        # Pulls the date from the fits header
         dateobs = (hdu['DATE-OBS'])
-        objName = (hdu['OBJECT'])
+
+        # Pulls the wavelength and flux values for a given order number, stores as a numpy array
         wavelength = np.float64(sp[0].data[ordernum, :, 0])
         flux = np.float64(sp[0].data[ordernum, :, 1])
 
-        wavearray.append(wavelength)
-        fluxarray.append(flux)
+        # Plots the wavelength and flux values
+        plt.plot(wavelength, flux)
+        plt.xlabel('Wavelength')
+        plt.ylabel('Flux')
+        plt.title('Spectral Curve')
 
-    for i in range(stackNum):
-        tempWave = wavearray
-        tempWave = tempWave[i*ords:(i*ords)+ords]
-        tempFlux = fluxarray
-        tempFlux = tempFlux[i*ords:(i*ords)+ords]
-        plt.scatter(tempWave, tempFlux, label=objName)
-    plt.show()
+        # Initializes X11 window
+        plt.show()
 
-elif ynstack is False:
-    # Gets file name from user
-    name = raw_input('Please Enter the name of the file: ')
 
-    # opens file as a fits file using the fits function set from astropy
-    sp = fits.open(name)
+class MyForm(QtGui.QMainWindow):
+    def __init__(self, parent=None):
+        QtGui.QWidget.__init__(self, parent)
+        self.ui = Ui_Header()
+        self.ui.setupUi(self)
 
-    # Opens the Header file as a object hdu
-    hdu = sp[0].header
+        self.ui.generatePathFiles.clicked.connect(self.search)
+        self.ui.quitBut.clicked.connect(self.end)
+        self.ui.stackIm.stateChanged.connect(self.stackinput)
+        self.ui.allStack.stateChanged.connect(self.allinput)
+        self.ui.plotBut.clicked.connect(self.plot)
 
-    # Order number Changer (Change this to look at different orders)
-    ordernum = 0
-    # Pulls the date from the fits header
-    dateobs = (hdu['DATE-OBS'])
+    @staticmethod
+    def end():
+        exit()
 
-    # Pulls the wavelength and flux values for a given order number, stores as a numpy array
-    wavelength = np.float64(sp[0].data[ordernum, :, 0])
-    flux = np.float64(sp[0].data[ordernum, :, 1])
+    @staticmethod
+    def stackinput():
+        useArray[0] = not useArray[0]
+        print useArray
 
-    # Plots the wavelength and flux values
-    plt.plot(wavelength, flux)
-    plt.xlabel('Wavelength')
-    plt.ylabel('Flux')
-    plt.title('Spectral Curve')
+    @staticmethod
+    def allinput():
+        useArray[1] = not useArray[1]
+        print useArray
 
-    # Initializes X11 window
-    plt.show()
+    def search(self):
+        namearray = []
+        for root, dirs, files in os.walk('.', topdown=True):
+            for file in files:
+                if 'achi' in file:
+                    filename = os.path.join(root, file)
+                    sp = fits.open(filename)
+                    hdu = sp[0].header
+                    objname = (hdu['OBJECT'])
+                    if objname not in namearray:
+                        namearray.append(objname)
+        for i in range(len(namearray)):
+            starname = namearray[i]
+            print starname, 'StarName'
+            nameforfile = 'PathTo' + starname
+            printlist = open(nameforfile, 'w')
+            for root, dirs, files in os.walk('.', topdown=True):
+                for file in files:
+                    if 'achi' in file:
+                        name = os.path.join(root, file)
+                        sp = fits.open(name)
+                        hdu = sp[0].header
+                        objname1 = (hdu['OBJECT'])
+                        if starname in objname1:
+                            print >>printlist, name
+        self.ui.generatePathFiles.setStyleSheet("background-color: green; color: white")
+
+    def plot(self):
+        if useArray[0] is True:
+            pathfilename = self.ui.pathListInput.toPlainText()
+            numToStack = self.ui.numStack.value()
+            order = self.ui.startOrd.value()
+            Plotter.stackplot(pathfilename, useArray[1], numToStack, order)
+        else:
+            filename = self.ui.singleFileInput.toPlainText()
+            order = self.ui.startOrd.value()
+            Plotter.nstackplot(filename, order)
+
+if __name__ == "__main__":
+    app = QtGui.QApplication(sys.argv)
+    myapp = MyForm()
+    myapp.show()
+    sys.exit(app.exec_())
