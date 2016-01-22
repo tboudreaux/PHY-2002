@@ -47,7 +47,7 @@ if ynstack is True:
     wavearray = []
     fluxarray = []
     ords = 62
-    for i in range(2):
+    for i in range(stackNum):
         name = pathArray[i]
         name = name[:-1]
         sp = fits.open(name)
@@ -56,19 +56,19 @@ if ynstack is True:
         ordernum = 0
 
         dateobs = (hdu['DATE-OBS'])
-
+        objName = (hdu['OBJECT'])
         wavelength = np.float64(sp[0].data[ordernum, :, 0])
         flux = np.float64(sp[0].data[ordernum, :, 1])
 
         wavearray.append(wavelength)
         fluxarray.append(flux)
 
-    for i in range(2):
+    for i in range(stackNum):
         tempWave = wavearray
         tempWave = tempWave[i*ords:(i*ords)+ords]
         tempFlux = fluxarray
         tempFlux = tempFlux[i*ords:(i*ords)+ords]
-        plt.scatter(tempWave, tempFlux)
+        plt.scatter(tempWave, tempFlux, label = objName)
     plt.show()
 
 elif ynstack is False:
