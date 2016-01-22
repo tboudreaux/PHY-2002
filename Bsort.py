@@ -4,6 +4,7 @@ from astropy.io import fits
 
 #This File may become obsolete, know that
 
+# random edit to the file
 class Generate(object):
     def search(self):
         pathArray = []
