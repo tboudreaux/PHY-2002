@@ -2,6 +2,7 @@
 import os
 from astropy.io import fits
 
+#This File may become obsolete, know that
 
 class Generate(object):
     def search(self):

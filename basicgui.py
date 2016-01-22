@@ -43,6 +43,8 @@ class Ui_Header(object):
         self.singleFileInput.setObjectName(_fromUtf8("singleFileInput"))
         self.numStack = QtGui.QSpinBox(Header)
         self.numStack.setGeometry(QtCore.QRect(250, 190, 57, 21))
+        self.numStack.setMinimum(1)
+        self.numStack.setMaximum(62)
         self.numStack.setObjectName(_fromUtf8("numStack"))
         self.allStack = QtGui.QCheckBox(Header)
         self.allStack.setGeometry(QtCore.QRect(230, 150, 141, 22))
