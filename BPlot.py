@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import platform
 import sys
 import os
-from PyQt4 import QtGui, QtCore
+from PyQt4 import QtGui
 from basicgui import Ui_Header
 
 operatings = platform.system()
@@ -35,13 +35,11 @@ class Plotter(object):
             if num > len(pathArray):
                 num = len(pathArray)
             stackNum = num
-        wavearray = []
-        fluxarray = []
-        ords = 62
+
+
         for i in range(stackNum):
             name = pathArray[i]
             name = name[:-1]
-            print name
             sp = fits.open(name)
             hdu = sp[0].header
 
@@ -52,15 +50,11 @@ class Plotter(object):
             wavelength = np.float64(sp[0].data[ordernum, :, 0])
             flux = np.float64(sp[0].data[ordernum, :, 1])
 
-            wavearray.append(wavelength)
-            fluxarray.append(flux)
+            plt.plot(wavelength, flux)
 
-        for i in range(stackNum):
-            tempWave = wavearray
-            tempWave = tempWave[i*ords:(i*ords)+ords]
-            tempFlux = fluxarray
-            tempFlux = tempFlux[i*ords:(i*ords)+ords]
-            plt.scatter(tempWave, tempFlux, label=objName)
+        plt.xlabel('Wavelength (Angstroms)')
+        plt.ylabel('Flux')
+        plt.title('Single Order 1-D Spectra for ' + str(stackNum) + ' Stars | Order number: ' + str(start))
         plt.show()
 
     @staticmethod
@@ -110,12 +104,10 @@ class MyForm(QtGui.QMainWindow):
     @staticmethod
     def stackinput():
         useArray[0] = not useArray[0]
-        print useArray
 
     @staticmethod
     def allinput():
         useArray[1] = not useArray[1]
-        print useArray
 
     def search(self):
         namearray = []
@@ -130,7 +122,6 @@ class MyForm(QtGui.QMainWindow):
                         namearray.append(objname)
         for i in range(len(namearray)):
             starname = namearray[i]
-            print starname, 'StarName'
             nameforfile = 'PathTo' + starname
             printlist = open(nameforfile, 'w')
             for root, dirs, files in os.walk('.', topdown=True):
