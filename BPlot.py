@@ -109,14 +109,26 @@ class Plotter(object):
         plt.show()
 
         # gets keyboard input and calls plot functions
-        def singlestackpress(event):
-            print('press',event.key)
-            #sys.stdout.flush()
-            if event.k == 'a':
-                self.stackplot(stackfile,allimages,num,start-1,degree,shouldfit)
+        def key_press(event):
+            keydown = event.key
+            print keydown
+            if keydown == 'a' or keydown == 'A':
+                plt.close()
+                Plotter.stackplot(stackfile, allimages, num, start-1, degree, shouldfit)
+            elif keydown == 'd' or keydown == 'D':
+                plt.close()
+                Plotter.stackplot(stackfile, allimages, num, start+1, degree, shouldfit)
+            elif keydown == 'q' or keydown == 'Q':
+                plt.close()
+                if num != 1:
+                    Plotter.stackplot(stackfile, allimages, num - 1, start, degree, shouldfit)
+                elif num == 1:
+                    Plotter.stackplot(stackfile, allimages, num, start, degree, shouldfit)
+            elif keydown == 'e' or keydown == 'E':
+                plt.close()
+                Plotter.stackplot(stackfile, allimages, num + 1, start, degree, shouldfit)
 
-        cid = fig.canvas.mpl_connect('key_press_event',singlestackpress)
-        print(cid)
+        fig.canvas.mpl_connect('key_press_event', key_press)
 
 
     @staticmethod
