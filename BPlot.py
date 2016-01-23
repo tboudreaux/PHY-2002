@@ -18,6 +18,8 @@ if operatings == 'Windows':
 else:
     print('OS OK')
 
+
+
 inputArray = []
 useArray = [False, False]
 fit = [False]
@@ -105,6 +107,17 @@ class Plotter(object):
         plt.tight_layout()
         plt.ion()
         plt.show()
+
+        # gets keyboard input and calls plot functions
+        def singlestackpress(event):
+            print('press',event.key)
+            #sys.stdout.flush()
+            if event.k == 'a':
+                self.stackplot(stackfile,allimages,num,start-1,degree,shouldfit)
+
+        cid = fig.canvas.mpl_connect('key_press_event',singlestackpress)
+        print(cid)
+
 
     @staticmethod
     def nstackplot(name, start, degree, shouldfit):
