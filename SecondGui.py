@@ -25,7 +25,7 @@ except AttributeError:
 class Ui_Header(object):
     def setupUi(self, Header):
         Header.setObjectName(_fromUtf8("Header"))
-        Header.resize(544, 390)
+        Header.resize(543, 390)
         self.stackIm = QtGui.QCheckBox(Header)
         self.stackIm.setGeometry(QtCore.QRect(0, 10, 111, 22))
         self.stackIm.setObjectName(_fromUtf8("stackIm"))
@@ -129,6 +129,9 @@ class Ui_Header(object):
         self.Reset = QtGui.QPushButton(Header)
         self.Reset.setGeometry(QtCore.QRect(470, 240, 61, 27))
         self.Reset.setObjectName(_fromUtf8("Reset"))
+        self.Shift = QtGui.QPushButton(Header)
+        self.Shift.setGeometry(QtCore.QRect(470, 210, 61, 27))
+        self.Shift.setObjectName(_fromUtf8("Shift"))
 
         self.retranslateUi(Header)
         QtCore.QMetaObject.connectSlotsByName(Header)
@@ -149,9 +152,10 @@ class Ui_Header(object):
         self.Secret.setText(_translate("Header", "Answer", None))
         self.info.setText(_translate("Header", "Info", None))
         self.label_2.setText(_translate("Header", "Degree:", None))
-        self.function1.setText(_translate("Header", "PushButton", None))
+        self.function1.setText(_translate("Header", "Show Fit", None))
         self.function2.setText(_translate("Header", "PushButton", None))
         self.function3.setText(_translate("Header", "PushButton", None))
         self.function4.setText(_translate("Header", "PushButton", None))
         self.Reset.setText(_translate("Header", "Reset", None))
+        self.Shift.setText(_translate("Header", "Shift", None))
 

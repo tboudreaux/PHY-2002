@@ -21,6 +21,8 @@ else:
 inputArray = []
 useArray = [False, False]
 fit = [False]
+showfit = [False]
+
 
 class General(object):
 
@@ -45,7 +47,9 @@ class Plotter(object):
 
     @staticmethod
     def stackplot(stackfile, allimages, num, start, degree, shouldfit):
-        degree = int(degree)
+
+        fig = plt.figure(figsize=(15, 10))
+
         pathList = open(stackfile, 'rb')
         pathArray = []
         for line in pathList:
@@ -71,24 +75,39 @@ class Plotter(object):
             wavelength = np.float64(sp[0].data[ordernum, :, 0])
             flux = np.float64(sp[0].data[ordernum, :, 1])
 
+            if showfit[0] is True:
+                spect = fig.add_subplot(1, 2, 2)
+            else:
+                spect = fig.add_subplot(1, 1, 1)
+
             if shouldfit:
+                degree = int(degree)
                 z = np.polyfit(wavelength, flux, degree)
                 f = np.poly1d(z)
                 y_poly = f(wavelength)
                 y_new = flux - y_poly
-                plt.plot(wavelength, y_new)
+                spect.plot(wavelength, y_new, color='green')
+
+                if showfit[0] is True:
+                    fitfig = fig.add_subplot(1, 2, 1)
+                    fitfig.plot(wavelength, flux)
+                    fitfig.plot(wavelength, y_poly, color='black', linewidth=2)
+                    fitfig.set_xlabel('Wavelength (Angstroms)')
+                    fitfig.set_ylabel('Flux')
+                    fitfig.set_title('Spectra with Function Fit')
 
             else:
-                plt.plot(wavelength, flux)
+                spect.plot(wavelength, flux)
 
-        plt.xlabel('Wavelength (Angstroms)')
-        plt.ylabel('Flux')
-        plt.title('Single Order 1-D Spectra for ' + str(stackNum) + ' Stars | Order number: ' + str(start))
+        spect.set_xlabel('Wavelength (Angstroms)')
+        spect.set_ylabel('Flux')
+        spect.set_title('Single Order 1-D Spectra for ' + str(stackNum) + ' Stars | Order number: ' + str(start))
+        plt.tight_layout()
+        plt.ion()
         plt.show()
 
     @staticmethod
     def nstackplot(name, start, degree, shouldfit):
-        degree = int(degree)
 
         filename = str(name)
         # opens file as a fits file using the fits function set from astropy
@@ -105,22 +124,39 @@ class Plotter(object):
         # Pulls the wavelength and flux values for a given order number, stores as a numpy array
         wavelength = np.float64(sp[0].data[ordernum, :, 0])
         flux = np.float64(sp[0].data[ordernum, :, 1])
+
+        fig = plt.figure(figsize=(15, 10))
+
+        if showfit[0] is True:
+            spect = fig.add_subplot(1, 2, 2)
+        else:
+            spect = fig.add_subplot(1, 1, 1)
+
         if shouldfit:
+            degree = int(degree)
             z = np.polyfit(wavelength, flux, degree)
             f = np.poly1d(z)
             y_poly = f(wavelength)
             y_new = flux - y_poly
-            plt.plot(wavelength, y_new, color='green')
-            plt.xlabel('wavelength (Angstroms)')
-            plt.ylabel('Flux')
+            spect.plot(wavelength, y_new, color='green')
+
+            if showfit[0] is True:
+                fitfig = fig.add_subplot(1, 2, 1)
+                fitfig.plot(wavelength, flux)
+                fitfig.plot(wavelength, y_poly, color='black', linewidth=2)
+                fitfig.set_xlabel('Wavelength (Angstroms)')
+                fitfig.set_ylabel('Flux')
+                fitfig.set_title('Spectra with Function Fit')
 
         else:
-            plt.plot(wavelength, flux)
-            plt.xlabel('Wavelength')
-            plt.ylabel('Flux')
-            plt.title('Single Order 1-D Spectra | Order number: ' + str(start))
+            spect.plot(wavelength, flux)
 
         # Initializes X11 window
+        spect.set_xlabel('Wavelength (Angstroms)')
+        spect.set_ylabel('Flux')
+        spect.set_title('Single Order 1-D Spectra | Order number: ' + str(start))
+        plt.tight_layout()
+        plt.ion()
         plt.show()
 
 
@@ -129,7 +165,7 @@ class MyForm(QtGui.QMainWindow):
         QtGui.QWidget.__init__(self, parent)
         self.ui = Ui_Header()
         self.ui.setupUi(self)
-
+        self.ui.function1.setStyleSheet("background-color: red; color: black")
         self.ui.generatePathFiles.clicked.connect(self.search)
         self.ui.quitBut.clicked.connect(self.end)
         self.ui.stackIm.stateChanged.connect(self.stackinput)
@@ -137,6 +173,7 @@ class MyForm(QtGui.QMainWindow):
         self.ui.plotBut.clicked.connect(self.plot)
         self.ui.Secret.clicked.connect(self.secret)
         self.ui.FunctionFit.stateChanged.connect(self.fitter)
+        self.ui.function1.clicked.connect(self.showfit)
 
 
 
@@ -156,9 +193,11 @@ class MyForm(QtGui.QMainWindow):
     def allinput():
         useArray[1] = not useArray[1]
 
-    @staticmethod
-    def fitter():
+    def fitter(self):
         fit[0] = not fit[0]
+        if fit[0] is False:
+            self.ui.function1.setStyleSheet('background-color: red; color: black')
+            showfit[0] = False
 
     def search(self):
         count = 0
@@ -194,6 +233,7 @@ class MyForm(QtGui.QMainWindow):
         self.ui.generatePathFiles.setStyleSheet("background-color: green; color: white")
 
     def plot(self):
+        plt.close(1)
         if useArray[0] is True:
             pathfilename = self.ui.pathListInput.toPlainText()
             numToStack = self.ui.numStack.value()
@@ -205,6 +245,14 @@ class MyForm(QtGui.QMainWindow):
             degree = self.ui.amplitude.toPlainText()
             order = self.ui.startOrd.value()
             Plotter.nstackplot(filename, order, degree, fit[0])
+
+    def showfit(self):
+        if fit[0] is True:
+            showfit[0] = not showfit[0]
+            if showfit[0] is True:
+                self.ui.function1.setStyleSheet("background-color: green; color: white")
+            else:
+                self.ui.function1.setStyleSheet("background-color: red; color: black")
 
 if __name__ == "__main__":
     app = QtGui.QApplication(sys.argv)
