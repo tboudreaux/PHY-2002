@@ -52,7 +52,7 @@ class Plotter(object):
     @staticmethod
     def stackplot(stackfile, allimages, num, start, degree, shouldfit):
 
-        fig = plt.figure(figsize=(15, 10))
+        fig = plt.figure(figsize=(10, 7))
 
         pathList = open(stackfile, 'rb')
         pathArray = []
@@ -90,7 +90,7 @@ class Plotter(object):
                 f = np.poly1d(z)
                 y_poly = f(wavelength)
                 y_new = flux - y_poly
-                spect.plot(wavelength, y_new, color='green')
+                spect.plot(wavelength, y_new)
 
                 if showfit[0] is True:
                     fitfig = fig.add_subplot(1, 2, 1)
