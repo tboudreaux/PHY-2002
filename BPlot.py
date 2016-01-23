@@ -2,6 +2,7 @@
 # Paddy Clancy and Thomas Boudreaux
 from astropy.io import fits
 import numpy as np
+import matplotlib
 import matplotlib.pyplot as plt
 import platform
 import sys
@@ -15,9 +16,10 @@ print('Checking Operating System')
 if operatings == 'Windows':
     print('Program does not run on Windows machines, please use a UNIX Like system to run program')
     exit()
+elif operatings == 'Darwin':
+    matplotlib.interactive(True)
 else:
     print('OS OK')
-
 
 
 inputArray = []
