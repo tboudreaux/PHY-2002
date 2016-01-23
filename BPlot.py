@@ -8,7 +8,6 @@ import sys
 import os
 from PyQt4 import QtGui
 from SecondGui import Ui_Header
-from astropy.modeling import models, fitting
 import webbrowser
 
 operatings = platform.system()
@@ -45,7 +44,8 @@ class General(object):
 class Plotter(object):
 
     @staticmethod
-    def stackplot(stackfile, allimages, num, start):
+    def stackplot(stackfile, allimages, num, start, degree, shouldfit):
+        degree = int(degree)
         pathList = open(stackfile, 'rb')
         pathArray = []
         for line in pathList:
@@ -71,7 +71,15 @@ class Plotter(object):
             wavelength = np.float64(sp[0].data[ordernum, :, 0])
             flux = np.float64(sp[0].data[ordernum, :, 1])
 
-            plt.plot(wavelength, flux)
+            if shouldfit:
+                z = np.polyfit(wavelength, flux, degree)
+                f = np.poly1d(z)
+                y_poly = f(wavelength)
+                y_new = flux - y_poly
+                plt.plot(wavelength, y_new)
+
+            else:
+                plt.plot(wavelength, flux)
 
         plt.xlabel('Wavelength (Angstroms)')
         plt.ylabel('Flux')
@@ -190,7 +198,8 @@ class MyForm(QtGui.QMainWindow):
             pathfilename = self.ui.pathListInput.toPlainText()
             numToStack = self.ui.numStack.value()
             order = self.ui.startOrd.value()
-            Plotter.stackplot(pathfilename, useArray[1], numToStack, order)
+            degree = self.ui.amplitude.toPlainText()
+            Plotter.stackplot(pathfilename, useArray[1], numToStack, order, degree, fit[0])
         else:
             filename = self.ui.singleFileInput.toPlainText()
             degree = self.ui.amplitude.toPlainText()
