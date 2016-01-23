@@ -9,6 +9,7 @@ import os
 from PyQt4 import QtGui
 from SecondGui import Ui_Header
 from astropy.modeling import models, fitting
+import webbrowser
 
 operatings = platform.system()
 print('Checking Operating System')
@@ -20,6 +21,25 @@ else:
 
 inputArray = []
 useArray = [False, False]
+fit = [False]
+
+class General(object):
+
+    @staticmethod
+    def smallest(array):
+        smallestnum = array[0]
+        for i in range(len(array)):
+            if array[i] < smallestnum:
+                smallestnum = array[i]
+        return smallestnum
+
+    @staticmethod
+    def largest(array):
+        largestnum = array[0]
+        for i in range(len(array)):
+            if array[i] > largestnum:
+                largestnum = array[i]
+        return largestnum
 
 
 class Plotter(object):
@@ -59,7 +79,9 @@ class Plotter(object):
         plt.show()
 
     @staticmethod
-    def nstackplot(name, start):
+    def nstackplot(name, start, degree, shouldfit):
+        degree = int(degree)
+
         filename = str(name)
         # opens file as a fits file using the fits function set from astropy
         sp = fits.open(filename)
@@ -75,12 +97,20 @@ class Plotter(object):
         # Pulls the wavelength and flux values for a given order number, stores as a numpy array
         wavelength = np.float64(sp[0].data[ordernum, :, 0])
         flux = np.float64(sp[0].data[ordernum, :, 1])
+        if shouldfit:
+            z = np.polyfit(wavelength, flux, degree)
+            f = np.poly1d(z)
+            y_poly = f(wavelength)
+            y_new = flux - y_poly
+            plt.plot(wavelength, y_new, color='green')
+            plt.xlabel('wavelength (Angstroms)')
+            plt.ylabel('Flux')
 
-        # Plots the wavelength and flux values
-        plt.plot(wavelength, flux)
-        plt.xlabel('Wavelength')
-        plt.ylabel('Flux')
-        plt.title('Spectral Curve')
+        else:
+            plt.plot(wavelength, flux)
+            plt.xlabel('Wavelength')
+            plt.ylabel('Flux')
+            plt.title('Single Order 1-D Spectra | Order number: ' + str(start))
 
         # Initializes X11 window
         plt.show()
@@ -97,10 +127,18 @@ class MyForm(QtGui.QMainWindow):
         self.ui.stackIm.stateChanged.connect(self.stackinput)
         self.ui.allStack.stateChanged.connect(self.allinput)
         self.ui.plotBut.clicked.connect(self.plot)
+        self.ui.Secret.clicked.connect(self.secret)
+        self.ui.FunctionFit.stateChanged.connect(self.fitter)
+
+
 
     @staticmethod
     def end():
         exit()
+
+    @staticmethod
+    def secret():
+        webbrowser.open('http://d.justpo.st/images/2013/04/b83fb1b7222c18934e59c5b1bd2f43bd.jpg')
 
     @staticmethod
     def stackinput():
@@ -110,7 +148,12 @@ class MyForm(QtGui.QMainWindow):
     def allinput():
         useArray[1] = not useArray[1]
 
+    @staticmethod
+    def fitter():
+        fit[0] = not fit[0]
+
     def search(self):
+        count = 0
         namearray = []
         for root, dirs, files in os.walk('.', topdown=True):
             for file in files:
@@ -123,6 +166,8 @@ class MyForm(QtGui.QMainWindow):
                         namearray.append(objname)
         for i in range(len(namearray)):
             starname = namearray[i]
+            self.ui.listWidget.addItem('Star name: ' + starname)
+            self.ui.listWidget.addItem('File name: PathTo' + starname)
             nameforfile = 'PathTo' + starname
             printlist = open(nameforfile, 'w')
             for root, dirs, files in os.walk('.', topdown=True):
@@ -134,6 +179,10 @@ class MyForm(QtGui.QMainWindow):
                         objname1 = (hdu['OBJECT'])
                         if starname in objname1:
                             print >>printlist, name
+                            self.ui.listWidget.addItem(name)
+                            count += 1
+                            progress = (count/len(namearray))*100
+                            self.ui.PathFileProgress.setValue(progress)
         self.ui.generatePathFiles.setStyleSheet("background-color: green; color: white")
 
     def plot(self):
@@ -144,9 +193,9 @@ class MyForm(QtGui.QMainWindow):
             Plotter.stackplot(pathfilename, useArray[1], numToStack, order)
         else:
             filename = self.ui.singleFileInput.toPlainText()
-            print filename
+            degree = self.ui.amplitude.toPlainText()
             order = self.ui.startOrd.value()
-            Plotter.nstackplot(filename, order)
+            Plotter.nstackplot(filename, order, degree, fit[0])
 
 if __name__ == "__main__":
     app = QtGui.QApplication(sys.argv)
