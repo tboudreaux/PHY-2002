@@ -153,7 +153,7 @@ class Ui_Header(object):
         self.info.setText(_translate("Header", "Info", None))
         self.label_2.setText(_translate("Header", "Degree:", None))
         self.function1.setText(_translate("Header", "Show Fit", None))
-        self.function2.setText(_translate("Header", "PushButton", None))
+        self.function2.setText(_translate("Header", "C-Correlation", None))
         self.function3.setText(_translate("Header", "PushButton", None))
         self.function4.setText(_translate("Header", "PushButton", None))
         self.Reset.setText(_translate("Header", "Reset", None))

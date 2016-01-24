@@ -3,12 +3,12 @@
 from General import *
 initrun = False
 #if PreChecks.modimport() is True and initrun == False:
-import numpy as np
 import matplotlib.pyplot as plt
 import sys
 import os
 from PyQt4 import QtGui
 from SecondGui import Ui_Header
+import webbrowser
 from GuiFunction import *
 from astropy.io import fits
 """
@@ -24,7 +24,8 @@ inputArray = []
 usearray = [False, False]
 fit = [False]
 showfit = [False]
-
+corlist = [False]
+jankeyname = []
 
 class Plotter(object):
 
@@ -90,7 +91,6 @@ class Plotter(object):
 
 class MyForm(QtGui.QMainWindow):
     def __init__(self, parent=None):
-        print 'here'
         QtGui.QWidget.__init__(self, parent)
         self.ui = Ui_Header()
         self.ui.setupUi(self)
@@ -103,6 +103,8 @@ class MyForm(QtGui.QMainWindow):
         self.ui.Secret.clicked.connect(self.secret)
         self.ui.FunctionFit.stateChanged.connect(self.fitter)
         self.ui.function1.clicked.connect(self.showfit)
+        self.ui.function2.clicked.connect(self.correlate)
+        self.window2 = None
 
     def fitter(self):
         fit[0] = not fit[0]
@@ -164,6 +166,12 @@ class MyForm(QtGui.QMainWindow):
                 self.ui.function1.setStyleSheet("background-color: green; color: white")
             else:
                 self.ui.function1.setStyleSheet("background-color: red; color: black")
+
+    def correlate(self):
+        self.window2 = CCWindow(self)
+        jankeyname.append(self.ui.singleFileInput.toPlainText())
+        self.window2.show()
+
     @staticmethod
     def end():
         exit()
@@ -179,6 +187,45 @@ class MyForm(QtGui.QMainWindow):
     @staticmethod
     def allinput():
         usearray[1] = not usearray[1]
+
+    def filenamepass():
+        filepass = MyForm.filenameget
+        return filepass
+
+class CCWindow(QtGui.QMainWindow):
+    def __init__ (self, parent = None):
+        QtGui.QWidget.__init__(self, parent)
+        self.ui = Ui_CrossCore()
+        self.ui.setupUi(self)
+
+        self.ui.listpath.setStyleSheet('background-color: grey')
+        self.ui.tempfilename.setStyleSheet('background-color: white')
+        self.ui.return_2.clicked.connect(self.closeer)
+        self.ui.ynlist.stateChanged.connect(self.uselist)
+        self.ui.correlate.clicked.connect(self.ccorplot)
+
+    def closeer(self):
+       self.destroy()
+
+    def uselist(self):
+        corlist[0] = not corlist[0]
+
+        if corlist[0] is False:
+            self.ui.tempfilename.setStyleSheet('background-color: white')
+            self.ui.listpath.setStyleSheet('background-color: grey')
+        else:
+            self.ui.tempfilename.setStyleSheet('background-color: grey')
+            self.ui.listpath.setStyleSheet('background-color: white')
+
+    def ccorplot(self):
+        if corlist[0] is True:
+            self.ui.infobox.append('<font color="red">Multiple Correlation Not an opetion currently, please deselect and use single correlation</font><br>')
+        else:
+            degree = self.ui.fitdegree.value()
+            templatename = self.ui.tempfilename.toPlainText()
+            objectname = jankeyname[0]
+            corelated = AdvancedPlotting.ccor(objectname, templatename, degree)
+            print corelated
 
 
 if __name__ == "__main__":
