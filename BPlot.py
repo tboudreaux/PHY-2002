@@ -1,119 +1,58 @@
 # Echel Spectra viewer
 # Paddy Clancy and Thomas Boudreaux
-from astropy.io import fits
+from General import *
+initrun = False
+#if PreChecks.modimport() is True and initrun == False:
 import numpy as np
-import matplotlib
 import matplotlib.pyplot as plt
-import platform
 import sys
 import os
 from PyQt4 import QtGui
 from SecondGui import Ui_Header
-import webbrowser
-
-operatings = platform.system()
-print('Checking Operating System')
-if operatings == 'Windows':
-    print('Program does not run on Windows machines, please use a UNIX Like system to run program')
-    exit()
-elif operatings == 'Darwin':
-    matplotlib.interactive(True)
+from GuiFunction import *
+from astropy.io import fits
+"""
+    print 'All Modules OK'
+    initrun = True
 else:
-    print('OS OK')
-
+    print 'Not All Modules are installed, Please Install All Required Modules try again (See README.txt)'
+    exit()
+"""
+PreChecks.oscheck()
 
 inputArray = []
-useArray = [False, False]
+usearray = [False, False]
 fit = [False]
 showfit = [False]
-
-
-class General(object):
-
-    @staticmethod
-    def smallest(array):
-        smallestnum = array[0]
-        for i in range(len(array)):
-            if array[i] < smallestnum:
-                smallestnum = array[i]
-        return smallestnum
-
-    @staticmethod
-    def largest(array):
-        largestnum = array[0]
-        for i in range(len(array)):
-            if array[i] > largestnum:
-                largestnum = array[i]
-        return largestnum
 
 
 class Plotter(object):
 
     @staticmethod
     def stackplot(stackfile, allimages, num, start, degree, shouldfit):
-
         fig = plt.figure(figsize=(10, 7))
-
-        pathList = open(stackfile, 'rb')
-        pathArray = []
-        for line in pathList:
-            pathArray.append(line)
+        pathlist = open(stackfile, 'rb')
+        patharray = []
+        for line in pathlist:
+            patharray.append(line)
         if allimages is True:
-            stackNum = len(pathArray)
+            stacknum = len(patharray)
         else:
-            if num > len(pathArray):
-                num = len(pathArray)
-            stackNum = num
+            if num > len(patharray):
+                num = len(patharray)
+            stacknum = num
 
-
-        for i in range(stackNum):
-            name = pathArray[i]
+        for i in range(stacknum):
+            name = patharray[i]
             name = name[:-1]
-            sp = fits.open(name)
-            hdu = sp[0].header
-
-            ordernum = start
-
-            dateobs = (hdu['DATE-OBS'])
-            objName = (hdu['OBJECT'])
-            wavelength = np.float64(sp[0].data[ordernum, :, 0])
-            flux = np.float64(sp[0].data[ordernum, :, 1])
-
-            if showfit[0] is True:
-                spect = fig.add_subplot(1, 2, 2)
-            else:
-                spect = fig.add_subplot(1, 1, 1)
-
-            if shouldfit:
-                degree = int(degree)
-                z = np.polyfit(wavelength, flux, degree)
-                f = np.poly1d(z)
-                y_poly = f(wavelength)
-                y_new = flux - y_poly
-                spect.plot(wavelength, y_new)
-
-                if showfit[0] is True:
-                    fitfig = fig.add_subplot(1, 2, 1)
-                    fitfig.plot(wavelength, flux)
-                    fitfig.plot(wavelength, y_poly, color='black', linewidth=2)
-                    fitfig.set_xlabel('Wavelength (Angstroms)')
-                    fitfig.set_ylabel('Flux')
-                    fitfig.set_title('Spectra with Function Fit')
-
-            else:
-                spect.plot(wavelength, flux)
-
-        spect.set_xlabel('Wavelength (Angstroms)')
-        spect.set_ylabel('Flux')
-        spect.set_title('Single Order 1-D Spectra for ' + str(stackNum) + ' Stars | Order number: ' + str(start))
+            PlotFunctionality.plot(name, start, showfit[0], shouldfit, degree, fig)
         plt.tight_layout()
         plt.ion()
         plt.show()
 
         # gets keyboard input and calls plot functions
-        def key_press(event):
+        def plotcontrol(event):
             keydown = event.key
-            print keydown
             if keydown == 'a' or keydown == 'A':
                 plt.close()
                 Plotter.stackplot(stackfile, allimages, num, start-1, degree, shouldfit)
@@ -129,71 +68,34 @@ class Plotter(object):
             elif keydown == 'e' or keydown == 'E':
                 plt.close()
                 Plotter.stackplot(stackfile, allimages, num + 1, start, degree, shouldfit)
-
-        fig.canvas.mpl_connect('key_press_event', key_press)
-
+        fig.canvas.mpl_connect('key_press_event', plotcontrol)
 
     @staticmethod
     def nstackplot(name, start, degree, shouldfit):
-
-        filename = str(name)
-        # opens file as a fits file using the fits function set from astropy
-        sp = fits.open(filename)
-
-        # Opens the Header file as a object hdu
-        hdu = sp[0].header
-
-        # Order number Changer (Change this to look at different orders)
-        ordernum = start
-        # Pulls the date from the fits header
-        dateobs = (hdu['DATE-OBS'])
-
-        # Pulls the wavelength and flux values for a given order number, stores as a numpy array
-        wavelength = np.float64(sp[0].data[ordernum, :, 0])
-        flux = np.float64(sp[0].data[ordernum, :, 1])
-
-        fig = plt.figure(figsize=(15, 10))
-
-        if showfit[0] is True:
-            spect = fig.add_subplot(1, 2, 2)
-        else:
-            spect = fig.add_subplot(1, 1, 1)
-
-        if shouldfit:
-            degree = int(degree)
-            z = np.polyfit(wavelength, flux, degree)
-            f = np.poly1d(z)
-            y_poly = f(wavelength)
-            y_new = flux - y_poly
-            spect.plot(wavelength, y_new, color='green')
-
-            if showfit[0] is True:
-                fitfig = fig.add_subplot(1, 2, 1)
-                fitfig.plot(wavelength, flux)
-                fitfig.plot(wavelength, y_poly, color='black', linewidth=2)
-                fitfig.set_xlabel('Wavelength (Angstroms)')
-                fitfig.set_ylabel('Flux')
-                fitfig.set_title('Spectra with Function Fit')
-
-        else:
-            spect.plot(wavelength, flux)
-
-        # Initializes X11 window
-        spect.set_xlabel('Wavelength (Angstroms)')
-        spect.set_ylabel('Flux')
-        spect.set_title('Single Order 1-D Spectra | Order number: ' + str(start))
+        fig = plt.figure(figsize=(10, 7))
+        PlotFunctionality.plot(name, start, showfit, shouldfit, degree, fig)
         plt.tight_layout()
         plt.ion()
         plt.show()
 
+        def plotcontrol(event):
+            keydown = event.key
+            if keydown == 'a' or keydown == 'A':
+                plt.close()
+                Plotter.nstackplot(name, start-1, degree, shouldfit)
+            elif keydown == 'd' or keydown == 'D':
+                plt.close()
+                Plotter.nstackplot(name, start+1, degree, shouldfit)
+        fig.canvas.mpl_connect('key_press_event', plotcontrol)
 
 class MyForm(QtGui.QMainWindow):
     def __init__(self, parent=None):
+        print 'here'
         QtGui.QWidget.__init__(self, parent)
         self.ui = Ui_Header()
         self.ui.setupUi(self)
         self.ui.function1.setStyleSheet("background-color: red; color: black")
-        self.ui.generatePathFiles.clicked.connect(self.search)
+        self.ui.generatePathFiles.clicked.connect(self.generatepath)
         self.ui.quitBut.clicked.connect(self.end)
         self.ui.stackIm.stateChanged.connect(self.stackinput)
         self.ui.allStack.stateChanged.connect(self.allinput)
@@ -202,31 +104,13 @@ class MyForm(QtGui.QMainWindow):
         self.ui.FunctionFit.stateChanged.connect(self.fitter)
         self.ui.function1.clicked.connect(self.showfit)
 
-
-
-    @staticmethod
-    def end():
-        exit()
-
-    @staticmethod
-    def secret():
-        webbrowser.open('http://d.justpo.st/images/2013/04/b83fb1b7222c18934e59c5b1bd2f43bd.jpg')
-
-    @staticmethod
-    def stackinput():
-        useArray[0] = not useArray[0]
-
-    @staticmethod
-    def allinput():
-        useArray[1] = not useArray[1]
-
     def fitter(self):
         fit[0] = not fit[0]
         if fit[0] is False:
             self.ui.function1.setStyleSheet('background-color: red; color: black')
             showfit[0] = False
 
-    def search(self):
+    def generatepath(self):
         count = 0
         namearray = []
         for root, dirs, files in os.walk('.', topdown=True):
@@ -261,12 +145,12 @@ class MyForm(QtGui.QMainWindow):
 
     def plot(self):
         plt.close(1)
-        if useArray[0] is True:
+        if usearray[0] is True:
             pathfilename = self.ui.pathListInput.toPlainText()
             numToStack = self.ui.numStack.value()
             order = self.ui.startOrd.value()
             degree = self.ui.amplitude.toPlainText()
-            Plotter.stackplot(pathfilename, useArray[1], numToStack, order, degree, fit[0])
+            Plotter.stackplot(pathfilename, usearray[1], numToStack, order, degree, fit[0])
         else:
             filename = self.ui.singleFileInput.toPlainText()
             degree = self.ui.amplitude.toPlainText()
@@ -280,6 +164,22 @@ class MyForm(QtGui.QMainWindow):
                 self.ui.function1.setStyleSheet("background-color: green; color: white")
             else:
                 self.ui.function1.setStyleSheet("background-color: red; color: black")
+    @staticmethod
+    def end():
+        exit()
+
+    @staticmethod
+    def secret():
+        webbrowser.open('http://d.justpo.st/images/2013/04/b83fb1b7222c18934e59c5b1bd2f43bd.jpg')
+
+    @staticmethod
+    def stackinput():
+        usearray[0] = not usearray[0]
+
+    @staticmethod
+    def allinput():
+        usearray[1] = not usearray[1]
+
 
 if __name__ == "__main__":
     app = QtGui.QApplication(sys.argv)
