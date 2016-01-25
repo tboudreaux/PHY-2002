@@ -1,23 +1,17 @@
 # Echel Spectra viewer
 # Paddy Clancy and Thomas Boudreaux
 from General import *
-initrun = False
-#if PreChecks.modimport() is True and initrun == False:
+
 import matplotlib.pyplot as plt
-import sys
 import os
 from PyQt4 import QtGui
 from SecondGui import Ui_Header
 import webbrowser
 from GuiFunction import *
 from astropy.io import fits
-"""
-    print 'All Modules OK'
-    initrun = True
-else:
-    print 'Not All Modules are installed, Please Install All Required Modules try again (See README.txt)'
-    exit()
-"""
+import sys
+from Correlation import Ui_CrossCore
+
 PreChecks.oscheck()
 
 inputArray = []
@@ -26,6 +20,7 @@ fit = [False]
 showfit = [False]
 corlist = [False]
 jankeyname = []
+useorder = [1]
 
 class Plotter(object):
 
@@ -188,10 +183,6 @@ class MyForm(QtGui.QMainWindow):
     def allinput():
         usearray[1] = not usearray[1]
 
-    def filenamepass():
-        filepass = MyForm.filenameget
-        return filepass
-
 class CCWindow(QtGui.QMainWindow):
     def __init__ (self, parent = None):
         QtGui.QWidget.__init__(self, parent)
@@ -221,11 +212,34 @@ class CCWindow(QtGui.QMainWindow):
         if corlist[0] is True:
             self.ui.infobox.append('<font color="red">Multiple Correlation Not an opetion currently, please deselect and use single correlation</font><br>')
         else:
+
+            fig = plt.figure(figsize=(7, 5))
+            corplot = fig.add_subplot(1, 1, 1)
             degree = self.ui.fitdegree.value()
             templatename = self.ui.tempfilename.toPlainText()
             objectname = jankeyname[0]
-            corelated = AdvancedPlotting.ccor(objectname, templatename, degree)
-            print corelated
+            self.ui.infobox.append('<font color ="green">Cross Correlating Order number ' + str(useorder[0]) + '</font><br>')
+            corelated = AdvancedPlotting.ccor(objectname, templatename, degree, useorder[0])
+            corplot.plot(corelated['corwave'], corelated['correlation'])
+
+            def plotcontrol(event):
+                keydown = event.key
+                if keydown == 'a' or keydown == 'A' and useorder[0] < 62:
+                    plt.close()
+                    fig2 = plt.figure(figsize=(7, 5))
+                    corplot2 = fig2.add_subplot(1, 1, 1)
+                    useorder[0] += 1
+                    corelated2 = AdvancedPlotting.ccor(objectname, templatename, degree, useorder[0])
+                    corplot2.plot(corelated2['corwave'], corelated2['correlation'])
+                    self.ui.infobox.append('<font color ="green">Cross Correlating Order number ' + str(useorder[0]) + '</font><br>')
+                    plt.show()
+            fig.canvas.mpl_connect('key_press_event', plotcontrol)
+            plt.show()
+
+
+
+
+
 
 
 if __name__ == "__main__":

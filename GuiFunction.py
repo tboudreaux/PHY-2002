@@ -1,10 +1,7 @@
 from astropy.io import fits
 import numpy as np
-from Correlation import Ui_CrossCore
-from PyQt4 import QtGui
-from PyQt4.QtGui import QApplication, QDialog
-import sys
-
+from General import Mathamatics
+import math
 run = [False]
 
 log = open('log.log', 'w')
@@ -70,19 +67,24 @@ class PlotFunctionality(object):
 class AdvancedPlotting(PlotFunctionality):
 
     @staticmethod
-    def ccor(targetpath, templatepath, degree):
+    def ccor(targetpath, templatepath, degree, order):
         targetflux = []
-        templateflux = []
-        #for i in range(61):
-        targetflux.append(PlotFunctionality.fitfunction(degree, PlotFunctionality.wfextract(targetpath, 1)['wavelength'], PlotFunctionality.wfextract(targetpath, 1)['flux'])['y_new'])
-        templateflux.append(PlotFunctionality.fitfunction(degree, PlotFunctionality.wfextract(templatepath, 1)['wavelength'], PlotFunctionality.wfextract(templatepath, 1)['flux'])['y_new'])
-        print >>log, 'Target Flux\n'
-        print >>log, len(targetflux[0])
-        print >>log, 'Template Flux\n'
-        print >>log, len(targetflux[0])
-        correlated = np.correlate(targetflux, templateflux)
-        print correlated
-        return correlated
+        correlation =[]
+        corwave = []
+        targetdata = PlotFunctionality.wfextract(targetpath, order)
+        templatedata = PlotFunctionality.wfextract(templatepath, order)
+        largest = Mathamatics.largest(targetdata['wavelength'])
+        smallest = Mathamatics.smallest(targetdata['wavelength'])
+        diff = largest - smallest
+        diff = int(math.ceil(diff))
+        targetflux.append(PlotFunctionality.fitfunction(degree, targetdata['wavelength'], targetdata['flux'])['y_new'])
+        for i in range(2 * diff):
+            templateflux = []
+            wshift = [x + diff - i for x in templatedata['wavelength']]
+            templateflux.append(PlotFunctionality.fitfunction(degree, wshift, templatedata['flux'])['y_new'])
+            correlation.append(np.correlate(targetflux[0], templateflux[0]))
+            corwave.append(diff-i)
+        return {'correlation': correlation, 'corwave': corwave}
 
     @staticmethod
     def listcomp(list1, list2):
@@ -98,3 +100,4 @@ class AdvancedPlotting(PlotFunctionality):
         for line in listactual:
             listarray.append(line)
         return listarray
+
