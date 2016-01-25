@@ -32,6 +32,7 @@ class PreChecks(object):
         return foundall
 
 
+
 class Mathamatics(object):
     @staticmethod
     def smallest(array):
