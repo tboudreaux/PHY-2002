@@ -42,9 +42,14 @@ class MyForm(QtGui.QMainWindow):
         self.ui.function3.clicked.connect(self.LS)
         self.ui.function4.clicked.connect(self.NI)
         self.ui.Shift.clicked.connect(self.NI)
-        self.ui.info.clicked.connect(self.NI)
+        self.ui.info.clicked.connect(self.info)
         self.ui.Reset.clicked.connect(self.NI)
         self.window2 = None
+
+    def info(self):
+       infofile = open('info.txt', 'rb')
+       infotxt = infofile.read()
+       self.ui.consol.append(infotxt)
 
     def LS(self):
         dirs = os.listdir('.')

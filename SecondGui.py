@@ -25,7 +25,7 @@ except AttributeError:
 class Ui_Header(object):
     def setupUi(self, Header):
         Header.setObjectName(_fromUtf8("Header"))
-        Header.resize(544, 788)
+        Header.resize(544, 837)
         self.stackIm = QtGui.QCheckBox(Header)
         self.stackIm.setGeometry(QtCore.QRect(0, 10, 111, 22))
         self.stackIm.setObjectName(_fromUtf8("stackIm"))
@@ -145,6 +145,23 @@ class Ui_Header(object):
         self.label_3 = QtGui.QLabel(Header)
         self.label_3.setGeometry(QtCore.QRect(220, 410, 101, 17))
         self.label_3.setObjectName(_fromUtf8("label_3"))
+        self.consolinput = QtGui.QTextEdit(Header)
+        self.consolinput.setGeometry(QtCore.QRect(30, 790, 501, 31))
+        font = QtGui.QFont()
+        font.setFamily(_fromUtf8("Nimbus Mono L"))
+        font.setItalic(True)
+        self.consolinput.setFont(font)
+        self.consolinput.setObjectName(_fromUtf8("consolinput"))
+        self.label_5 = QtGui.QLabel(Header)
+        self.label_5.setGeometry(QtCore.QRect(9, 790, 21, 31))
+        font = QtGui.QFont()
+        font.setPointSize(20)
+        font.setBold(True)
+        font.setItalic(False)
+        font.setUnderline(False)
+        font.setWeight(75)
+        self.label_5.setFont(font)
+        self.label_5.setObjectName(_fromUtf8("label_5"))
 
         self.retranslateUi(Header)
         QtCore.QMetaObject.connectSlotsByName(Header)
@@ -172,4 +189,5 @@ class Ui_Header(object):
         self.Reset.setText(_translate("Header", "Reset", None))
         self.Shift.setText(_translate("Header", "Shift", None))
         self.label_3.setText(_translate("Header", "Consol Logger", None))
+        self.label_5.setText(_translate("Header", ">", None))
 
