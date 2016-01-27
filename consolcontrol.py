@@ -14,7 +14,7 @@ class BSPS(object):
 
 class BSPSEss(QObject):
 
-    returnsig = pyqtSignal()
+    returnsig = pyqtSignal(str)
 
     def __init__(self):
         QObject.__init__(self)
@@ -22,6 +22,6 @@ class BSPSEss(QObject):
     def view(self, filename):
         openfile = open(filename, 'rb')
         openfile = openfile.read()
-        self.returnsig.em
+        self.emit()
 
 

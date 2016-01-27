@@ -51,6 +51,19 @@ class PlotFunctionality(object):
         f = np.poly1d(z)
         y_poly = f(wavelength)
         y_new = flux - y_poly
+        """
+        fluxstdev = np.std(y_new)
+        mean = np.mean(y_new)
+        for i in range(len(y_new)):
+            if y_new[i] >= 3 * fluxstdev + mean:
+                np.delete(y_new, i)
+                np.delete(wavelength, i)
+        flux = y_new + y_poly
+        z = np.polyfit(wavelength, flux, degree)
+        f = np.poly1d(z)
+        y_poly = f(wavelength)
+        y_new = flux - y_poly
+        """
         return {'y_poly': y_poly, 'y_new': y_new}
 
     @staticmethod
