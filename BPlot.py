@@ -12,6 +12,7 @@ from astropy.io import fits
 import sys
 from Correlation import Ui_CrossCore
 from consolcontrol import *
+from JumpToOrder import Ui_JumpToOrder
 
 PreChecks.oscheck()
 
@@ -48,6 +49,7 @@ class MyForm(QtGui.QMainWindow):
         self.ui.info.clicked.connect(self.info)
         self.ui.Reset.clicked.connect(self.NI)
         self.window2 = None
+        self.window3 = None
 
     def keyPressEvent(self, e):
         if e.key() == QtCore.Qt.Key_Return:
@@ -128,16 +130,17 @@ class MyForm(QtGui.QMainWindow):
 
     def plot(self):
         plt.close(1)
+
+        degree = self.ui.amplitude.toPlainText()
+        pathfilename = self.ui.pathListInput.toPlainText()
+        numToStack = self.ui.numStack.value()
+        filename = self.ui.singleFileInput.toPlainText()
+        order = self.ui.startOrd.value()
+
+        self.jumpTo()
         if usearray[0] is True:
-            pathfilename = self.ui.pathListInput.toPlainText()
-            numToStack = self.ui.numStack.value()
-            order = self.ui.startOrd.value()
-            degree = self.ui.amplitude.toPlainText()
             Plotter.stackplot(pathfilename, usearray[1], numToStack, order, degree, fit[0])
         else:
-            filename = self.ui.singleFileInput.toPlainText()
-            degree = self.ui.amplitude.toPlainText()
-            order = self.ui.startOrd.value()
             Plotter.nstackplot(filename, order, degree, fit[0])
 
     def showfit(self):
@@ -153,6 +156,15 @@ class MyForm(QtGui.QMainWindow):
     def correlate(self):
         self.window2 = CCWindow(self)
         self.window2.show()
+
+    def jumpTo(self):
+        degree = self.ui.amplitude.toPlainText()
+        pathfilename = self.ui.pathListInput.toPlainText()
+        numToStack = self.ui.numStack.value()
+        filename = self.ui.singleFileInput.toPlainText()
+        order = self.ui.startOrd.value()
+        self.window3 = OrderJump(self)
+        self.window3.show()
 
     @staticmethod
     def end():
@@ -170,6 +182,22 @@ class MyForm(QtGui.QMainWindow):
     @staticmethod
     def allinput():
         usearray[1] = not usearray[1]
+
+class OrderJump(QtGui.QMainWindow):
+    def __init__ (self, parent=None):
+        QtGui.QWidget.__init__(self, parent)
+        self.ui = Ui_JumpToOrder()
+        self.ui.setupUi(self)
+
+        self.ui.cancel.clicked.connect(self.closser)
+        self.ui.replot.clicked.connect(self.replot)
+
+    def replot(self):
+        order = self.ui.order.value()
+        Plotter
+
+    def closser(self):
+        self.destroy()
 
 class CCWindow(QtGui.QMainWindow):
     def __init__ (self, parent = None):
