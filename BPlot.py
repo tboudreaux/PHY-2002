@@ -1,199 +1,39 @@
 # Echel Spectra viewer
 # Paddy Clancy and Thomas Boudreaux
-from astropy.io import fits
-import numpy as np
-import matplotlib
+from General import *
+
 import matplotlib.pyplot as plt
-import platform
-import sys
 import os
-from PyQt4 import QtGui
+from PyQt4 import QtGui, QtCore
 from SecondGui import Ui_Header
 import webbrowser
+from GuiFunction import *
+from astropy.io import fits
+import sys
+from Correlation import Ui_CrossCore
+from consolcontrol import *
 
-operatings = platform.system()
-print('Checking Operating System')
-if operatings == 'Windows':
-    print('Program does not run on Windows machines, please use a UNIX Like system to run program')
-    exit()
-elif operatings == 'Darwin':
-    matplotlib.interactive(True)
-else:
-    print('OS OK')
-
+PreChecks.oscheck()
 
 inputArray = []
-useArray = [False, False]
+usearray = [False, False]
 fit = [False]
 showfit = [False]
-
-
-class General(object):
-
-    @staticmethod
-    def smallest(array):
-        smallestnum = array[0]
-        for i in range(len(array)):
-            if array[i] < smallestnum:
-                smallestnum = array[i]
-        return smallestnum
-
-    @staticmethod
-    def largest(array):
-        largestnum = array[0]
-        for i in range(len(array)):
-            if array[i] > largestnum:
-                largestnum = array[i]
-        return largestnum
-
-
-class Plotter(object):
-
-    @staticmethod
-    def stackplot(stackfile, allimages, num, start, degree, shouldfit):
-
-        fig = plt.figure(figsize=(10, 7))
-
-        pathList = open(stackfile, 'rb')
-        pathArray = []
-        for line in pathList:
-            pathArray.append(line)
-        if allimages is True:
-            stackNum = len(pathArray)
-        else:
-            if num > len(pathArray):
-                num = len(pathArray)
-            stackNum = num
-
-
-        for i in range(stackNum):
-            name = pathArray[i]
-            name = name[:-1]
-            sp = fits.open(name)
-            hdu = sp[0].header
-
-            ordernum = start
-
-            dateobs = (hdu['DATE-OBS'])
-            objName = (hdu['OBJECT'])
-            wavelength = np.float64(sp[0].data[ordernum, :, 0])
-            flux = np.float64(sp[0].data[ordernum, :, 1])
-
-            if showfit[0] is True:
-                spect = fig.add_subplot(1, 2, 2)
-            else:
-                spect = fig.add_subplot(1, 1, 1)
-
-            if shouldfit:
-                degree = int(degree)
-                z = np.polyfit(wavelength, flux, degree)
-                f = np.poly1d(z)
-                y_poly = f(wavelength)
-                y_new = flux - y_poly
-                spect.plot(wavelength, y_new)
-
-                if showfit[0] is True:
-                    fitfig = fig.add_subplot(1, 2, 1)
-                    fitfig.plot(wavelength, flux)
-                    fitfig.plot(wavelength, y_poly, color='black', linewidth=2)
-                    fitfig.set_xlabel('Wavelength (Angstroms)')
-                    fitfig.set_ylabel('Flux')
-                    fitfig.set_title('Spectra with Function Fit')
-
-            else:
-                spect.plot(wavelength, flux)
-
-        spect.set_xlabel('Wavelength (Angstroms)')
-        spect.set_ylabel('Flux')
-        spect.set_title('Single Order 1-D Spectra for ' + str(stackNum) + ' Stars | Order number: ' + str(start))
-        plt.tight_layout()
-        plt.ion()
-        plt.show()
-
-        # gets keyboard input and calls plot functions
-        def key_press(event):
-            keydown = event.key
-            print keydown
-            if keydown == 'a' or keydown == 'A':
-                plt.close()
-                Plotter.stackplot(stackfile, allimages, num, start-1, degree, shouldfit)
-            elif keydown == 'd' or keydown == 'D':
-                plt.close()
-                Plotter.stackplot(stackfile, allimages, num, start+1, degree, shouldfit)
-            elif keydown == 'q' or keydown == 'Q':
-                plt.close()
-                if num != 1:
-                    Plotter.stackplot(stackfile, allimages, num - 1, start, degree, shouldfit)
-                elif num == 1:
-                    Plotter.stackplot(stackfile, allimages, num, start, degree, shouldfit)
-            elif keydown == 'e' or keydown == 'E':
-                plt.close()
-                Plotter.stackplot(stackfile, allimages, num + 1, start, degree, shouldfit)
-
-        fig.canvas.mpl_connect('key_press_event', key_press)
-
-
-    @staticmethod
-    def nstackplot(name, start, degree, shouldfit):
-
-        filename = str(name)
-        # opens file as a fits file using the fits function set from astropy
-        sp = fits.open(filename)
-
-        # Opens the Header file as a object hdu
-        hdu = sp[0].header
-
-        # Order number Changer (Change this to look at different orders)
-        ordernum = start
-        # Pulls the date from the fits header
-        dateobs = (hdu['DATE-OBS'])
-
-        # Pulls the wavelength and flux values for a given order number, stores as a numpy array
-        wavelength = np.float64(sp[0].data[ordernum, :, 0])
-        flux = np.float64(sp[0].data[ordernum, :, 1])
-
-        fig = plt.figure(figsize=(15, 10))
-
-        if showfit[0] is True:
-            spect = fig.add_subplot(1, 2, 2)
-        else:
-            spect = fig.add_subplot(1, 1, 1)
-
-        if shouldfit:
-            degree = int(degree)
-            z = np.polyfit(wavelength, flux, degree)
-            f = np.poly1d(z)
-            y_poly = f(wavelength)
-            y_new = flux - y_poly
-            spect.plot(wavelength, y_new, color='green')
-
-            if showfit[0] is True:
-                fitfig = fig.add_subplot(1, 2, 1)
-                fitfig.plot(wavelength, flux)
-                fitfig.plot(wavelength, y_poly, color='black', linewidth=2)
-                fitfig.set_xlabel('Wavelength (Angstroms)')
-                fitfig.set_ylabel('Flux')
-                fitfig.set_title('Spectra with Function Fit')
-
-        else:
-            spect.plot(wavelength, flux)
-
-        # Initializes X11 window
-        spect.set_xlabel('Wavelength (Angstroms)')
-        spect.set_ylabel('Flux')
-        spect.set_title('Single Order 1-D Spectra | Order number: ' + str(start))
-        plt.tight_layout()
-        plt.ion()
-        plt.show()
-
+corlist = [False]
+jankeyname = []
+useorder = [1]
+commands = []
+i = [0, 1]
 
 class MyForm(QtGui.QMainWindow):
     def __init__(self, parent=None):
         QtGui.QWidget.__init__(self, parent)
         self.ui = Ui_Header()
         self.ui.setupUi(self)
+        self.ui.consol.append('<font color = "green"> Spectral Image Plotter Version 0.3<br>Written by Paddy Clancy and Thomas Boudreaux  - 2016</font><br>')
+        self.ui.consol.append('<font color = "blue"> Module and OS Checks OK</font><br>')
         self.ui.function1.setStyleSheet("background-color: red; color: black")
-        self.ui.generatePathFiles.clicked.connect(self.search)
+        self.ui.generatePathFiles.clicked.connect(self.generatepath)
         self.ui.quitBut.clicked.connect(self.end)
         self.ui.stackIm.stateChanged.connect(self.stackinput)
         self.ui.allStack.stateChanged.connect(self.allinput)
@@ -201,24 +41,45 @@ class MyForm(QtGui.QMainWindow):
         self.ui.Secret.clicked.connect(self.secret)
         self.ui.FunctionFit.stateChanged.connect(self.fitter)
         self.ui.function1.clicked.connect(self.showfit)
+        self.ui.function2.clicked.connect(self.correlate)
+        self.ui.function3.clicked.connect(self.LS)
+        self.ui.function4.clicked.connect(self.NI)
+        self.ui.Shift.clicked.connect(self.NI)
+        self.ui.info.clicked.connect(self.info)
+        self.ui.Reset.clicked.connect(self.NI)
+        self.window2 = None
 
+    def keyPressEvent(self, e):
+        if e.key() == QtCore.Qt.Key_Return:
+            command = self.ui.consolinput.text()
+            commandcomp = str.split(str(command))
+            iscommand = commandcomp[0]
+            commandcomp.pop(0)
+            BSPS.route(iscommand, commandcomp)
+            self.ui.consol.append(command)
+            self.ui.consolinput.clear()
+            commands.append(command)
+        elif e.key() == QtCore.Qt.Key_Down:
+            i[0] -= 1
+            self.ui.consolinput.setText(commands[i[0]])
+        elif e.key() == QtCore.Qt.Key_Up:
+            i[0] += 1
+            self.ui.consolinput.setText(commands[i[0]])
 
+    def info(self):
+       infofile = open('info.txt', 'rb')
+       infotxt = infofile.read()
+       self.ui.consol.append(infotxt)
 
-    @staticmethod
-    def end():
-        exit()
+    def LS(self):
+        dirs = os.listdir('.')
+        for i in range(len(dirs)):
+            self.ui.consol.append('<font color = "blue">' + dirs[i] + '</font>')
+        self.ui.consol.append('<font color = "black"> ---------------------------- <font><br>')
 
-    @staticmethod
-    def secret():
-        webbrowser.open('http://d.justpo.st/images/2013/04/b83fb1b7222c18934e59c5b1bd2f43bd.jpg')
+    def NI(self):
+        self.ui.consol.append('<font color = "red"> Button currently not implimented</font><br>')
 
-    @staticmethod
-    def stackinput():
-        useArray[0] = not useArray[0]
-
-    @staticmethod
-    def allinput():
-        useArray[1] = not useArray[1]
 
     def fitter(self):
         fit[0] = not fit[0]
@@ -226,7 +87,7 @@ class MyForm(QtGui.QMainWindow):
             self.ui.function1.setStyleSheet('background-color: red; color: black')
             showfit[0] = False
 
-    def search(self):
+    def generatepath(self):
         count = 0
         namearray = []
         for root, dirs, files in os.walk('.', topdown=True):
@@ -257,16 +118,22 @@ class MyForm(QtGui.QMainWindow):
                             count += 1
                             progress = (count/len(namearray))*100
                             self.ui.PathFileProgress.setValue(progress)
-        self.ui.generatePathFiles.setStyleSheet("background-color: green; color: white")
+
+        if len(namearray) > 0:
+            self.ui.consol.append('<font color = "green"> Path Files Successfully generated</font><br>')
+            self.ui.generatePathFiles.setStyleSheet("background-color: green; color: white")
+        else:
+            self.ui.consol.append('<font color = "red"> No Path Files Generated, is your data folder in the program direcotry?</font><br>')
+            self.ui.generatePathFiles.setStyleSheet("background-color: red; color: white")
 
     def plot(self):
         plt.close(1)
-        if useArray[0] is True:
+        if usearray[0] is True:
             pathfilename = self.ui.pathListInput.toPlainText()
             numToStack = self.ui.numStack.value()
             order = self.ui.startOrd.value()
             degree = self.ui.amplitude.toPlainText()
-            Plotter.stackplot(pathfilename, useArray[1], numToStack, order, degree, fit[0])
+            Plotter.stackplot(pathfilename, usearray[1], numToStack, order, degree, fit[0])
         else:
             filename = self.ui.singleFileInput.toPlainText()
             degree = self.ui.amplitude.toPlainText()
@@ -280,6 +147,144 @@ class MyForm(QtGui.QMainWindow):
                 self.ui.function1.setStyleSheet("background-color: green; color: white")
             else:
                 self.ui.function1.setStyleSheet("background-color: red; color: black")
+        elif fit[0] is False:
+                self.ui.consol.append('<font color = "red"> Cannot Show function unless a function is being fit</font><br>')
+
+    def correlate(self):
+        self.window2 = CCWindow(self)
+        self.window2.show()
+
+    @staticmethod
+    def end():
+        print 'Closing Spectral Plotter in 5 seconds'
+        exit()
+
+    def secret(self):
+        self.ui.consol.append('<font color = "green"> Displaying the Answer to life - Credit: http://d.justpo.st/images/2013/04/b83fb1b7222c18934e59c5b1bd2f43bd.jpg</font><br>')
+        webbrowser.open('http://d.justpo.st/images/2013/04/b83fb1b7222c18934e59c5b1bd2f43bd.jpg')
+
+    @staticmethod
+    def stackinput():
+        usearray[0] = not usearray[0]
+
+    @staticmethod
+    def allinput():
+        usearray[1] = not usearray[1]
+
+class CCWindow(QtGui.QMainWindow):
+    def __init__ (self, parent = None):
+        QtGui.QWidget.__init__(self, parent)
+        self.ui = Ui_CrossCore()
+        self.ui.setupUi(self)
+
+        self.ui.listpath.setStyleSheet('background-color: grey')
+        self.ui.return_2.clicked.connect(self.closeer)
+        self.ui.ynlist.stateChanged.connect(self.uselist)
+        self.ui.correlate.clicked.connect(self.ccorplot)
+
+    def closeer(self):
+       self.destroy()
+
+    def uselist(self):
+        corlist[0] = not corlist[0]
+
+        if corlist[0] is False:
+            self.ui.tempfilename.setStyleSheet('background-color: white')
+            self.ui.targetfilename.setStyleSheet('background-color: white')
+            self.ui.listpath.setStyleSheet('background-color: grey')
+        else:
+            self.ui.tempfilename.setStyleSheet('background-color: grey')
+            self.ui.targetfilename.setStyleSheet('background-color: grey')
+            self.ui.listpath.setStyleSheet('background-color: white')
+
+
+    def ccorplot(self):
+        if corlist[0] is True:
+            self.ui.infobox.append('<font color="red">Multiple Correlation Not an opetion currently, please deselect and use single correlation</font><br>')
+        else:
+            degree = self.ui.fitdegree.value()
+            templatename = self.ui.tempfilename.toPlainText()
+            objectname = self.ui.targetfilename.toPlainText()
+            self.ui.infobox.append('<font color ="green">Cross Correlating Orders, use "a" to advance</font><br>')
+            Plotter.corplot(degree, templatename, objectname, 1)
+
+
+class Plotter(MyForm, CCWindow):
+
+    @staticmethod
+    def corplot(degree, templatename, objectname, order):
+        fig=plt.figure(figsize=(10, 7))
+        ccorfig = fig.add_subplot(1, 1, 1)
+        data = AdvancedPlotting.ccor(objectname, templatename, degree, order)
+        ccorfig.plot(data['corwave'], data['correlation'])
+        def plotcontrol(event):
+            keydown = event.key
+            if keydown == 'a' or keydown == 'A' and order < 62:
+                plt.close()
+                Plotter.corplot(degree, templatename, objectname, order + 1)
+        fig.canvas.mpl_connect('key_press_event', plotcontrol)
+        plt.show()
+
+    @staticmethod
+    def stackplot(stackfile, allimages, num, start, degree, shouldfit):
+        fig = plt.figure(figsize=(10, 7))
+        pathlist = open(stackfile, 'rb')
+        patharray = []
+        for line in pathlist:
+            patharray.append(line)
+        if allimages is True:
+            stacknum = len(patharray)
+        else:
+            if num > len(patharray):
+                num = len(patharray)
+            stacknum = num
+
+        for i in range(stacknum):
+            name = patharray[i]
+            name = name[:-1]
+            PlotFunctionality.plot(name, start, showfit[0], shouldfit, degree, fig)
+        plt.tight_layout()
+        plt.ion()
+        plt.show()
+
+        # gets keyboard input and calls plot functions
+        def plotcontrol(event):
+            keydown = event.key
+            if keydown == 'a' or keydown == 'A':
+                plt.close()
+                if int(start)-1 != 0:
+                    Plotter.stackplot(stackfile, allimages, num, start-1, degree, shouldfit)
+            elif keydown == 'd' or keydown == 'D':
+                plt.close()
+                Plotter.stackplot(stackfile, allimages, num, start+1, degree, shouldfit)
+            elif keydown == 'q' or keydown == 'Q':
+                plt.close()
+                if num != 1:
+                    Plotter.stackplot(stackfile, allimages, num - 1, start, degree, shouldfit)
+                elif num == 1:
+                    Plotter.stackplot(stackfile, allimages, num, start, degree, shouldfit)
+            elif keydown == 'e' or keydown == 'E':
+                plt.close()
+                Plotter.stackplot(stackfile, allimages, num + 1, start, degree, shouldfit)
+        fig.canvas.mpl_connect('key_press_event', plotcontrol)
+
+    @staticmethod
+    def nstackplot(name, start, degree, shouldfit):
+        fig = plt.figure(figsize=(10, 7))
+        PlotFunctionality.plot(name, start, showfit, shouldfit, degree, fig)
+        plt.tight_layout()
+        plt.ion()
+        plt.show()
+
+        def plotcontrol(event):
+            keydown = event.key
+            if keydown == 'a' or keydown == 'A':
+                plt.close()
+                Plotter.nstackplot(name, start-1, degree, shouldfit)
+            elif keydown == 'd' or keydown == 'D':
+                plt.close()
+                Plotter.nstackplot(name, start+1, degree, shouldfit)
+        fig.canvas.mpl_connect('key_press_event', plotcontrol)
 
 if __name__ == "__main__":
     app = QtGui.QApplication(sys.argv)
