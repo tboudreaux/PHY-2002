@@ -23,7 +23,7 @@ class PlotFunctionality(object):
 
         if shouldfit:
             fitresults = PlotFunctionality.fitfunction(degree, wavelength, flux)
-            spect.plot(wavelength, fitresults['y_new'])
+            spect.plot(fitresults['wave'], fitresults['y_new'])
 
             if showfit is True:
                 PlotFunctionality.fitshower(fig, wavelength, flux, fitresults['y_poly'])
@@ -47,24 +47,30 @@ class PlotFunctionality(object):
     @staticmethod
     def fitfunction(degree, wavelength, flux):
         degree = int(degree)
+        flux2 = flux
         z = np.polyfit(wavelength, flux, degree)
         f = np.poly1d(z)
         y_poly = f(wavelength)
         y_new = flux - y_poly
-        """
+        y_fit = y_new
         fluxstdev = np.std(y_new)
         mean = np.mean(y_new)
-        for i in range(len(y_new)):
-            if y_new[i] >= 3 * fluxstdev + mean:
-                np.delete(y_new, i)
-                np.delete(wavelength, i)
-        flux = y_new + y_poly
-        z = np.polyfit(wavelength, flux, degree)
+        forrange = len(y_new)
+        for i in range(forrange):
+            if y_new[i] >= (3 * fluxstdev) + mean:
+                y_new[i] = mean
+                y_fit[i] = mean
+            if y_new[i] <= mean - (3 * fluxstdev):
+                y_fit[i] = mean
+        flux2 = y_fit + y_poly
+        z = np.polyfit(wavelength, flux2, degree)
         f = np.poly1d(z)
         y_poly = f(wavelength)
         y_new = flux - y_poly
-        """
-        return {'y_poly': y_poly, 'y_new': y_new}
+        for i in range(forrange):
+            if y_new[i] >= (3 * fluxstdev) + mean:
+                y_new[i] = mean
+        return {'y_poly': y_poly, 'y_new': y_new, 'wave': wavelength}
 
     @staticmethod
     def wfextract(path, order):
