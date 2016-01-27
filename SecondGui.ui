@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>544</width>
-    <height>837</height>
+    <height>774</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -437,7 +437,7 @@
      <x>10</x>
      <y>431</y>
      <width>521</width>
-     <height>351</height>
+     <height>291</height>
     </rect>
    </property>
   </widget>
@@ -446,35 +446,19 @@
     <rect>
      <x>220</x>
      <y>410</y>
-     <width>101</width>
+     <width>111</width>
      <height>17</height>
     </rect>
    </property>
    <property name="text">
-    <string>Consol Logger</string>
-   </property>
-  </widget>
-  <widget class="QTextEdit" name="consolinput">
-   <property name="geometry">
-    <rect>
-     <x>30</x>
-     <y>790</y>
-     <width>501</width>
-     <height>31</height>
-    </rect>
-   </property>
-   <property name="font">
-    <font>
-     <family>Nimbus Mono L</family>
-     <italic>true</italic>
-    </font>
+    <string>Console Logger</string>
    </property>
   </widget>
   <widget class="QLabel" name="label_5">
    <property name="geometry">
     <rect>
-     <x>9</x>
-     <y>790</y>
+     <x>10</x>
+     <y>730</y>
      <width>21</width>
      <height>31</height>
     </rect>
@@ -490,6 +474,16 @@
    </property>
    <property name="text">
     <string>&gt;</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="consolinput">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>730</y>
+     <width>501</width>
+     <height>31</height>
+    </rect>
    </property>
   </widget>
  </widget>

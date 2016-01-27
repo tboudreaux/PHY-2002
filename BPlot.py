@@ -4,13 +4,14 @@ from General import *
 
 import matplotlib.pyplot as plt
 import os
-from PyQt4 import QtGui
+from PyQt4 import QtGui, QtCore
 from SecondGui import Ui_Header
 import webbrowser
 from GuiFunction import *
 from astropy.io import fits
 import sys
 from Correlation import Ui_CrossCore
+from consolcontrol import *
 
 PreChecks.oscheck()
 
@@ -21,6 +22,8 @@ showfit = [False]
 corlist = [False]
 jankeyname = []
 useorder = [1]
+commands = []
+i = [0, 1]
 
 class MyForm(QtGui.QMainWindow):
     def __init__(self, parent=None):
@@ -45,6 +48,23 @@ class MyForm(QtGui.QMainWindow):
         self.ui.info.clicked.connect(self.info)
         self.ui.Reset.clicked.connect(self.NI)
         self.window2 = None
+
+    def keyPressEvent(self, e):
+        if e.key() == QtCore.Qt.Key_Return:
+            command = self.ui.consolinput.text()
+            commandcomp = str.split(str(command))
+            iscommand = commandcomp[0]
+            commandcomp.pop(0)
+            BSPS.route(iscommand, commandcomp)
+            self.ui.consol.append(command)
+            self.ui.consolinput.clear()
+            commands.append(command)
+        elif e.key() == QtCore.Qt.Key_Down:
+            i[0] -= 1
+            self.ui.consolinput.setText(commands[i[0]])
+        elif e.key() == QtCore.Qt.Key_Up:
+            i[0] += 1
+            self.ui.consolinput.setText(commands[i[0]])
 
     def info(self):
        infofile = open('info.txt', 'rb')
@@ -232,7 +252,8 @@ class Plotter(MyForm, CCWindow):
             keydown = event.key
             if keydown == 'a' or keydown == 'A':
                 plt.close()
-                Plotter.stackplot(stackfile, allimages, num, start-1, degree, shouldfit)
+                if int(start)-1 != 0:
+                    Plotter.stackplot(stackfile, allimages, num, start-1, degree, shouldfit)
             elif keydown == 'd' or keydown == 'D':
                 plt.close()
                 Plotter.stackplot(stackfile, allimages, num, start+1, degree, shouldfit)

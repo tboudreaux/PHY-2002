@@ -13,8 +13,8 @@ class PlotFunctionality(object):
         name = str(name)
         sp = fits.open(name)
 
-        wavelength = np.float64(sp[0].data[start, :, 0])
-        flux = np.float64(sp[0].data[start, :, 1])
+        wavelength = np.float64(sp[0].data[start-1, :, 0])
+        flux = np.float64(sp[0].data[start-1, :, 1])
 
         if showfit is True:
             spect = fig.add_subplot(1, 2, 2)
@@ -30,11 +30,10 @@ class PlotFunctionality(object):
         else:
             spect.plot(wavelength, flux)
 
-        while run[0] is False:
-            spect.set_xlabel('Wavelength (Angstroms)')
-            spect.set_ylabel('Flux')
-            spect.set_title('Single Order 1-D Spectra | Order number: ' + str(start))
-            run[0] = True
+        spect.set_xlabel('Wavelength (Angstroms)')
+        spect.set_ylabel('Flux')
+        spect.set_title('Single Order 1-D Spectra | Order number: ' + str(start))
+
 
     @staticmethod
     def fitshower(fig, wavelength, flux, y_poly):
