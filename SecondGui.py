@@ -181,7 +181,7 @@ class Ui_Header(object):
         self.tabWidget.addTab(self.UserFunctions, _fromUtf8(""))
 
         self.retranslateUi(Header)
-        self.tabWidget.setCurrentIndex(1)
+        self.tabWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(Header)
 
     def retranslateUi(self, Header):
