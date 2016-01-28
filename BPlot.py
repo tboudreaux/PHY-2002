@@ -30,10 +30,9 @@ useorder = [1]
 commands = []
 commandnum = [0, 1]
 UserFunctions = ['open', 'open', 'open', 'open']
-datafile = open('lastrun.dat', 'w')
-readfile = open('lastrun.dat', 'rb')
+readfile = open('UserFunc.conf', 'rb')
 plotparm = []
-
+funcconf = [['1','Null', 'Function1'], ['2', 'Null', 'Function2'], ['3', 'Null', 'Function3'], ['4', 'Null', 'Function4']]
 # The main GUI Class that runs
 class MyForm(QtGui.QMainWindow):
     #I nitilazation of the GUI
@@ -44,8 +43,34 @@ class MyForm(QtGui.QMainWindow):
         self.ui.setupUi(self)
         self.com = Plotter()
         # These are in here because at some point I will add data persistance between runs, but I have to think some things out ther first
-       # lastrun = readfile.readlines()
-       # func1 = lastrun[0]; func2 = lastrun[1]; func3 = lastrun[2]; func4 = lastrun[3]
+        lastrun = readfile.readlines()
+        saverun = lastrun
+        for j in range(len(lastrun)):
+            lastrun[j] = lastrun[j].split()
+        print lastrun
+        number = 0
+        if len(saverun) >= 1:
+            UserFunctions[0] = lastrun[0][1]
+            self.ui.UseFunction1.clicked.connect(self.functiontie1)
+            self.ui.UseFunction1.setText(lastrun[0][2])
+            funcconf[0] = lastrun[0]
+        if len(saverun) >= 2:
+            UserFunctions[1] = lastrun[1][1]
+            self.ui.UserFunction2.clicked.connect(self.functiontie2)
+            self.ui.UserFunction2.setText(lastrun[1][2])
+            funcconf[1] = lastrun[1]
+        if len(saverun) >= 3:
+            UserFunctions[2] = lastrun[2][1]
+            self.ui.UserFuntion3.clicked.connect(self.functiontie3)
+            self.ui.UserFuntion3.setText(lastrun[2][2])
+            funcconf[2] = lastrun[2]
+        if len(saverun) == 4:
+            UserFunctions[3] = lastrun[3][1]
+            self.ui.userFuntion4.clicked.connect(self.functiontie4)
+            self.ui.userFuntion4.setText(lastrun[3][2])
+            funcconf[3] = lastrun[3]
+
+        print lastrun
        # func1a = func1.split(); func2a = func2.split(); func3a = func3.split(); func4a = func4.split()
         self.ui.consol.append('<font color = "green"> Spectral Image Plotter Version 0.4<br>Written by Paddy Clancy and Thomas Boudreaux  - 2016</font><br>')
         self.ui.consol.append('<font color = "blue"> Module and OS Checks OK</font><br>')
@@ -124,39 +149,42 @@ class MyForm(QtGui.QMainWindow):
                 if function == '1' or function == 'one' or function == 'One':
                     if len(commandcomp) == 3:
                         self.ui.UseFunction1.setText(commandcomp[2])
-                        print >>datafile, 'UseFunction1 ' + script + ' ' + commandcomp[2]
+                        funcconf[0] = '1 ' + script + ' ' + commandcomp[2]
                     else:
                         self.ui.UseFunction1.setText(script)
-                        print >>datafile, 'UseFunction1 ' + script + ' ' + commandcomp[2]
+                        funcconf[0] =  '1 ' + script + ' ' + script
                     UserFunctions[0] = script
                     self.ui.UseFunction1.clicked.connect(self.functiontie1)
                 if function == '2' or function == 'two' or function == 'Two':
                     if len(commandcomp) == 3:
                         self.ui.UserFunction2.setText(commandcomp[2])
-                        print >>datafile, 'UserFunction2 ' + script + ' ' + script
+                        funcconf[1] = '2 ' + script + ' ' + commandcomp[2]
                     else:
                         self.ui.UserFunction2.setText(script)
-                        print >>datafile, 'UserFunction2 ' + script + ' ' + script
+                        funcconf[1] = '2 ' + script + ' ' + script
                     UserFunctions[1] = script
                     self.ui.UserFunction2.clicked.connect(self.functiontie2)
                 if function == '3' or function == 'three' or function == 'Three':
                     if len(commandcomp) == 3:
                         self.ui.UserFuntion3.setText(commandcomp[2])
-                        print >>datafile, 'UserFuntion3 ' + script + ' ' + script
+                        funcconf[2] = '3 ' + script + ' ' + commandcomp[2]
                     else:
                         self.ui.UserFuntion3.setText(script)
-                        print >>datafile, 'UserFuntion3 ' + script + ' ' + script
+                        funcconf[2] = '3 ' + script + ' ' + script
                     UserFunctions[2] = script
                     self.ui.UserFuntion3.clicked.connect(self.functiontie3)
                 if function == 'four' or function == 'four' or function == 'Four':
                     if len(commandcomp) == 3:
                         self.ui.userFuntion4.setText(commandcomp[2])
-                        print >>datafile, 'userFuntion4 ' + script + ' ' + script
+                        funcconf[3] = '4 ' + script + ' ' + commandcomp[2]
                     else:
                         self.ui.userFuntion4.setText(script)
-                        print >>datafile, 'userFuntion4 ' + script + ' ' + script
+                        funcconf[3] = '4 ' + script + ' ' + script
                     UserFunctions[3] = script
                     self.ui.userFuntion4.clicked.connect(self.functiontie4)
+                datafile = open('UserFunc.conf', 'w')
+                for n in range(len(funcconf)):
+                    print >>datafile, funcconf[n]
                 string = None
             if string:
                 self.ui.consol.append(string)
