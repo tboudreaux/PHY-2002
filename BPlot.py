@@ -313,6 +313,7 @@ class MyForm(QtGui.QMainWindow):
             Plotter.stackplot(pathfilename, usearray[1], numToStack, order, degree, fit[0])
         else:
             Plotter.nstackplot(filename, order, degree, fit[0])
+        self.jumpTo()
 
     # This controls the "show fit" button, its color and the boolean behind it. Again I would like to come up with a better
     #   way to store the booleans behind buttons, but that is for a latter date
@@ -466,7 +467,7 @@ class Plotter():
             name = patharray[i]
             name = name[:-1]
             PlotFunctionality.plot(name, start, showfit[0], shouldfit, degree, fig)
-        plt.tight_layout()
+        # plt.tight_layout()
         plt.ion()
         plt.show()
 
@@ -495,7 +496,7 @@ class Plotter():
     def nstackplot(name, start, degree, shouldfit):
         fig = plt.figure(figsize=(10, 7))
         PlotFunctionality.plot(name, start, showfit, shouldfit, degree, fig)
-        plt.tight_layout()
+        # plt.tight_layout()
         plt.ion()
         plt.show()
 

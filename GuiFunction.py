@@ -37,6 +37,15 @@ class PlotFunctionality(object):
 
     @staticmethod
     def fitshower(fig, wavelength, flux, y_poly):
+        #
+        # newwave = []
+        # newflux = []
+        # for j in range(len(wavelength)):
+        #     if (wavelength[j] >= 4857 and wavelength[j] <= 4863) or (wavelength[j] >= 6557 and wavelength[j] <= 6565):
+        #         pass
+        #     else:
+        #         newwave.append(wavelength[j])
+        #         newflux.append(flux[j])
         fitfig = fig.add_subplot(1, 2, 1)
         fitfig.plot(wavelength, flux)
         fitfig.plot(wavelength, y_poly, color='black', linewidth=2)
@@ -46,12 +55,20 @@ class PlotFunctionality(object):
 
     @staticmethod
     def fitfunction(degree, wavelength, flux):
+        newwave = []
+        newflux = []
+        print wavelength[0]
+        for j in range(len(wavelength)):
+            if (wavelength[j] >= 4857 and wavelength[j] <= 4863) or (wavelength[j] >= 6557 and wavelength[j] <= 6565):
+                pass
+            else:
+                newwave.append(wavelength[j])
+                newflux.append(flux[j])
         degree = int(degree)
-        flux2 = flux
-        z = np.polyfit(wavelength, flux, degree)
+        z = np.polyfit(newwave, newflux, degree)
         f = np.poly1d(z)
-        y_poly = f(wavelength)
-        y_new = flux - y_poly
+        y_poly = f(newwave)
+        y_new = newflux - y_poly
         y_fit = y_new
         fluxstdev = np.std(y_new)
         mean = np.mean(y_new)
@@ -63,7 +80,7 @@ class PlotFunctionality(object):
             if y_new[i] <= mean - (3 * fluxstdev):
                 y_fit[i] = mean
         flux2 = y_fit + y_poly
-        z = np.polyfit(wavelength, flux2, degree)
+        z = np.polyfit(newwave, flux2, degree)
         f = np.poly1d(z)
         y_poly = f(wavelength)
         y_new = flux - y_poly
