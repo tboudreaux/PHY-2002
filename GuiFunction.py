@@ -57,9 +57,8 @@ class PlotFunctionality(object):
     def fitfunction(degree, wavelength, flux):
         newwave = []
         newflux = []
-        print wavelength[0]
         for j in range(len(wavelength)):
-            if (wavelength[j] >= 4857 and wavelength[j] <= 4863) or (wavelength[j] >= 6557 and wavelength[j] <= 6565):
+            if (wavelength[j] >= 4855 and wavelength[j] <= 4867) or (wavelength[j] >= 6554 and wavelength[j] <= 6570):
                 pass
             else:
                 newwave.append(wavelength[j])
@@ -68,7 +67,7 @@ class PlotFunctionality(object):
         z = np.polyfit(newwave, newflux, degree)
         f = np.poly1d(z)
         y_poly = f(newwave)
-        y_new = newflux - y_poly
+        y_new = newflux / y_poly
         y_fit = y_new
         fluxstdev = np.std(y_new)
         mean = np.mean(y_new)
@@ -79,11 +78,11 @@ class PlotFunctionality(object):
                 y_fit[i] = mean
             if y_new[i] <= mean - (3 * fluxstdev):
                 y_fit[i] = mean
-        flux2 = y_fit + y_poly
+        flux2 = y_fit * y_poly
         z = np.polyfit(newwave, flux2, degree)
         f = np.poly1d(z)
         y_poly = f(wavelength)
-        y_new = flux - y_poly
+        y_new = flux / y_poly
         for i in range(forrange):
             if y_new[i] >= (3 * fluxstdev) + mean:
                 y_new[i] = mean
@@ -113,6 +112,7 @@ class AdvancedPlotting(PlotFunctionality):
         diff = largest - smallest
         diff = int(math.ceil(diff))
         targetflux.append(PlotFunctionality.fitfunction(degree, targetdata['wavelength'], targetdata['flux'])['y_new'])
+        print targetflux
         for i in range(2 * diff):
             templateflux = []
             wshift = [x + diff - i for x in templatedata['wavelength']]

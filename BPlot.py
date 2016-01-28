@@ -297,7 +297,7 @@ class MyForm(QtGui.QMainWindow):
         # Closes whatever figure is open so that the screen is not overrun with windows everytime Plot is pressed
         # the effect of this is that one can modify parmaters in the GUI and then replot by pressing plot
         plt.close(1)
-        self.jumpTo()
+
         # Fetch the values and strings stored in relevent text fields
         degree = self.ui.amplitude.toPlainText()
         pathfilename = self.ui.pathListInput.toPlainText()
