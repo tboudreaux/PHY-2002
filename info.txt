@@ -1,0 +1,27 @@
+Basic Spectral Plotter, Written by Paddy Clancy and Thomas Boudreaux. Developed for PHY-2002 at High Point University, advisor Dr. Brad N. Barlow. 
+Basic Opperation:
+-------------------
+This program has been written to view and analize high resolution spectral data from CHIRON on the SMARTS 1.5 meter telesocpe. If you would like to stack multiple exposures of a target for the same order Press the "Generate Path Files" button (or if you have pressed the button in the past just enter the file name into the "Path List File Name" field) and then enter the file name for the desired target in the "Path List File Name" fileld. Check the "Stack Images" box and then select the number of targets that you would like to stack, or select "all" and all will be stacked. If you do not check "all" you can increase or decrease the number of stacked images once you plot by pressing the 'q' (decrease) or 'e' (increase) keys on your keyboard. If instead you would only like to examin one object enter the file path to that object in the "Single File Name" field. Once you have your file(s) selected you can decide if you would like to normalize your spectra. To Normalize a spectra check "Fit a Function" and then enter the degree polynominal that you would like to fit. If you would like to show the function that was fit as well as the nomralized spectra click the "Show Fit" button. Once you have your settings as you like click on "Plot" Once in the Plot window 'd' will advance to the next order and 'a' will retrete to the previous order. 
+
+More Features:
+-------------------
+Press the "LS" Button to list all files and folders in the current directory
+Press the "quit" button to exit the program
+Press the "Info" Button to bring up this screen
+Press the "Answer" Button to bring up the actual answer to the problem
+
+Features to come:
+-------------------
+Cross Correlation is a feature under active development
+Gausian fitting to absorbtion lines is another feature under active development
+The Shift key will at some point allow for 2x functionality in the 4 function keys
+One fuction key is currently unassigned, its finction is yet to be determined
+The Reset key currently does not do anything, at some point it will reset the program
+The consol currently does not accept text input, it will at some point get its own scripting language
+Grid Spaced as oppoesed to absolute spaced
+Order Number Jump to is feature that will come about at some point
+RV calculation is a feature far down the line that is planned
+Better code documentation will come as well
+
+Thanks.
+

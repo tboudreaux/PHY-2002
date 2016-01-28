@@ -1,27 +1,98 @@
 # This program controls the functions avalible to the user in the consol
-from BPlot import MyForm
-from PyQt4.QtCore import QObject, pyqtSignal, pyqtSlot
+from PyQt4 import QtCore, QtGui
+import os
+
+
 class BSPS(object):
 
     @staticmethod
     def route(command, paramter):
-        commandlist = open('CL.list', 'rb')
-        commandlist = commandlist.read()
-        commandlist = str.split(commandlist)
-        if command in commandlist:
-            if command == 'view':
-                BSPSEss.view(BSPSEss())
+        commandList = {'view':BSPSEss.view, 'ls':BSPSEss.ls, 'lcom':BSPSEss.lcom, 'pwd':BSPSEss.pwd, 'cd':BSPSEss.cd, 'clear':BSPSEss.clear, 'mkdir': BSPSEss.mkdir, 'edit': BSPSEss.edit, 'pyrun': BSPSEss.pyrun, 'tie': BSPSEss.tie, 'lfunc': BSPSEss.lfunc}
+        if command in commandList:
+            string = BSPSEss.strsend(command, paramter)
+            return string
 
-class BSPSEss(QObject):
+class Communicate(QtCore.QObject):
+        returnsig = QtCore.pyqtSignal()
 
-    returnsig = pyqtSignal(str)
+class BSPSEss(BSPS):
 
     def __init__(self):
-        QObject.__init__(self)
+        self.com = Communicate()
 
-    def view(self, filename):
-        openfile = open(filename, 'rb')
+    @staticmethod
+    def strsend(command, parameter):
+        commandlist = {'view':BSPSEss.view, 'ls':BSPSEss.ls, 'lcom':BSPSEss.lcom, 'pwd':BSPSEss.pwd, 'cd':BSPSEss.cd, 'clear':BSPSEss.clear, 'mkdir': BSPSEss.mkdir, 'edit': BSPSEss.edit, 'pyrun':BSPSEss.pyrun, 'tie': BSPSEss.tie, 'lfunc': BSPSEss.lfunc}
+        try:
+            string = commandlist[command](parameter)
+        except TypeError:
+            string = commandlist[command]()
+        BSPSEss.stremit(BSPSEss())
+        return string
+
+    @staticmethod
+    def lfunc(parameter):
+        parameter.append('Null')
+        if parameter[0] == '-a':
+            return '//lfuncall'
+        else:
+            return '//lfunc'
+
+    @staticmethod
+    def pyrun(parameter):
+        execfile(parameter[0])
+        return 'running ' + parameter[0]
+
+    @staticmethod
+    def tie(parameter):
+        return '//tie'
+
+    @staticmethod
+    def edit():
+        return '//edit'
+
+    @staticmethod
+    def mkdir(parameter):
+        os.mkdir(parameter[0])
+
+    @staticmethod
+    def clear():
+        return '//clear'
+
+    @staticmethod
+    def cd(parameter):
+        try:
+            os.chdir(parameter[0])
+        except OSError:
+            string = '<font color = "red">No such directory</font>'
+            return string
+
+    @staticmethod
+    def ls():
+        dirs = os.listdir('.')
+        if len(dirs) != 0:
+            string = ', '.join(dirs)
+        else:
+            string = '<font color = "red">Nothing Here</font>'
+        return string
+
+    @staticmethod
+    def lcom():
+        commands = open('CL.list','rb')
+        commands = commands.read()
+        return commands
+
+    @staticmethod
+    def pwd():
+        directory = os.getcwd()
+        return directory
+
+    @staticmethod
+    def view(filename):
+        openfile = open(filename[0], 'rb')
         openfile = openfile.read()
-        self.emit()
+        return openfile
 
+    def stremit(self):
+        self.com.returnsig.emit()
 

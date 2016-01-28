@@ -1,0 +1,24 @@
+view - view an ascii text file in the consol
+ls - list the files and folders in your working directory
+lcom - show a list of all commands and a basic description of each
+pwd - print working directory to the consol
+clear - clear the consol window
+cd - change working directory
+mkdir - make directory
+edit - basic editor for ascii files
+pyrun - run a python file
+tie - tie a python script to a function button
+lfunc - list infomration about user functions
+-------
+command syntax:
+view [filename]
+ls
+lcom
+pwd
+clear
+cd [directory]
+mkdir [directoryname]
+edit [filename]
+pyrun [filename]
+tie [script] [function] [optional: name of button after tie]
+lfunc [options -a (list what functions are ties to what)]

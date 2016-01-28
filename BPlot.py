@@ -5,6 +5,7 @@ from General import *
 import matplotlib.pyplot as plt
 import os
 from PyQt4 import QtGui, QtCore
+from consolcontrol import *
 from SecondGui import Ui_Header
 import webbrowser
 from GuiFunction import *
@@ -13,6 +14,7 @@ import sys
 from Correlation import Ui_CrossCore
 from consolcontrol import *
 from JumpToOrder import Ui_JumpToOrder
+from Editor import Ui_MainWindow
 
 PreChecks.oscheck()
 
@@ -26,7 +28,10 @@ corlist = [False]
 jankeyname = []
 useorder = [1]
 commands = []
-i = [0, 1]
+commandnum = [0, 1]
+UserFunctions = ['open', 'open', 'open', 'open']
+datafile = open('lastrun.dat', 'w')
+readfile = open('lastrun.dat', 'rb')
 
 # The main GUI Class that runs
 class MyForm(QtGui.QMainWindow):
@@ -36,15 +41,21 @@ class MyForm(QtGui.QMainWindow):
         QtGui.QWidget.__init__(self, parent)
         self.ui = Ui_Header()
         self.ui.setupUi(self)
-        self.ui.consol.append('<font color = "green"> Spectral Image Plotter Version 0.3<br>Written by Paddy Clancy and Thomas Boudreaux  - 2016</font><br>')
+        self.com = Communicate()
+        # These are in here because at some point I will add data persistance between runs, but I have to think some things out ther first
+       # lastrun = readfile.readlines()
+       # func1 = lastrun[0]; func2 = lastrun[1]; func3 = lastrun[2]; func4 = lastrun[3]
+       # func1a = func1.split(); func2a = func2.split(); func3a = func3.split(); func4a = func4.split()
+        self.ui.consol.append('<font color = "green"> Spectral Image Plotter Version 0.4<br>Written by Paddy Clancy and Thomas Boudreaux  - 2016</font><br>')
         self.ui.consol.append('<font color = "blue"> Module and OS Checks OK</font><br>')
+        self.ui.consol.append('<font color = "blue"> type "lcom" for a list of avalibel commands</font><br>')
         self.ui.function1.setStyleSheet("background-color: red; color: black")
         # These are the GUI functional ties for the main window
         self.ui.generatePathFiles.clicked.connect(self.generatepath)
         # attempting to replace some of these long functions with lambda statments in otder to clean up code
         self.ui.quitBut.clicked.connect(lambda : exit())
-        self.ui.stackIm.stateChanged.connect(lambda : not usearray[0])
-        self.ui.allStack.stateChanged.connect(lambda : not usearray[1])
+        self.ui.stackIm.stateChanged.connect(lambda : usearray.__setitem__(0, not usearray[0]))
+        self.ui.allStack.stateChanged.connect(lambda : usearray.__setitem__(1, not usearray[1]))
         self.ui.plotBut.clicked.connect(self.plot)
         self.ui.Secret.clicked.connect(self.secret)
         self.ui.FunctionFit.stateChanged.connect(self.fitter)
@@ -52,11 +63,12 @@ class MyForm(QtGui.QMainWindow):
         self.ui.function2.clicked.connect(self.correlate)
         self.ui.function3.clicked.connect(self.LS)
         self.ui.function4.clicked.connect(self.NI)
-        self.ui.Shift.clicked.connect(self.NI)
         self.ui.info.clicked.connect(self.info)
         self.ui.Reset.clicked.connect(self.NI)
+
         # These initialize the windows as empty objects in the Main GUI controller
         self.window2 = None
+        self.window3 = None
         self.window3 = None
 
     ###########################
@@ -77,18 +89,86 @@ class MyForm(QtGui.QMainWindow):
             commandcomp = str.split(str(command))
             iscommand = commandcomp[0]
             commandcomp.pop(0)
-            BSPS.route(iscommand, commandcomp)
-            self.ui.consol.append(command)
+            string = BSPS.route(iscommand, commandcomp)
+            self.ui.consol.append('<font color = green>' + command + '</font>')
+            if string == '//clear':
+                self.ui.consol.clear()
+                string = None
+            elif string == '//edit':
+                self.window3 = Editor(self)
+                self.window3.show()
+                text = open(commandcomp[0], 'rb')
+                text = text.read()
+                self.window3.ui.textEdit.append(text)
+                self.window3.ui.FileName.setText(commandcomp[0])
+                string = None
+            elif string == '//lfunc':
+                count = 0
+                for i in range(4):
+                    if UserFunctions[i] == 'open':
+                        count += 1
+                self.ui.consol.append('There are ' + str(count) + ' Open functions')
+                string = None
+            elif string == '//lfuncall':
+                count = 0
+                for q in range(4):
+                    self.ui.consol.append(UserFunctions[q] + '[' + str(q+1)  + ']')
+                    if UserFunctions[q] == 'open':
+                        count += 1
+                self.ui.consol.append('There are ' + str(count) + ' Open functions')
+                string = None
+            elif string == '//tie':
+                script = commandcomp[0]
+                function = commandcomp[1]
+                if function == '1' or function == 'one' or function == 'One':
+                    if len(commandcomp) == 3:
+                        self.ui.UseFunction1.setText(commandcomp[2])
+                        print >>datafile, 'UseFunction1 ' + script + ' ' + commandcomp[2]
+                    else:
+                        self.ui.UseFunction1.setText(script)
+                        print >>datafile, 'UseFunction1 ' + script + ' ' + commandcomp[2]
+                    UserFunctions[0] = script
+                    self.ui.UseFunction1.clicked.connect(self.functiontie1)
+                if function == '2' or function == 'two' or function == 'Two':
+                    if len(commandcomp) == 3:
+                        self.ui.UserFunction2.setText(commandcomp[2])
+                        print >>datafile, 'UserFunction2 ' + script + ' ' + script
+                    else:
+                        self.ui.UserFunction2.setText(script)
+                        print >>datafile, 'UserFunction2 ' + script + ' ' + script
+                    UserFunctions[1] = script
+                    self.ui.UserFunction2.clicked.connect(self.functiontie2)
+                if function == '3' or function == 'three' or function == 'Three':
+                    if len(commandcomp) == 3:
+                        self.ui.UserFuntion3.setText(commandcomp[2])
+                        print >>datafile, 'UserFuntion3 ' + script + ' ' + script
+                    else:
+                        self.ui.UserFuntion3.setText(script)
+                        print >>datafile, 'UserFuntion3 ' + script + ' ' + script
+                    UserFunctions[2] = script
+                    self.ui.UserFuntion3.clicked.connect(self.functiontie3)
+                if function == 'four' or function == 'four' or function == 'Four':
+                    if len(commandcomp) == 3:
+                        self.ui.userFuntion4.setText(commandcomp[2])
+                        print >>datafile, 'userFuntion4 ' + script + ' ' + script
+                    else:
+                        self.ui.userFuntion4.setText(script)
+                        print >>datafile, 'userFuntion4 ' + script + ' ' + script
+                    UserFunctions[3] = script
+                    self.ui.userFuntion4.clicked.connect(self.functiontie4)
+                string = None
+            if string:
+                self.ui.consol.append(string)
             self.ui.consolinput.clear()
             commands.append(command)
 
         # Next and previous command for consol input
         elif e.key() == QtCore.Qt.Key_Down:
-            i[0] -= 1
-            self.ui.consolinput.setText(commands[i[0]])
+            commandnum[0] -= 1
+            self.ui.consolinput.setText(commands[commandnum[0]])
         elif e.key() == QtCore.Qt.Key_Up:
-            i[0] += 1
-            self.ui.consolinput.setText(commands[i[0]])
+            commandnum[0] += 1
+            self.ui.consolinput.setText(commands[commandnum[0]])
 
     # Prints the info screen from the info.txt file in the directory tree to the consol
     def info(self):
@@ -98,6 +178,19 @@ class MyForm(QtGui.QMainWindow):
 
     # Lists the directories in the working directory in the consol
     # This is due to be replaced when the lauguage is implimented with the ls command built into the language
+    @staticmethod
+    def functiontie1():
+        execfile(UserFunctions[0])
+    @staticmethod
+    def functiontie2():
+        execfile(UserFunctions[1])
+    @staticmethod
+    def functiontie3():
+        execfile(UserFunctions[2])
+    @staticmethod
+    def functiontie4():
+        execfile(UserFunctions[3])
+
     def LS(self):
         dirs = os.listdir('.')
         for i in range(len(dirs)):
@@ -177,7 +270,7 @@ class MyForm(QtGui.QMainWindow):
 
         # This opens the jump to window, at some point in the near future this will go away and be called form within
         #   the plotter class so that the user can press j without havin gto refocus on the GUI
-        #self.jumpTo()
+        self.jumpTo()
 
         # Determins whether to use stack plot or nstack plot, would like to figure out a better way to to this than arrays
         #   but that is currently not a super high priority
@@ -213,19 +306,6 @@ class MyForm(QtGui.QMainWindow):
         self.window3 = OrderJump(self)
         self.window3.show()
 
-    # Once I determin that the lambda fundtions work these will be deleted, they are antiquated now
-    # @staticmethod
-    # def end():
-    #     exit()
-
-    # @staticmethod
-    # def stackinput():
-    #     usearray[0] = not usearray[0]
-
-    # @staticmethod
-    # def allinput():
-    #     usearray[1] = not usearray[1]
-
 # This is the order jump GUI, as before it currently is non functional, will fix at sometime
 class OrderJump(QtGui.QMainWindow):
     def __init__ (self, parent=None):
@@ -242,6 +322,19 @@ class OrderJump(QtGui.QMainWindow):
 
     def closser(self):
         self.destroy()
+
+class Editor(QtGui.QMainWindow):
+    def __init__(self, parent = None):
+        QtGui.QWidget.__init__(self, parent)
+        self.ui = Ui_MainWindow()
+        self.ui.setupUi(self)
+        self.ui.Close.clicked.connect(lambda : self.destroy())
+        self.ui.Save.clicked.connect(self.save)
+
+    def save(self):
+        with open(self.ui.FileName.text(), 'wt') as file:
+            file.write(self.ui.textEdit.toPlainText())
+
 
 # this is the cross correlation GUI
 class CCWindow(QtGui.QMainWindow):
