@@ -59,7 +59,7 @@ class Ui_MainWindow(object):
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow", None))
+        MainWindow.setWindowTitle(_translate("MainWindow", "ASCII Editor", None))
         self.Close.setText(_translate("MainWindow", "Close", None))
         self.Save.setText(_translate("MainWindow", "Save", None))
 

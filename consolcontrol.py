@@ -1,13 +1,13 @@
 # This program controls the functions avalible to the user in the consol
 from PyQt4 import QtCore, QtGui
-import os
+import os, sys, subprocess
 
 
 class BSPS(object):
 
     @staticmethod
     def route(command, paramter):
-        commandList = {'view':BSPSEss.view, 'ls':BSPSEss.ls, 'lcom':BSPSEss.lcom, 'pwd':BSPSEss.pwd, 'cd':BSPSEss.cd, 'clear':BSPSEss.clear, 'mkdir': BSPSEss.mkdir, 'edit': BSPSEss.edit, 'pyrun': BSPSEss.pyrun, 'tie': BSPSEss.tie, 'lfunc': BSPSEss.lfunc}
+        commandList = {'view':BSPSEss.view, 'ls':BSPSEss.ls, 'lcom':BSPSEss.lcom, 'pwd':BSPSEss.pwd, 'cd':BSPSEss.cd, 'clear':BSPSEss.clear, 'mkdir': BSPSEss.mkdir, 'edit': BSPSEss.edit, 'pyrun': BSPSEss.pyrun, 'tie': BSPSEss.tie, 'lfunc': BSPSEss.lfunc, 'reload': BSPSEss.reload}
         if command in commandList:
             string = BSPSEss.strsend(command, paramter)
             return string
@@ -22,13 +22,18 @@ class BSPSEss(BSPS):
 
     @staticmethod
     def strsend(command, parameter):
-        commandlist = {'view':BSPSEss.view, 'ls':BSPSEss.ls, 'lcom':BSPSEss.lcom, 'pwd':BSPSEss.pwd, 'cd':BSPSEss.cd, 'clear':BSPSEss.clear, 'mkdir': BSPSEss.mkdir, 'edit': BSPSEss.edit, 'pyrun':BSPSEss.pyrun, 'tie': BSPSEss.tie, 'lfunc': BSPSEss.lfunc}
+        commandlist = {'view':BSPSEss.view, 'ls':BSPSEss.ls, 'lcom':BSPSEss.lcom, 'pwd':BSPSEss.pwd, 'cd':BSPSEss.cd, 'clear':BSPSEss.clear, 'mkdir': BSPSEss.mkdir, 'edit': BSPSEss.edit, 'pyrun':BSPSEss.pyrun, 'tie': BSPSEss.tie, 'lfunc': BSPSEss.lfunc, 'reload': BSPSEss.reload}
         try:
             string = commandlist[command](parameter)
         except TypeError:
             string = commandlist[command]()
         BSPSEss.stremit(BSPSEss())
         return string
+
+    @staticmethod
+    def reload():
+        python = sys.executable
+        os.execl(python, python, * sys.argv)
 
     @staticmethod
     def lfunc(parameter):
@@ -40,8 +45,10 @@ class BSPSEss(BSPS):
 
     @staticmethod
     def pyrun(parameter):
-        execfile(parameter[0])
-        return 'running ' + parameter[0]
+        #execfile(parameter[0])
+        string = None
+        subprocess.call(["python", "./" + parameter[0]], stdout=string)
+        return str(string)
 
     @staticmethod
     def tie(parameter):
