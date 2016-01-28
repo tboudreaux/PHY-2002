@@ -53,6 +53,7 @@ class MyForm(QtGui.QMainWindow):
         print lastrun
         number = 0
         if len(saverun) >= 1:
+            UserFunctions[0] = lastrun[0][1]
             print UserFunctions[0]
             self.ui.UseFunction1.clicked.connect(self.functiontie1)
             self.ui.UseFunction1.setText(lastrun[0][2])
