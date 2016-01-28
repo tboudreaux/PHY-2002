@@ -32,6 +32,7 @@ commandnum = [0, 1]
 UserFunctions = ['open', 'open', 'open', 'open']
 datafile = open('lastrun.dat', 'w')
 readfile = open('lastrun.dat', 'rb')
+plotparm = []
 
 # The main GUI Class that runs
 class MyForm(QtGui.QMainWindow):
@@ -41,7 +42,7 @@ class MyForm(QtGui.QMainWindow):
         QtGui.QWidget.__init__(self, parent)
         self.ui = Ui_Header()
         self.ui.setupUi(self)
-        self.com = Communicate()
+        self.com = Plotter()
         # These are in here because at some point I will add data persistance between runs, but I have to think some things out ther first
        # lastrun = readfile.readlines()
        # func1 = lastrun[0]; func2 = lastrun[1]; func3 = lastrun[2]; func4 = lastrun[3]
@@ -169,6 +170,8 @@ class MyForm(QtGui.QMainWindow):
         elif e.key() == QtCore.Qt.Key_Up:
             commandnum[0] += 1
             self.ui.consolinput.setText(commands[commandnum[0]])
+        elif e.key() == QtCore.Qt.Key_J:
+            self.jumpTo()
 
     # Prints the info screen from the info.txt file in the directory tree to the consol
     def info(self):
@@ -260,17 +263,15 @@ class MyForm(QtGui.QMainWindow):
         # Closes whatever figure is open so that the screen is not overrun with windows everytime Plot is pressed
         # the effect of this is that one can modify parmaters in the GUI and then replot by pressing plot
         plt.close(1)
-
+        self.jumpTo()
         # Fetch the values and strings stored in relevent text fields
         degree = self.ui.amplitude.toPlainText()
         pathfilename = self.ui.pathListInput.toPlainText()
         numToStack = self.ui.numStack.value()
         filename = self.ui.singleFileInput.toPlainText()
         order = self.ui.startOrd.value()
-
-        # This opens the jump to window, at some point in the near future this will go away and be called form within
-        #   the plotter class so that the user can press j without havin gto refocus on the GUI
-        self.jumpTo()
+        plotparm.append(degree); plotparm.append(pathfilename); plotparm.append(numToStack)
+        plotparm.append(filename);
 
         # Determins whether to use stack plot or nstack plot, would like to figure out a better way to to this than arrays
         #   but that is currently not a super high priority
@@ -298,11 +299,11 @@ class MyForm(QtGui.QMainWindow):
 
     # calls the jump to function (currently this does jack shit so this is a major area for improvment)
     def jumpTo(self):
-        degree = self.ui.amplitude.toPlainText()
-        pathfilename = self.ui.pathListInput.toPlainText()
-        numToStack = self.ui.numStack.value()
-        filename = self.ui.singleFileInput.toPlainText()
-        order = self.ui.startOrd.value()
+        # degree = self.ui.amplitude.toPlainText()
+        # pathfilename = self.ui.pathListInput.toPlainText()
+        # numToStack = self.ui.numStack.value()
+        # filename = self.ui.singleFileInput.toPlainText()
+        # order = self.ui.startOrd.value()
         self.window3 = OrderJump(self)
         self.window3.show()
 
@@ -318,7 +319,17 @@ class OrderJump(QtGui.QMainWindow):
 
     def replot(self):
         order = self.ui.order.value()
-        Plotter
+        degree = plotparm[0]
+        pathfilename = plotparm[1]
+        numToStack = plotparm[2]
+        filename = plotparm[3]
+        if usearray[0] is True:
+            plt.close()
+            Plotter.stackplot(pathfilename, usearray[1], numToStack, order, degree, fit[0])
+        else:
+            plt.close()
+            Plotter.nstackplot(filename, order, degree, fit[0])
+
 
     def closser(self):
         self.destroy()
@@ -378,7 +389,8 @@ class CCWindow(QtGui.QMainWindow):
             Plotter.corplot(degree, templatename, objectname, 1)
 
 # This is plotter code, at some point it may be nice to move this class (During the great reorginazation of code to come)
-class Plotter(MyForm, CCWindow):
+
+class Plotter():
 
     # Corplot function that calls the ccofig function from GUI function to extract the required data
     # incidentaly this will be completely reorganized in the great reorganization of code to come
@@ -462,6 +474,7 @@ class Plotter(MyForm, CCWindow):
                 plt.close()
                 Plotter.nstackplot(name, start+1, degree, shouldfit)
         fig.canvas.mpl_connect('key_press_event', plotcontrol)
+
 
 if __name__ == "__main__":
     app = QtGui.QApplication(sys.argv)
