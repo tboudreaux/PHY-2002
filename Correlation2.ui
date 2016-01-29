@@ -1,0 +1,508 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>CrossCore</class>
+ <widget class="QMainWindow" name="CrossCore">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>800</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="CrossCore_2">
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="0" column="1">
+     <widget class="QTabWidget" name="tabWidget">
+      <property name="tabShape">
+       <enum>QTabWidget::Triangular</enum>
+      </property>
+      <property name="currentIndex">
+       <number>0</number>
+      </property>
+      <widget class="QWidget" name="MainTab">
+       <attribute name="title">
+        <string>Main</string>
+       </attribute>
+       <widget class="QTextEdit" name="listpath">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>70</y>
+          <width>341</width>
+          <height>31</height>
+         </rect>
+        </property>
+       </widget>
+       <widget class="QTextEdit" name="tempfilename">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>160</y>
+          <width>341</width>
+          <height>31</height>
+         </rect>
+        </property>
+       </widget>
+       <widget class="QTextEdit" name="targetfilename">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>230</y>
+          <width>341</width>
+          <height>31</height>
+         </rect>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="ynlist">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>40</y>
+          <width>96</width>
+          <height>22</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Use List?</string>
+        </property>
+       </widget>
+       <widget class="QTextBrowser" name="infobox">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>280</y>
+          <width>761</width>
+          <height>201</height>
+         </rect>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="correlate">
+        <property name="geometry">
+         <rect>
+          <x>629</x>
+          <y>240</y>
+          <width>131</width>
+          <height>29</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Correlate</string>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="return_2">
+        <property name="geometry">
+         <rect>
+          <x>639</x>
+          <y>10</y>
+          <width>121</width>
+          <height>29</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Return</string>
+        </property>
+       </widget>
+       <widget class="QSpinBox" name="fitdegree">
+        <property name="geometry">
+         <rect>
+          <x>510</x>
+          <y>240</y>
+          <width>71</width>
+          <height>31</height>
+         </rect>
+        </property>
+        <property name="minimum">
+         <number>1</number>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_6">
+        <property name="geometry">
+         <rect>
+          <x>430</x>
+          <y>230</y>
+          <width>71</width>
+          <height>51</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Degree-&gt;</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_7">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>140</y>
+          <width>151</width>
+          <height>17</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Path To Template file</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_8">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>210</y>
+          <width>151</width>
+          <height>17</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Path To Target file</string>
+        </property>
+       </widget>
+      </widget>
+      <widget class="QWidget" name="settings">
+       <attribute name="title">
+        <string>Settings and Profiles</string>
+       </attribute>
+       <widget class="QWidget" name="horizontalLayoutWidget">
+        <property name="geometry">
+         <rect>
+          <x>269</x>
+          <y>259</y>
+          <width>511</width>
+          <height>231</height>
+         </rect>
+        </property>
+        <layout class="QHBoxLayout" name="horizontalLayout">
+         <item>
+          <widget class="QTextEdit" name="editor"/>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="horizontalLayoutWidget_3">
+        <property name="geometry">
+         <rect>
+          <x>270</x>
+          <y>200</y>
+          <width>501</width>
+          <height>51</height>
+         </rect>
+        </property>
+        <layout class="QHBoxLayout" name="horizontalLayout_3">
+         <item>
+          <widget class="QPushButton" name="reset">
+           <property name="text">
+            <string>Reset Text</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="save">
+           <property name="text">
+            <string>Commit Changes</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QListWidget" name="listoforders">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>261</y>
+          <width>91</width>
+          <height>221</height>
+         </rect>
+        </property>
+       </widget>
+       <widget class="QSlider" name="lowerbound">
+        <property name="geometry">
+         <rect>
+          <x>100</x>
+          <y>270</y>
+          <width>160</width>
+          <height>17</height>
+         </rect>
+        </property>
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+       <widget class="QLabel" name="upperboundlabel">
+        <property name="geometry">
+         <rect>
+          <x>150</x>
+          <y>290</y>
+          <width>81</width>
+          <height>17</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Upper Limit</string>
+        </property>
+       </widget>
+       <widget class="QSlider" name="upperbound">
+        <property name="geometry">
+         <rect>
+          <x>100</x>
+          <y>330</y>
+          <width>160</width>
+          <height>17</height>
+         </rect>
+        </property>
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+       <widget class="QLabel" name="loweboundlabel">
+        <property name="geometry">
+         <rect>
+          <x>150</x>
+          <y>350</y>
+          <width>91</width>
+          <height>17</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Lower Limit</string>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="addout">
+        <property name="geometry">
+         <rect>
+          <x>100</x>
+          <y>420</y>
+          <width>161</width>
+          <height>31</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Add ignore range</string>
+        </property>
+        <property name="flat">
+         <bool>false</bool>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="SaveProfile">
+        <property name="geometry">
+         <rect>
+          <x>190</x>
+          <y>459</y>
+          <width>71</width>
+          <height>31</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Save</string>
+        </property>
+       </widget>
+       <widget class="QLineEdit" name="lineEdit">
+        <property name="geometry">
+         <rect>
+          <x>100</x>
+          <y>370</y>
+          <width>71</width>
+          <height>29</height>
+         </rect>
+        </property>
+       </widget>
+       <widget class="QLineEdit" name="lineEdit_2">
+        <property name="geometry">
+         <rect>
+          <x>180</x>
+          <y>370</y>
+          <width>71</width>
+          <height>29</height>
+         </rect>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label">
+        <property name="geometry">
+         <rect>
+          <x>100</x>
+          <y>400</y>
+          <width>66</width>
+          <height>17</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Lower</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_2">
+        <property name="geometry">
+         <rect>
+          <x>180</x>
+          <y>400</y>
+          <width>66</width>
+          <height>17</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Upper</string>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="SaveProfile_2">
+        <property name="geometry">
+         <rect>
+          <x>100</x>
+          <y>460</y>
+          <width>71</width>
+          <height>31</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Delete</string>
+        </property>
+       </widget>
+       <widget class="QComboBox" name="SystemProfiles">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>50</y>
+          <width>241</width>
+          <height>25</height>
+         </rect>
+        </property>
+       </widget>
+       <widget class="QComboBox" name="UserProfile">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>110</y>
+          <width>241</width>
+          <height>25</height>
+         </rect>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="useUser">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>150</y>
+          <width>151</width>
+          <height>22</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Use User Profile</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_3">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>90</y>
+          <width>91</width>
+          <height>17</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>User Profiles</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_4">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>30</y>
+          <width>121</width>
+          <height>17</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>System Profiles</string>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="AddProfile">
+        <property name="geometry">
+         <rect>
+          <x>19</x>
+          <y>200</y>
+          <width>231</width>
+          <height>29</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Add Custom Profile</string>
+        </property>
+       </widget>
+       <widget class="QLineEdit" name="lineEdit_3">
+        <property name="geometry">
+         <rect>
+          <x>360</x>
+          <y>160</y>
+          <width>331</width>
+          <height>29</height>
+         </rect>
+        </property>
+       </widget>
+       <widget class="Line" name="line">
+        <property name="geometry">
+         <rect>
+          <x>260</x>
+          <y>-20</y>
+          <width>20</width>
+          <height>541</height>
+         </rect>
+        </property>
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_5">
+        <property name="geometry">
+         <rect>
+          <x>270</x>
+          <y>160</y>
+          <width>91</width>
+          <height>31</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>File to Open:</string>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="open">
+        <property name="geometry">
+         <rect>
+          <x>700</x>
+          <y>160</y>
+          <width>71</width>
+          <height>31</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>open</string>
+        </property>
+       </widget>
+      </widget>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>800</width>
+     <height>23</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <widget class="QToolBar" name="toolBar">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

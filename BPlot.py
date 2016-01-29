@@ -11,7 +11,7 @@ import webbrowser
 from GuiFunction import *
 from astropy.io import fits
 import sys
-from Correlation import Ui_CrossCore
+from Correlation2 import Ui_CrossCore
 from consolcontrol import *
 from JumpToOrder import Ui_JumpToOrder
 from Editor import Ui_MainWindow
@@ -389,6 +389,22 @@ class CCWindow(QtGui.QMainWindow):
         self.ui = Ui_CrossCore()
         self.ui.setupUi(self)
 
+        self.smallerwaves = []
+        self.largerwaves = []
+        self.profiles = {'CHIRON':'chiron.pconf'}
+        profile1 =  open(self.profiles['CHIRON'], 'rb')
+        profile1 = profile1.readlines()
+        length = len(profile1)
+
+        for i in range(length):
+            profile1[i] = profile1[i].split('-')
+            profile1[i][1] = profile1[i][1][:-1]
+            self.smallerwaves.append(profile1[i][0])
+            self.largerwaves.append(profile1[i][1])
+            self.smallerwaves[i] = float(self.smallerwaves[i])
+            self.largerwaves[i] = float(self.largerwaves[i])
+
+
         self.ui.listpath.setStyleSheet('background-color: grey')
         self.ui.return_2.clicked.connect(self.closeer)
         self.ui.ynlist.stateChanged.connect(self.uselist)
@@ -467,7 +483,7 @@ class Plotter():
             name = patharray[i]
             name = name[:-1]
             PlotFunctionality.plot(name, start, showfit[0], shouldfit, degree, fig)
-        # plt.tight_layout()
+        plt.tight_layout()
         plt.ion()
         plt.show()
 
@@ -496,7 +512,7 @@ class Plotter():
     def nstackplot(name, start, degree, shouldfit):
         fig = plt.figure(figsize=(10, 7))
         PlotFunctionality.plot(name, start, showfit, shouldfit, degree, fig)
-        # plt.tight_layout()
+        plt.tight_layout()
         plt.ion()
         plt.show()
 
