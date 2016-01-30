@@ -105,18 +105,8 @@ class AdvancedPlotting(PlotFunctionality):
         newtargetflux = []
         newtemplatewave = []
         newtemplateflux = []
-        # for j in range(len(targetdata['wavelength'])):
-        #     for n in range(numberignore):
-        #         if targetdata['wavelength'][j] >= smallerwave[n] and targetdata['wavelength'][j] <= largerwave[n]:
-        #             pass
-        #         else:
-        #             newtargetwave.append(targetdata['wavelength'][j])
-        #             newtargetflux.append(targetdata['flux'][j])
-        #             newtemplatewave.append(templatedata['wavelength'][j])
-        #             newtemplateflux.append(templatedata['flux'][j])
         largest = Mathamatics.largest(targetdata['wavelength'])
         smallest = Mathamatics.smallest(targetdata['wavelength'])
-        count = 0
         for n in range(numberignore):
             if smallest < smallerwave[n] < largest:
                 if smallest < largerwave[n] < largest:
@@ -154,9 +144,29 @@ class AdvancedPlotting(PlotFunctionality):
         targetflux.append(PlotFunctionality.fitfunction(degree, newtargetwave, newtargetflux, 0)['y_new'])
         for i in range(2*diff):
             templateflux = []
-            wshift = [x + diff - i for x in newtemplatewave]
+            usetemplateflux = []
+            usetargetflux = []
+            wshift = [x + diff - i + 1for x in newtemplatewave]
+            start = Mathamatics.smallest(wshift)
             templateflux.append(PlotFunctionality.fitfunction(degree, wshift, newtemplateflux, 0)['y_new'])
-            correlation.append(np.correlate(targetflux[0], templateflux[0]))
+
+            if Mathamatics.smallest(wshift) > Mathamatics.smallest(newtargetwave):
+                for k in range(len(newtargetwave)):
+                    if newtargetwave[k] < start:
+                        pass
+                    else:
+                        usetemplateflux.append(templateflux[0][k])
+                        usetargetflux.append(targetflux[0][k])
+            elif Mathamatics.smallest(wshift) == Mathamatics.smallest(newtargetwave):
+                pass
+            else:
+                for k in range(len(newtargetwave)):
+                    if wshift[k] < start:
+                        pass
+                    else:
+                        usetargetflux.append(targetflux[0][k])
+                        usetemplateflux.append(templateflux[0][k])
+            correlation.append(np.correlate(usetargetflux, usetemplateflux))
             corwave.append(diff-i)
 
         return {'correlation': correlation, 'corwave': corwave}

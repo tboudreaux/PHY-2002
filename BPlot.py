@@ -51,11 +51,11 @@ class MyForm(QtGui.QMainWindow):
         saverun = lastrun
         for j in range(len(lastrun)):
             lastrun[j] = lastrun[j].split()
-        print lastrun
+
         number = 0
         if len(saverun) >= 1:
             UserFunctions[0] = lastrun[0][1]
-            print UserFunctions[0]
+
             self.ui.UseFunction1.clicked.connect(self.functiontie1)
             self.ui.UseFunction1.setText(lastrun[0][2])
             funcconf[0] = lastrun[0]
@@ -185,7 +185,7 @@ class MyForm(QtGui.QMainWindow):
                     else:
                         self.ui.userFuntion4.setText(script)
                         funcconf[3][0] = '4 '; funcconf[3][1] = script; funcconf[3][2] = script
-                        print funcconf[3]
+
                     UserFunctions[3] = script
                     self.ui.userFuntion4.clicked.connect(self.functiontie4)
                 datafile = open('UserFunc.conf', 'w')
@@ -365,18 +365,19 @@ class OrderJump(QtGui.QMainWindow):
                 plt.close()
                 Plotter.nstackplot(plotparm[3], order, plotparm[0], fit[0])
         else:
+            plt.close()
             Plotter.corplot(plotparm[4], plotparm[5], plotparm[6], order, plotparm[7], plotparm[8], plotparm[9])
 
 
     def closser(self):
-        self.destroy()
+        self.close()
 
 class Editor(QtGui.QMainWindow):
     def __init__(self, parent = None):
         QtGui.QWidget.__init__(self, parent)
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
-        self.ui.Close.clicked.connect(lambda : self.destroy())
+        self.ui.Close.clicked.connect(lambda : self.close())
         self.ui.Save.clicked.connect(self.save)
 
     def save(self):
@@ -406,8 +407,6 @@ class CCWindow(QtGui.QMainWindow):
             self.largerwaves.append(profile1[i][1])
             self.smallerwaves[i] = float(self.smallerwaves[i])
             self.largerwaves[i] = float(self.largerwaves[i])
-
-        print self.smallerwaves, self.largerwaves
 
         self.ui.listpath.setStyleSheet('background-color: grey')
         self.ui.return_2.clicked.connect(self.closeer)
