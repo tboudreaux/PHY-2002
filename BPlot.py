@@ -31,8 +31,9 @@ commands = []
 commandnum = [0, 1]
 UserFunctions = ['open', 'open', 'open', 'open']
 readfile = open('UserFunc.conf', 'rb')
-plotparm = []
+plotparm = [None] * 10
 funcconf = [['1','Null', 'Function1'], ['2', 'Null', 'Function2'], ['3', 'Null', 'Function3'], ['4', 'Null', 'Function4']]
+jumpcore = [False]
 # The main GUI Class that runs
 class MyForm(QtGui.QMainWindow):
     #I nitilazation of the GUI
@@ -75,6 +76,7 @@ class MyForm(QtGui.QMainWindow):
             funcconf[3] = lastrun[3]
 
        # func1a = func1.split(); func2a = func2.split(); func3a = func3.split(); func4a = func4.split()
+
         self.ui.consol.append('<font color = "green"> Spectral Image Plotter Version 0.4<br>Written by Paddy Clancy and Thomas Boudreaux  - 2016</font><br>')
         self.ui.consol.append('<font color = "blue"> Module and OS Checks OK</font><br>')
         self.ui.consol.append('<font color = "blue"> type "lcom" for a list of avalibel commands</font><br>')
@@ -218,12 +220,15 @@ class MyForm(QtGui.QMainWindow):
     @staticmethod
     def functiontie1():
         execfile(UserFunctions[0])
+
     @staticmethod
     def functiontie2():
         execfile(UserFunctions[1])
+
     @staticmethod
     def functiontie3():
         execfile(UserFunctions[2])
+
     @staticmethod
     def functiontie4():
         execfile(UserFunctions[3])
@@ -304,15 +309,14 @@ class MyForm(QtGui.QMainWindow):
         numToStack = self.ui.numStack.value()
         filename = self.ui.singleFileInput.toPlainText()
         order = self.ui.startOrd.value()
-        plotparm.append(degree); plotparm.append(pathfilename); plotparm.append(numToStack)
-        plotparm.append(filename);
-
+        plotparm[0] = degree; plotparm[1] = pathfilename; plotparm[2] = numToStack; plotparm[3] = filename
         # Determins whether to use stack plot or nstack plot, would like to figure out a better way to to this than arrays
         #   but that is currently not a super high priority
         if usearray[0] is True:
             Plotter.stackplot(pathfilename, usearray[1], numToStack, order, degree, fit[0])
         else:
             Plotter.nstackplot(filename, order, degree, fit[0])
+        jumpcore[0] = False
         self.jumpTo()
 
     # This controls the "show fit" button, its color and the boolean behind it. Again I would like to come up with a better
@@ -348,22 +352,20 @@ class OrderJump(QtGui.QMainWindow):
         QtGui.QWidget.__init__(self, parent)
         self.ui = Ui_JumpToOrder()
         self.ui.setupUi(self)
-
         self.ui.cancel.clicked.connect(self.closser)
         self.ui.replot.clicked.connect(self.replot)
 
     def replot(self):
         order = self.ui.order.value()
-        degree = plotparm[0]
-        pathfilename = plotparm[1]
-        numToStack = plotparm[2]
-        filename = plotparm[3]
-        if usearray[0] is True:
-            plt.close()
-            Plotter.stackplot(pathfilename, usearray[1], numToStack, order, degree, fit[0])
+        if jumpcore[0] is False:
+            if usearray[0] is True:
+                plt.close()
+                Plotter.stackplot(plotparm[1], usearray[1], plotparm[2], order, plotparm[0], fit[0])
+            else:
+                plt.close()
+                Plotter.nstackplot(plotparm[3], order, plotparm[0], fit[0])
         else:
-            plt.close()
-            Plotter.nstackplot(filename, order, degree, fit[0])
+            Plotter.corplot(plotparm[4], plotparm[5], plotparm[6], order, plotparm[7], plotparm[8], plotparm[9])
 
 
     def closser(self):
@@ -394,9 +396,10 @@ class CCWindow(QtGui.QMainWindow):
         self.profiles = {'CHIRON':'chiron.pconf'}
         profile1 =  open(self.profiles['CHIRON'], 'rb')
         profile1 = profile1.readlines()
-        length = len(profile1)
+        self.length = len(profile1)
+        self.window2 = None
 
-        for i in range(length):
+        for i in range(self.length):
             profile1[i] = profile1[i].split('-')
             profile1[i][1] = profile1[i][1][:-1]
             self.smallerwaves.append(profile1[i][0])
@@ -404,11 +407,22 @@ class CCWindow(QtGui.QMainWindow):
             self.smallerwaves[i] = float(self.smallerwaves[i])
             self.largerwaves[i] = float(self.largerwaves[i])
 
+        print self.smallerwaves, self.largerwaves
 
         self.ui.listpath.setStyleSheet('background-color: grey')
         self.ui.return_2.clicked.connect(self.closeer)
         self.ui.ynlist.stateChanged.connect(self.uselist)
         self.ui.correlate.clicked.connect(self.ccorplot)
+
+    def keyPressEvent(self, e):
+        if e.key() == QtCore.Qt.Key_J:
+            self.jumpTo()
+        elif e.key() == QtCore.Qt.Key_Escape:
+            self.destroy()
+
+    def jumpTo(self):
+        self.window2 = OrderJump()
+        self.window2.show()
 
     # Closes the Cross correlation GUI
     def closeer(self):
@@ -437,7 +451,11 @@ class CCWindow(QtGui.QMainWindow):
             templatename = self.ui.tempfilename.toPlainText()
             objectname = self.ui.targetfilename.toPlainText()
             self.ui.infobox.append('<font color ="green">Cross Correlating Orders, use "a" to advance</font><br>')
-            Plotter.corplot(degree, templatename, objectname, 1)
+            Plotter.corplot(degree, templatename, objectname, 1, self.length, self.smallerwaves, self.largerwaves)
+            plotparm[4] = degree; plotparm[5] = templatename; plotparm[6] = objectname; plotparm[7] = self.length
+            plotparm[8] = self.smallerwaves; plotparm[9] = self.largerwaves
+            jumpcore[0] = True
+            self.jumpTo()
 
 # This is plotter code, at some point it may be nice to move this class (During the great reorginazation of code to come)
 
@@ -446,22 +464,25 @@ class Plotter():
     # Corplot function that calls the ccofig function from GUI function to extract the required data
     # incidentaly this will be completely reorganized in the great reorganization of code to come
     @staticmethod
-    def corplot(degree, templatename, objectname, order):
+    def corplot(degree, templatename, objectname, order, num, larger, smaller):
         # Creates a matplotlib figure of given size (will at some point be configuarble in the forcoming settings menu)
         fig=plt.figure(figsize=(10, 7))
         # Adds the ccorfig subplot
         ccorfig = fig.add_subplot(1, 1, 1)
         # fetches the data from the ccor function in Advanced Plotting by calling the function, data is returnted as a
         #   2 element dictionary, so then when its plotted below there its is called with the dictionaty nameing
-        data = AdvancedPlotting.ccor(objectname, templatename, degree, order)
+        data = AdvancedPlotting.ccor(objectname, templatename, degree, order, num, larger, smaller)
         ccorfig.plot(data['corwave'], data['correlation'])
+        ccorfig.set_xlabel('Offset')
+        ccorfig.set_ylabel('Correlation Coefficient')
+        ccorfig.set_title('Cross Correlation')
 
         # This allows one to move between orders in C
         def plotcontrol(event):
             keydown = event.key
             if keydown == 'a' or keydown == 'A' and order < 62:
                 plt.close()
-                Plotter.corplot(degree, templatename, objectname, order + 1)
+                Plotter.corplot(degree, templatename, objectname, order + 1, num, larger, smaller)
         fig.canvas.mpl_connect('key_press_event', plotcontrol)
         plt.show()
 
@@ -478,12 +499,13 @@ class Plotter():
             if num > len(patharray):
                 num = len(patharray)
             stacknum = num
-
+        offset = 0
         for i in range(stacknum):
             name = patharray[i]
             name = name[:-1]
-            PlotFunctionality.plot(name, start, showfit[0], shouldfit, degree, fig)
-        plt.tight_layout()
+            offset += 0.1
+            PlotFunctionality.plot(name, start, showfit[0], shouldfit, degree, fig, offset)
+        #plt.tight_layout()
         plt.ion()
         plt.show()
 
@@ -511,8 +533,8 @@ class Plotter():
     @staticmethod
     def nstackplot(name, start, degree, shouldfit):
         fig = plt.figure(figsize=(10, 7))
-        PlotFunctionality.plot(name, start, showfit, shouldfit, degree, fig)
-        plt.tight_layout()
+        PlotFunctionality.plot(name, start, showfit[0], shouldfit, degree, fig, 0)
+        #plt.tight_layout()
         plt.ion()
         plt.show()
 

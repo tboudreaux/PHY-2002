@@ -9,7 +9,7 @@ log = open('log.log', 'w')
 class PlotFunctionality(object):
 
     @staticmethod
-    def plot(name, start, showfit, shouldfit, degree, fig,):
+    def plot(name, start, showfit, shouldfit, degree, fig, offsety):
         name = str(name)
         sp = fits.open(name)
 
@@ -22,7 +22,7 @@ class PlotFunctionality(object):
             spect = fig.add_subplot(1, 1, 1)
 
         if shouldfit:
-            fitresults = PlotFunctionality.fitfunction(degree, wavelength, flux)
+            fitresults = PlotFunctionality.fitfunction(degree, wavelength, flux, offsety)
             spect.plot(fitresults['wave'], fitresults['y_new'])
 
             if showfit is True:
@@ -37,15 +37,6 @@ class PlotFunctionality(object):
 
     @staticmethod
     def fitshower(fig, wavelength, flux, y_poly):
-        #
-        # newwave = []
-        # newflux = []
-        # for j in range(len(wavelength)):
-        #     if (wavelength[j] >= 4857 and wavelength[j] <= 4863) or (wavelength[j] >= 6557 and wavelength[j] <= 6565):
-        #         pass
-        #     else:
-        #         newwave.append(wavelength[j])
-        #         newflux.append(flux[j])
         fitfig = fig.add_subplot(1, 2, 1)
         fitfig.plot(wavelength, flux)
         fitfig.plot(wavelength, y_poly, color='black', linewidth=2)
@@ -54,7 +45,7 @@ class PlotFunctionality(object):
         fitfig.set_title('Spectra with Function Fit')
 
     @staticmethod
-    def fitfunction(degree, wavelength, flux):
+    def fitfunction(degree, wavelength, flux, offset):
         newwave = []
         newflux = []
         for j in range(len(wavelength)):
@@ -86,6 +77,9 @@ class PlotFunctionality(object):
         for i in range(forrange):
             if y_new[i] >= (3 * fluxstdev) + mean:
                 y_new[i] = mean
+        if offset != 0:
+            for j in range(len(y_new)):
+                y_new[j] += offset
         return {'y_poly': y_poly, 'y_new': y_new, 'wave': wavelength}
 
     @staticmethod
@@ -101,24 +95,70 @@ class PlotFunctionality(object):
 class AdvancedPlotting(PlotFunctionality):
 
     @staticmethod
-    def ccor(targetpath, templatepath, degree, order):
+    def ccor(targetpath, templatepath, degree, order, numberignore, largerwave, smallerwave):
         targetflux = []
         correlation =[]
         corwave = []
         targetdata = PlotFunctionality.wfextract(targetpath, order)
         templatedata = PlotFunctionality.wfextract(templatepath, order)
+        newtargetwave = []
+        newtargetflux = []
+        newtemplatewave = []
+        newtemplateflux = []
+        # for j in range(len(targetdata['wavelength'])):
+        #     for n in range(numberignore):
+        #         if targetdata['wavelength'][j] >= smallerwave[n] and targetdata['wavelength'][j] <= largerwave[n]:
+        #             pass
+        #         else:
+        #             newtargetwave.append(targetdata['wavelength'][j])
+        #             newtargetflux.append(targetdata['flux'][j])
+        #             newtemplatewave.append(templatedata['wavelength'][j])
+        #             newtemplateflux.append(templatedata['flux'][j])
         largest = Mathamatics.largest(targetdata['wavelength'])
         smallest = Mathamatics.smallest(targetdata['wavelength'])
+        count = 0
+        for n in range(numberignore):
+            if smallest < smallerwave[n] < largest:
+                if smallest < largerwave[n] < largest:
+                    for j in range(len(targetdata['wavelength'])):
+                        if smallerwave[n] <= targetdata['wavelength'][j] <= largerwave[n]:
+                            pass
+                        else:
+                            newtargetwave.append(targetdata['wavelength'][j])
+                            newtargetflux.append(targetdata['flux'][j])
+                            newtemplatewave.append(templatedata['wavelength'][j])
+                            newtemplateflux.append(templatedata['flux'][j])
+                else:
+                    for j in range(len(targetdata['wavelength'])):
+                        if smallerwave[n] <= targetdata['wavelength'][j] <= largest:
+                            pass
+                        else:
+                            newtargetwave.append(targetdata['wavelength'][j])
+                            newtargetflux.append(targetdata['flux'][j])
+                            newtemplatewave.append(templatedata['wavelength'][j])
+                            newtemplateflux.append(templatedata['flux'][j])
+            elif smallest < largerwave[n] < largest:
+                for j in range(len(targetdata['wavelength'])):
+                    if smallest <= targetdata['wavelength'][j] <= largerwave[n]:
+                        newtargetwave.append(targetdata['wavelength'][j])
+                        newtargetflux.append(targetdata['flux'][j])
+                        newtemplatewave.append(templatedata['wavelength'][j])
+                        newtemplateflux.append(templatedata['flux'][j])
+            else:
+                newtargetwave = targetdata['wavelength'].tolist()
+                newtargetflux = targetdata['flux'].tolist()
+                newtemplatewave = templatedata['wavelength'].tolist()
+                newtemplateflux = templatedata['flux'].tolist()
         diff = largest - smallest
         diff = int(math.ceil(diff))
-        targetflux.append(PlotFunctionality.fitfunction(degree, targetdata['wavelength'], targetdata['flux'])['y_new'])
-        print targetflux
-        for i in range(2 * diff):
+        targetflux.append(PlotFunctionality.fitfunction(degree, newtargetwave, newtargetflux, 0)['y_new'])
+        for i in range(2*diff):
             templateflux = []
-            wshift = [x + diff - i for x in templatedata['wavelength']]
-            templateflux.append(PlotFunctionality.fitfunction(degree, wshift, templatedata['flux'])['y_new'])
+            wshift = [x + diff - i for x in newtemplatewave]
+            templateflux.append(PlotFunctionality.fitfunction(degree, wshift, newtemplateflux, 0)['y_new'])
             correlation.append(np.correlate(targetflux[0], templateflux[0]))
             corwave.append(diff-i)
+
         return {'correlation': correlation, 'corwave': corwave}
 
     @staticmethod
