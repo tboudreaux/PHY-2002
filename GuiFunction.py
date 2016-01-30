@@ -146,7 +146,7 @@ class AdvancedPlotting(PlotFunctionality):
             templateflux = []
             usetemplateflux = []
             usetargetflux = []
-            wshift = [x + diff - i + 1for x in newtemplatewave]
+            wshift = [x + diff - i + 1 for x in newtemplatewave]
             start = Mathamatics.smallest(wshift)
             templateflux.append(PlotFunctionality.fitfunction(degree, wshift, newtemplateflux, 0)['y_new'])
 
