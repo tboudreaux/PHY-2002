@@ -396,30 +396,89 @@ class CCWindow(QtGui.QMainWindow):
 
         self.smallerwaves = []
         self.largerwaves = []
-        self.profiles = {'CHIRON':'chiron.pconf'}
-        profile1 =  open(self.profiles['CHIRON'], 'rb')
-        profile1 = profile1.readlines()
-        self.length = len(profile1)
-        self.window2 = None
+        self.ranges = []
 
-        for i in range(self.length):
-            profile1[i] = profile1[i].split('-')
-            profile1[i][1] = profile1[i][1][:-1]
-            self.smallerwaves.append(profile1[i][0])
-            self.largerwaves.append(profile1[i][1])
-            self.smallerwaves[i] = float(self.smallerwaves[i])
-            self.largerwaves[i] = float(self.largerwaves[i])
+        try:
+            self.profiles = {'CHIRON':'chiron.pconf'}
+            profile1 =  open(self.profiles['CHIRON'], 'rb')
+            self.ui.SystemProfiles.addItem('CHIRON')
+            profile1 = profile1.readlines()
+            self.length = len(profile1)
+            self.window2 = None
 
+            for i in range(self.length):
+                profile1[i] = profile1[i].split('-')
+                profile1[i][1] = profile1[i][1][:-1]
+                self.smallerwaves.append(profile1[i][0])
+                self.largerwaves.append(profile1[i][1])
+                self.smallerwaves[i] = float(self.smallerwaves[i])
+                self.largerwaves[i] = float(self.largerwaves[i])
+        except IOError:
+            self.ui.infobox.append('<font color = "red"> ERROR - DEFAULT PROFILE {CHIRON} NOT FOUND</font>')
+
+        dirs = os.listdir('.')
+        for i in range(len(dirs)):
+            if '.pconf' in dirs[i] and 'chiron' not in dirs[i] and dirs[i][:-6]:
+                self.ui.UserProfile.addItem(dirs[i][:-6])
+        self.useuser = False
         self.ui.listpath.setStyleSheet('background-color: grey')
         self.ui.return_2.clicked.connect(self.closeer)
         self.ui.ynlist.stateChanged.connect(self.uselist)
         self.ui.correlate.clicked.connect(self.ccorplot)
+        self.ui.AddProfile.clicked.connect(self.addProfile)
+        self.ui.addout.clicked.connect(self.addout)
+        self.ui.SaveProfile.clicked.connect(self.setprofile)
+        self.ui.useUser.stateChanged.connect(self.user)
+
+    def user(self):
+        self.useuser = not self.useuser
+
+    def setprofile(self):
+        if self.useuser is True:
+            profile = str(self.ui.UserProfile.currentText())
+        else:
+            profile = str(self.ui.SystemProfiles.currentText())
+        try:
+            profile += '.pconf'
+            profileopen =  open(profile, 'rb')
+            profileopen = profileopen.readlines()
+            length = len(profileopen)
+
+            for i in range(length):
+                profileopen[i] = profileopen[i].split('-')
+                profileopen[i][1] = profileopen[i][1][:-1]
+                self.smallerwaves.append(profileopen[i][0])
+                self.largerwaves.append(profileopen[i][1])
+                self.smallerwaves[i] = float(self.smallerwaves[i])
+                self.largerwaves[i] = float(self.largerwaves[i])
+        except IOError:
+            self.ui.infobox.append('<font color = "red"> ERROR - .pconf profile file not found</font>')
+
+    def addout(self):
+        lower = self.ui.Lowertext.text()
+        upper = self.ui.uppertext.text()
+        rangenum = str(lower) + '-' + str(upper)
+        self.ui.listoforders.addItem(rangenum)
+        self.ui.Lowertext.clear()
+        self.ui.uppertext.clear()
+        self.ranges.append(rangenum)
+
+    def addProfile(self):
+        name = self.ui.ProfileName.text()
+        name += '.pconf'
+        write = open(name, 'w')
+        for i in range(len(self.ranges)):
+            print >>write, self.ranges[i]
+        self.ui.listoforders.clear()
+        self.ui.ProfileName.clear()
+        self.ranges = None
+        self.ranges = []
 
     def keyPressEvent(self, e):
         if e.key() == QtCore.Qt.Key_J:
             self.jumpTo()
         elif e.key() == QtCore.Qt.Key_Escape:
-            self.destroy()
+            self.close()
 
     def jumpTo(self):
         self.window2 = OrderJump()
@@ -427,7 +486,7 @@ class CCWindow(QtGui.QMainWindow):
 
     # Closes the Cross correlation GUI
     def closeer(self):
-       self.destroy()
+       self.close()
 
     # The Boolean operator for Cross Corelation list (cross corelate multiple orders at one time or not)
     def uselist(self):
