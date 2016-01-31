@@ -15,6 +15,7 @@ from Correlation2 import Ui_CrossCore
 from consolcontrol import *
 from JumpToOrder import Ui_JumpToOrder
 from Editor import Ui_MainWindow
+import time
 
 PreChecks.oscheck()
 
@@ -128,8 +129,11 @@ class MyForm(QtGui.QMainWindow):
             elif string == '//edit':
                 self.window3 = Editor(self)
                 self.window3.show()
-                text = open(commandcomp[0], 'rb')
-                text = text.read()
+                try:
+                    text = open(commandcomp[0], 'rb')
+                    text = text.read()
+                except IOError:
+                    text = open(commandcomp[0], 'w')
                 self.window3.ui.textEdit.append(text)
                 self.window3.ui.FileName.setText(commandcomp[0])
                 string = None
@@ -465,14 +469,18 @@ class CCWindow(QtGui.QMainWindow):
 
     def addProfile(self):
         name = self.ui.ProfileName.text()
-        name += '.pconf'
-        write = open(name, 'w')
-        for i in range(len(self.ranges)):
-            print >>write, self.ranges[i]
-        self.ui.listoforders.clear()
-        self.ui.ProfileName.clear()
-        self.ranges = None
-        self.ranges = []
+        if len(name) > 0:
+            name += '.pconf'
+            write = open(name, 'w')
+            for i in range(len(self.ranges)):
+                print >>write, self.ranges[i]
+            self.ui.listoforders.clear()
+            self.ui.ProfileName.clear()
+            self.ranges = None
+            self.ranges = []
+            self.ui.ProfileName.setStyleSheet('border: 1px solid grey')
+        else:
+            self.ui.ProfileName.setStyleSheet('border: 1px solid red')
 
     def keyPressEvent(self, e):
         if e.key() == QtCore.Qt.Key_J:

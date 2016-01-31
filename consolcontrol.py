@@ -1,6 +1,6 @@
 # This program controls the functions avalible to the user in the consol
 from PyQt4 import QtCore, QtGui
-import os, sys
+import os, sys, stat
 from subprocess import Popen, PIPE
 
 
