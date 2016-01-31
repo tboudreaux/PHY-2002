@@ -154,28 +154,28 @@ class MyForm(QtGui.QMainWindow):
                 if function == '1' or function == 'one' or function == 'One':
                     if len(commandcomp) == 3:
                         self.ui.UseFunction1.setText(commandcomp[2])
-                        funcconf[0][0] = '4 '; funcconf[0][1] = script; funcconf[0][2] = commandcomp[2]
+                        funcconf[0][0] = '1 '; funcconf[0][1] = script; funcconf[0][2] = commandcomp[2]
                     else:
                         self.ui.UseFunction1.setText(script)
-                        funcconf[0][0] = '4 '; funcconf[0][1] = script; funcconf[0][2] = script
+                        funcconf[0][0] = '1 '; funcconf[0][1] = script; funcconf[0][2] = script
                     UserFunctions[0] = script
                     self.ui.UseFunction1.clicked.connect(self.functiontie1)
                 if function == '2' or function == 'two' or function == 'Two':
                     if len(commandcomp) == 3:
                         self.ui.UserFunction2.setText(commandcomp[2])
-                        funcconf[1][0] = '4 '; funcconf[1][1] = script; funcconf[1][2] = commandcomp[2]
+                        funcconf[1][0] = '2 '; funcconf[1][1] = script; funcconf[1][2] = commandcomp[2]
                     else:
                         self.ui.UserFunction2.setText(script)
-                        funcconf[1][0] = '4 '; funcconf[1][1] = script; funcconf[1][2] = script
+                        funcconf[1][0] = '2 '; funcconf[1][1] = script; funcconf[1][2] = script
                     UserFunctions[1] = script
                     self.ui.UserFunction2.clicked.connect(self.functiontie2)
                 if function == '3' or function == 'three' or function == 'Three':
                     if len(commandcomp) == 3:
                         self.ui.UserFuntion3.setText(commandcomp[2])
-                        funcconf[2][0] = '4 '; funcconf[2][1] = script; funcconf[2][2] = commandcomp[2]
+                        funcconf[2][0] = '3 '; funcconf[2][1] = script; funcconf[2][2] = commandcomp[2]
                     else:
                         self.ui.UserFuntion3.setText(script)
-                        funcconf[2][0] = '4 '; funcconf[2][1] = script; funcconf[2][2] = script
+                        funcconf[2][0] = '3 '; funcconf[2][1] = script; funcconf[2][2] = script
                     UserFunctions[2] = script
                     self.ui.UserFuntion3.clicked.connect(self.functiontie3)
                 if function == '4' or function == 'four' or function == 'Four':
@@ -189,10 +189,11 @@ class MyForm(QtGui.QMainWindow):
                     UserFunctions[3] = script
                     self.ui.userFuntion4.clicked.connect(self.functiontie4)
                 datafile = open('UserFunc.conf', 'w')
+                print funcconf
                 for n in range(len(funcconf)):
-                    for k in range(4):
-                        print >>datafile, funcconf[n][k],
-                    print >>datafile, '\n'
+                    printwords = funcconf[n][0] + ' ' + funcconf[n][1] + ' ' + funcconf[n][2]
+                    #for k in range(3):
+                    print >>datafile, printwords
                 string = None
             if string:
                 self.ui.consol.append(string)
@@ -217,21 +218,22 @@ class MyForm(QtGui.QMainWindow):
 
     # Lists the directories in the working directory in the consol
     # This is due to be replaced when the lauguage is implimented with the ls command built into the language
-    @staticmethod
-    def functiontie1():
-        execfile(UserFunctions[0])
 
-    @staticmethod
-    def functiontie2():
-        execfile(UserFunctions[1])
+    def functiontie1(self):
+        text = BSPSEss.pyrun(UserFunctions[0])
+        self.ui.consol.append(text)
 
-    @staticmethod
-    def functiontie3():
-        execfile(UserFunctions[2])
+    def functiontie2(self):
+        text = BSPSEss.pyrun(UserFunctions[1])
+        self.ui.consol.append(text)
 
-    @staticmethod
-    def functiontie4():
-        execfile(UserFunctions[3])
+    def functiontie3(self):
+        text = BSPSEss.pyrun(UserFunctions[2])
+        self.ui.consol.append(text)
+
+    def functiontie4(self):
+        text = BSPSEss.pyrun(UserFunctions[3])
+        self.ui.consol.append(text)
 
     def LS(self):
         dirs = os.listdir('.')

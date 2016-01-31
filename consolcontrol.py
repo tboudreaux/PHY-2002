@@ -1,13 +1,14 @@
 # This program controls the functions avalible to the user in the consol
 from PyQt4 import QtCore, QtGui
-import os, sys, subprocess
+import os, sys
+from subprocess import Popen, PIPE
 
 
 class BSPS(object):
 
     @staticmethod
     def route(command, paramter):
-        commandList = {'view':BSPSEss.view, 'ls':BSPSEss.ls, 'lcom':BSPSEss.lcom, 'pwd':BSPSEss.pwd, 'cd':BSPSEss.cd, 'clear':BSPSEss.clear, 'mkdir': BSPSEss.mkdir, 'edit': BSPSEss.edit, 'pyrun': BSPSEss.pyrun, 'tie': BSPSEss.tie, 'lfunc': BSPSEss.lfunc, 'reload': BSPSEss.reload}
+        commandList = {'view':BSPSEss.view, 'ls':BSPSEss.ls, 'lcom':BSPSEss.lcom, 'pwd':BSPSEss.pwd, 'cd':BSPSEss.cd, 'clear':BSPSEss.clear, 'mkdir': BSPSEss.mkdir, 'edit': BSPSEss.edit, 'pyrun': BSPSEss.pyrun, 'tie': BSPSEss.tie, 'lfunc': BSPSEss.lfunc, 'reload': BSPSEss.reload, 'quit':BSPSEss.quit}
         if command in commandList:
             string = BSPSEss.strsend(command, paramter)
             return string
@@ -22,7 +23,7 @@ class BSPSEss(BSPS):
 
     @staticmethod
     def strsend(command, parameter):
-        commandlist = {'view':BSPSEss.view, 'ls':BSPSEss.ls, 'lcom':BSPSEss.lcom, 'pwd':BSPSEss.pwd, 'cd':BSPSEss.cd, 'clear':BSPSEss.clear, 'mkdir': BSPSEss.mkdir, 'edit': BSPSEss.edit, 'pyrun':BSPSEss.pyrun, 'tie': BSPSEss.tie, 'lfunc': BSPSEss.lfunc, 'reload': BSPSEss.reload}
+        commandlist = {'view':BSPSEss.view, 'ls':BSPSEss.ls, 'lcom':BSPSEss.lcom, 'pwd':BSPSEss.pwd, 'cd':BSPSEss.cd, 'clear':BSPSEss.clear, 'mkdir': BSPSEss.mkdir, 'edit': BSPSEss.edit, 'pyrun':BSPSEss.pyrun, 'tie': BSPSEss.tie, 'lfunc': BSPSEss.lfunc, 'reload': BSPSEss.reload, 'quit': BSPSEss.quit}
         try:
             string = commandlist[command](parameter)
         except TypeError:
@@ -36,6 +37,10 @@ class BSPSEss(BSPS):
         os.execl(python, python, * sys.argv)
 
     @staticmethod
+    def quit():
+        exit()
+
+    @staticmethod
     def lfunc(parameter):
         parameter.append('Null')
         if parameter[0] == '-a':
@@ -45,10 +50,16 @@ class BSPSEss(BSPS):
 
     @staticmethod
     def pyrun(parameter):
-        #execfile(parameter[0])
-        string = None
-        subprocess.call(["python", "./" + parameter[0]], stdout=string)
-        return str(string)
+        if isinstance(parameter, list):
+            prosses = Popen(["python", parameter[0]], stdout=PIPE, stderr=PIPE)
+        else:
+            prosses = Popen(["python", parameter], stdout=PIPE, stderr=PIPE)
+        stdout, stderr = prosses.communicate()
+        if len(stdout) > 0:
+            stdout = '<font color = "purple">' + str(stdout) + '</font>'
+        if len(stderr) > 0:
+            stderr = '<font color = "orange">' + str(stderr) + '</font>'
+        return stdout + stderr
 
     @staticmethod
     def tie(parameter):
