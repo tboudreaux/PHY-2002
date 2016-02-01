@@ -10,6 +10,7 @@ from scipy.optimize import curve_fit
 from scipy import asarray as arr, exp
 import matplotlib.pyplot as plt
 import time
+from astropy.modeling import models,fitting
 run = [False]
 
 
@@ -400,3 +401,10 @@ class AdvancedPlotting(PlotFunctionality):
                 selection.append(wavelength[i])
 
         return selection
+
+    @staticmethod
+    def gaussianfit(x,y,a,mean,stddev):
+        g_init = models.Gaussian1D(a,mean,stddev)
+        fit_g = fitting.LevMarLSQFitter()
+        g = fit_g(g_init,x,y)
+        return g
