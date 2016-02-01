@@ -2,6 +2,7 @@
 # Paddy Clancy and Thomas Boudreaux
 from General import *
 
+import random
 import matplotlib.pyplot as plt
 import os
 from PyQt4 import QtGui, QtCore
