@@ -2,6 +2,7 @@
 # Paddy Clancy and Thomas Boudreaux
 from General import *
 
+import random
 import matplotlib.pyplot as plt
 import os
 from PyQt4 import QtGui, QtCore
@@ -112,8 +113,19 @@ class MyForm(QtGui.QMainWindow):
 
     # Easter Egg
     def secret(self):
-        self.ui.consol.append('<font color = "green"> Displaying the Answer to life - Credit: http://d.justpo.st/images/2013/04/b83fb1b7222c18934e59c5b1bd2f43bd.jpg</font><br>')
-        webbrowser.open('http://d.justpo.st/images/2013/04/b83fb1b7222c18934e59c5b1bd2f43bd.jpg')
+        r = random.randrange(1, 5)
+        if r == 1:
+            self.ui.consol.append('<font color = "green"> Displaying a possible Answer to life - Credit: http://d.justpo.st/images/2013/04/b83fb1b7222c18934e59c5b1bd2f43bd.jpg</font><br>')
+            webbrowser.open('http://d.justpo.st/images/2013/04/b83fb1b7222c18934e59c5b1bd2f43bd.jpg')
+        elif r == 2:
+            self.ui.consol.append('<font color = "green"> Displaying a possible Answer to life - Credit: http://sf.co.ua/id90453</font><br>')
+            webbrowser.open('http://sf.co.ua/id90453')
+        elif r == 3:
+            self.ui.consol.append('<font color = "green"> Displaying a possible Answer to life - Credit: https://s-media-cache-ak0.pinimg.com/236x/2f/88/26/2f8826f5a6a97006ecd350211eb584ee.jpg</font><br>')
+            webbrowser.open('https://s-media-cache-ak0.pinimg.com/236x/2f/88/26/2f8826f5a6a97006ecd350211eb584ee.jpg')
+        elif r == 4:
+            self.ui.consol.append('<font color = "green"> Displaying a possible Answer to life - Credit: http://nicolascage.us/wp-content/uploads/2013/09/Universe-Cupcake.jpg</font><br>')
+            webbrowser.open('http://nicolascage.us/wp-content/uploads/2013/09/Universe-Cupcake.jpg')
 
     # This function controls all keyPresses, it runs at all times in the main window and grabs keypress from that
     def keyPressEvent(self, e):
