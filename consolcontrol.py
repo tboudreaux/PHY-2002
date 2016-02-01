@@ -1,13 +1,14 @@
 # This program controls the functions avalible to the user in the consol
 from PyQt4 import QtCore, QtGui
 import os, sys, subprocess
+import random
 
 
 class BSPS(object):
 
     @staticmethod
     def route(command, paramter):
-        commandList = {'view':BSPSEss.view, 'ls':BSPSEss.ls, 'lcom':BSPSEss.lcom, 'pwd':BSPSEss.pwd, 'cd':BSPSEss.cd, 'clear':BSPSEss.clear, 'mkdir': BSPSEss.mkdir, 'edit': BSPSEss.edit, 'pyrun': BSPSEss.pyrun, 'tie': BSPSEss.tie, 'lfunc': BSPSEss.lfunc, 'reload': BSPSEss.reload}
+        commandList = {'view':BSPSEss.view, 'ls':BSPSEss.ls, 'lcom':BSPSEss.lcom, 'pwd':BSPSEss.pwd, 'cd':BSPSEss.cd, 'clear':BSPSEss.clear, 'mkdir': BSPSEss.mkdir, 'edit': BSPSEss.edit, 'pyrun': BSPSEss.pyrun, 'tie': BSPSEss.tie, 'lfunc': BSPSEss.lfunc, 'reload': BSPSEss.reload,'answer':BSPSEss.answer}
         if command in commandList:
             string = BSPSEss.strsend(command, paramter)
             return string
@@ -22,12 +23,25 @@ class BSPSEss(BSPS):
 
     @staticmethod
     def strsend(command, parameter):
-        commandlist = {'view':BSPSEss.view, 'ls':BSPSEss.ls, 'lcom':BSPSEss.lcom, 'pwd':BSPSEss.pwd, 'cd':BSPSEss.cd, 'clear':BSPSEss.clear, 'mkdir': BSPSEss.mkdir, 'edit': BSPSEss.edit, 'pyrun':BSPSEss.pyrun, 'tie': BSPSEss.tie, 'lfunc': BSPSEss.lfunc, 'reload': BSPSEss.reload}
+        commandlist = {'view':BSPSEss.view, 'ls':BSPSEss.ls, 'lcom':BSPSEss.lcom, 'pwd':BSPSEss.pwd, 'cd':BSPSEss.cd, 'clear':BSPSEss.clear, 'mkdir': BSPSEss.mkdir, 'edit': BSPSEss.edit, 'pyrun':BSPSEss.pyrun, 'tie': BSPSEss.tie, 'lfunc': BSPSEss.lfunc, 'reload': BSPSEss.reload,'answer':BSPSEss.answer}
         try:
             string = commandlist[command](parameter)
         except TypeError:
             string = commandlist[command]()
         BSPSEss.stremit(BSPSEss())
+        return string
+
+    @staticmethod
+    def answer():
+        r = random.randrange(1,3)
+        if r == 1:
+            variable = open('cage1.sec','rb')
+            variable = variable.read()
+            string = variable
+        elif r == 2:
+            variable = open('cage2.sec','rb')
+            variable = variable.read()
+            string = variable
         return string
 
     @staticmethod

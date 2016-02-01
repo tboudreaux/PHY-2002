@@ -2,6 +2,7 @@ from astropy.io import fits
 import numpy as np
 from General import Mathamatics
 import math
+from astropy.modeling import models,fitting
 run = [False]
 
 log = open('log.log', 'w')
@@ -136,3 +137,10 @@ class AdvancedPlotting(PlotFunctionality):
             listarray.append(line)
         return listarray
 
+
+    @staticmethod
+    def gaussianfit(x,y,a,mean,stddev):
+        g_init = models.Gaussian1D(a,mean,stddev)
+        fit_g = fitting.LevMarLSQFitter()
+        g = fit_g(g_init,x,y)
+        return g
