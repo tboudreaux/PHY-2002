@@ -94,31 +94,51 @@ class PlotFunctionality(object):
 
 class AdvancedPlotting(PlotFunctionality):
 
+    # correlation math / logic
     @staticmethod
     def ccor(targetpath, templatepath, degree, order, numberignore, largerwave, smallerwave):
+        # local namespace arrays and variables used throuout, I don't have a problem useing these here because they are
+        # local
         targetflux = []
         correlation =[]
         corwave = []
+
+        # These call the wfextract function to get the flux and wavelength for the target and template as a dictionary
         targetdata = PlotFunctionality.wfextract(targetpath, order)
         templatedata = PlotFunctionality.wfextract(templatepath, order)
         newtargetwave = []
         newtargetflux = []
         newtemplatewave = []
         newtemplateflux = []
+        # Finds the largest and smallest wavelengths in the the target for the given order
         largest = Mathamatics.largest(targetdata['wavelength'])
         smallest = Mathamatics.smallest(targetdata['wavelength'])
+
+        # this next large block of code is what deals with ignoring certain wavelengths, this is a mildly optimized
+        # version (way more that before at least) and it makes sure to only take wavelengths into account that are not
+        # in the range specified by the user
         for n in range(numberignore):
+
+            # This checks when the smaller wavelength is and if it falls in the range of the array it will then preform
+            # more checks, if not it will move on
             if smallest < smallerwave[n] < largest:
+
+                # This checks if the largest wavelength is in the range of the array,
                 if smallest < largerwave[n] < largest:
                     for j in range(len(targetdata['wavelength'])):
+                        # Checks if the target wavelength is in in the range of the ignore, if so passes
                         if smallerwave[n] <= targetdata['wavelength'][j] <= largerwave[n]:
                             pass
                         else:
+                            # Does the actual appending of the new data, only appends if the range is not inbetween the
+                            # ignore ranges
                             newtargetwave.append(targetdata['wavelength'][j])
                             newtargetflux.append(targetdata['flux'][j])
                             newtemplatewave.append(templatedata['wavelength'][j])
                             newtemplateflux.append(templatedata['flux'][j])
+                # if the largest is not in the array
                 else:
+                    # Same more or less logic than above
                     for j in range(len(targetdata['wavelength'])):
                         if smallerwave[n] <= targetdata['wavelength'][j] <= largest:
                             pass

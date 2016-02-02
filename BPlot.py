@@ -1,4 +1,4 @@
-# Echel Spectra viewer
+# Echel Spectra viewer & analizer
 # Paddy Clancy and Thomas Boudreaux
 from General import *
 
@@ -17,10 +17,11 @@ from JumpToOrder import Ui_JumpToOrder
 from Editor import Ui_MainWindow
 import time
 
+# Checks os for compatability
 PreChecks.oscheck()
 
-#These are here to allow for global variables passe betweel all classes, at some point these
-#Should be replaced by PyQt Signals so that there aren't so many global definitions
+# These are here to allow for global variables passe betweel all classes, at some point these
+# Should be replaced by local namespace variables, however I have yet to get around to that
 inputArray = []
 usearray = [False, False]
 fit = [False]
@@ -35,7 +36,8 @@ readfile = open('UserFunc.conf', 'rb')
 plotparm = [None] * 10
 funcconf = [['1','Null', 'Function1'], ['2', 'Null', 'Function2'], ['3', 'Null', 'Function3'], ['4', 'Null', 'Function4']]
 jumpcore = [False]
-# The main GUI Class that runs
+
+# The main GUI Class that controlles the rest og the program
 class MyForm(QtGui.QMainWindow):
     #I nitilazation of the GUI
     def __init__(self, parent=None):
@@ -44,7 +46,8 @@ class MyForm(QtGui.QMainWindow):
         self.ui = Ui_Header()
         self.ui.setupUi(self)
         self.com = Plotter()
-        # These are in here because at some point I will add data persistance between runs, but I have to think some things out ther first
+
+        # These next few lines control the Custom User Function Persistence Features
         lastrun = readfile.readlines()
         for o in range(4):
             lastrun[o] = lastrun[o][:-1]
@@ -53,7 +56,8 @@ class MyForm(QtGui.QMainWindow):
         for j in range(len(lastrun)):
             lastrun[j] = lastrun[j].split()
 
-        number = 0
+        # These lines load in the data that was read in from the file into the User functions, could prorobably be
+        # simplified with a switch statment, however thats not really nessisary right now
         if len(saverun) >= 1:
             UserFunctions[0] = lastrun[0][1]
 
@@ -76,8 +80,7 @@ class MyForm(QtGui.QMainWindow):
             self.ui.userFuntion4.setText(lastrun[3][2])
             funcconf[3] = lastrun[3]
 
-       # func1a = func1.split(); func2a = func2.split(); func3a = func3.split(); func4a = func4.split()
-
+        # These control most of the button assignments in the main GUI
         self.ui.consol.append('<font color = "green"> Spectral Image Plotter Version 0.4<br>Written by Paddy Clancy and Thomas Boudreaux  - 2016</font><br>')
         self.ui.consol.append('<font color = "blue"> Module and OS Checks OK</font><br>')
         self.ui.consol.append('<font color = "blue"> type "lcom" for a list of avalibel commands</font><br>')
@@ -98,7 +101,7 @@ class MyForm(QtGui.QMainWindow):
         self.ui.info.clicked.connect(self.info)
         self.ui.Reset.clicked.connect(self.NI)
 
-        # These initialize the windows as empty objects in the Main GUI controller
+        # These initialize the other windows as empty objects in the Main GUI controller
         self.window2 = None
         self.window3 = None
         self.window3 = None
@@ -121,14 +124,28 @@ class MyForm(QtGui.QMainWindow):
             commandcomp = str.split(str(command))
             iscommand = commandcomp[0]
             commandcomp.pop(0)
+
+            # Passes the parsed command and parameters into the consol control class routing function
+            # the routing function returns a string
             string = BSPS.route(iscommand, commandcomp)
+
+            # appends the entered command to the consol
             self.ui.consol.append('<font color = green>' + command + '</font>')
+
+            # all these //word are the syntax for commands that have special functions
+            # clears the terminal window
             if string == '//clear':
                 self.ui.consol.clear()
                 string = None
+
+            # Brings up an ASCII Text editor
             elif string == '//edit':
                 self.window3 = Editor(self)
                 self.window3.show()
+
+                # Opens file if file exists / creats file if file does not exist
+                # This could be done better with logic instead of rellying on errors, however so far it works
+                # and as such that is low priority
                 try:
                     text = open(commandcomp[0], 'rb')
                     text = text.read()
@@ -137,6 +154,8 @@ class MyForm(QtGui.QMainWindow):
                 self.window3.ui.textEdit.append(text)
                 self.window3.ui.FileName.setText(commandcomp[0])
                 string = None
+
+            #lists the number of open user functions
             elif string == '//lfunc':
                 count = 0
                 for i in range(4):
@@ -144,6 +163,8 @@ class MyForm(QtGui.QMainWindow):
                         count += 1
                 self.ui.consol.append('There are ' + str(count) + ' Open functions')
                 string = None
+
+            # lists more detail on open user functions
             elif string == '//lfuncall':
                 count = 0
                 for q in range(4):
@@ -152,6 +173,8 @@ class MyForm(QtGui.QMainWindow):
                         count += 1
                 self.ui.consol.append('There are ' + str(count) + ' Open functions')
                 string = None
+
+            #controls the tieing of scripts to user buttons, most of this is repetative logic
             elif string == '//tie':
                 script = commandcomp[0]
                 function = commandcomp[1]
@@ -199,7 +222,11 @@ class MyForm(QtGui.QMainWindow):
                     #for k in range(3):
                     print >>datafile, printwords
                 string = None
+
+            # Checks to make sure that the sring exists
             if string:
+                # appends the sting returnes from the routing function to the consol, if it has not been deinitialized
+                # in the command logic above
                 self.ui.consol.append(string)
             self.ui.consolinput.clear()
             commands.append(command)
