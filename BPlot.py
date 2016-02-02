@@ -624,7 +624,9 @@ class Plotter():
             PlotFunctionality.plot(name, start, showfit[0], shouldfit, degree, fig, offset)
 
         # You are probably wondering (I know I am) why this seamingly important line is commented out, and why when it
-        # is not commented out MAC OSX systems
+        # is not commented out MAC OSX systems go cray cray, they shouldn't go cray cray but they do go cray cray
+        # that was odd, moving on, keep this commmented out until that bug is sorted out or OS X systems will go
+        # cray cray
         #plt.tight_layout()
         plt.ion()
         plt.show()
@@ -633,7 +635,12 @@ class Plotter():
         def plotcontrol(event):
             keydown = event.key
             if keydown == 'a' or keydown == 'A':
+                # closes the window
                 plt.close()
+
+                # Checks to to keep you from going negative, I actually don't know if this works right now but its
+                # so low on my priority list that I haven't given it any thought (I mean not an ioda) since I first
+                # wrote this line, so yea.
                 if int(start)-1 != 0:
                     Plotter.stackplot(stackfile, allimages, num, start-1, degree, shouldfit)
             elif keydown == 'd' or keydown == 'D':
@@ -648,10 +655,15 @@ class Plotter():
             elif keydown == 'e' or keydown == 'E':
                 plt.close()
                 Plotter.stackplot(stackfile, allimages, num + 1, start, degree, shouldfit)
+
+        # Connects to the matplot lib keypress function
         fig.canvas.mpl_connect('key_press_event', plotcontrol)
 
+    # function called when no images will be staked, this is basically obsolete, and should be at some point replace
+    # except no, idk, im having a mental break down about this
     @staticmethod
     def nstackplot(name, start, degree, shouldfit):
+        # same deal here as with stackplot above
         fig = plt.figure(figsize=(10, 7))
         PlotFunctionality.plot(name, start, showfit[0], shouldfit, degree, fig, 0)
         #plt.tight_layout()
@@ -669,6 +681,8 @@ class Plotter():
         fig.canvas.mpl_connect('key_press_event', plotcontrol)
 
 
+# Bascically the most important section of code in the whole code because it makes everything start, its also the
+# only section of code in this entire program I don't really understand (I got this section from a tutorial)
 if __name__ == "__main__":
     app = QtGui.QApplication(sys.argv)
     myapp = MyForm()
