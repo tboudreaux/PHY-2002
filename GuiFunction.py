@@ -155,21 +155,36 @@ class AdvancedPlotting(PlotFunctionality):
                         newtemplatewave.append(templatedata['wavelength'][j])
                         newtemplateflux.append(templatedata['flux'][j])
             else:
+                # if there are no wavelengths to ignore then it sets the new use arrays to the target data relevent
                 newtargetwave = targetdata['wavelength'].tolist()
                 newtargetflux = targetdata['flux'].tolist()
                 newtemplatewave = templatedata['wavelength'].tolist()
                 newtemplateflux = templatedata['flux'].tolist()
+
+        # finds the differenec between the largest and smallest wavelength and then rounds that up to the nearest int
         diff = largest - smallest
         diff = int(math.ceil(diff))
+
+        # Gets the flux and normalizes it by calling the functional fitting function
         targetflux.append(PlotFunctionality.fitfunction(degree, newtargetwave, newtargetflux, 0)['y_new'])
+
+        # This does the actual shifting
         for i in range(2*diff):
+            # More local name space variables that are jangly but okay
             templateflux = []
             usetemplateflux = []
             usetargetflux = []
+
+            # Calculares the new Wavelength valuses for the template in each run of the cross correlation loop
             wshift = [x + diff - i + 1 for x in newtemplatewave]
             start = Mathamatics.smallest(wshift)
+
+            # Same thing as above but for the template as opposed to the target
             templateflux.append(PlotFunctionality.fitfunction(degree, wshift, newtemplateflux, 0)['y_new'])
 
+            # This is the section of code that is ment to deal with removing the edges of the arrays (ie the sections
+            # not lines up with each other) in order to not throw off the cross correlation
+            # in all honest if I had to guess this is where the problems lie
             if Mathamatics.smallest(wshift) > Mathamatics.smallest(newtargetwave):
                 for k in range(len(newtargetwave)):
                     if newtargetwave[k] < start:
@@ -186,9 +201,15 @@ class AdvancedPlotting(PlotFunctionality):
                     else:
                         usetargetflux.append(targetflux[0][k])
                         usetemplateflux.append(templateflux[0][k])
+            # This is the line that does the actual correlation, passing in the adjusted fluxes
             correlation.append(np.correlate(usetargetflux, usetemplateflux))
+
+            # This is a missnomer, wave is not in any way related to this, this is more appropriately titles
+            # offsett or something, but either way its called cor wave because I wrote this late at night
+            # so yea, thats a thing
             corwave.append(diff-i)
 
+        # returns a dictionary of values (y and x values respectivly)
         return {'correlation': correlation, 'corwave': corwave}
 
     @staticmethod

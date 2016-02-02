@@ -558,6 +558,9 @@ class Plotter():
 
     # Corplot function that calls the ccofig function from GUI function to extract the required data
     # incidentaly this will be completely reorganized in the great reorganization of code to come
+    # I wrote the comment like a week ago now and I have yet to begin the great reorganization of code
+    # as my younger naive self called it, rather it has been a slow logical change in the code base
+    # whatever, maybe one day.
     @staticmethod
     def corplot(degree, templatename, objectname, order, num, larger, smaller):
         # Creates a matplotlib figure of given size (will at some point be configuarble in the forcoming settings menu)
@@ -575,31 +578,53 @@ class Plotter():
         # This allows one to move between orders in C
         def plotcontrol(event):
             keydown = event.key
+            # A advances in the cross correlation, nothing is printed out as of yet, it just produced the plot
+            # eventually this whole function if gonna be reorganized to allow for multiple figures to be displayed over
             if keydown == 'a' or keydown == 'A' and order < 62:
                 plt.close()
                 Plotter.corplot(degree, templatename, objectname, order + 1, num, larger, smaller)
+        # connects to the key press event function
         fig.canvas.mpl_connect('key_press_event', plotcontrol)
         plt.show()
 
+    # The plot controller for the plot that plots (enough plots for you yet?) stacked plots (there we go)
     @staticmethod
     def stackplot(stackfile, allimages, num, start, degree, shouldfit):
+
+        # Initialized the matplotlib figure
         fig = plt.figure(figsize=(10, 7))
+
+        # Opens the file with the path to files list in it and reads that into an array, this code is ideentical more
+        # or less to code that has been written earlier in BPlot and other classes for reading in data files
         pathlist = open(stackfile, 'rb')
         patharray = []
         for line in pathlist:
             patharray.append(line)
+
+        # figures out whether or not to stack all the images based on a global namespace variable (that I should change
+        # to a local namespace variable bu that is neither here nor there for the time being), I actually want to change
+        # This more fundamentally so that when all images is stacked, instead of flipping a boolean it just counts and
+        # sets a value, this will allow for a change in the number stacked when the button is presses, Currently very
+        # low priority
         if allimages is True:
             stacknum = len(patharray)
+
+        # if not stack all, how many stack
         else:
             if num > len(patharray):
                 num = len(patharray)
             stacknum = num
+
+        # This applies an offset to stacked / Nomralized orders to that the velocity offset can be more clearly seen
         offset = 0
         for i in range(stacknum):
             name = patharray[i]
             name = name[:-1]
             offset += 0.1
             PlotFunctionality.plot(name, start, showfit[0], shouldfit, degree, fig, offset)
+
+        # You are probably wondering (I know I am) why this seamingly important line is commented out, and why when it
+        # is not commented out MAC OSX systems
         #plt.tight_layout()
         plt.ion()
         plt.show()
