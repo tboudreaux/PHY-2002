@@ -4,8 +4,11 @@ from General import Mathamatics
 import math
 run = [False]
 
+# opens a log file, I don't always print to it but its nice to have handy when I want to print a lot of output
+
 log = open('log.log', 'w')
 
+# basic plot functionality
 class PlotFunctionality(object):
 
     @staticmethod
