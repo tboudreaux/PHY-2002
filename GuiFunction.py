@@ -2,7 +2,11 @@ from astropy.io import fits
 import numpy as np
 from General import Mathamatics
 import math
+import astropy.coordinates as coord
+from astropy import units as u
+import jdcal
 run = [False]
+
 
 # opens a log file, I don't always print to it but its nice to have handy when I want to print a lot of output
 
@@ -15,7 +19,7 @@ class PlotFunctionality(object):
     def plot(name, start, showfit, shouldfit, degree, fig, offsety):
         name = str(name)
         sp = fits.open(name)
-
+        AdvancedPlotting.coordconvert(name)
         wavelength = np.float64(sp[0].data[start-1, :, 0])
         flux = np.float64(sp[0].data[start-1, :, 1])
 
@@ -230,3 +234,52 @@ class AdvancedPlotting(PlotFunctionality):
             listarray.append(line)
         return listarray
 
+    @staticmethod
+    def coordconvert(name):
+        hdulist = fits.open(name)
+        RA = hdulist[0].header['RA']
+        Dec = hdulist[0].header['Dec']
+        RA= RA.split(':')
+        Dec= Dec.split(':')
+        for i in range(len(RA)):
+            RA[i] = float(RA[i])
+            Dec[i] = float(Dec[i])
+        ObsDate = hdulist[0].header['DATE']
+        Year = int(ObsDate[:-15])
+        Month = int(ObsDate[5:-12])
+        Day = int(ObsDate[8:-9])
+        # Calculate the Julian Date
+        JD = sum(jdcal.gcal2jd(Year, Month, Day))
+
+        # Convert to JD2000
+        J2 = JD - 2451545.0
+
+        # This calculates the distance to the sun on a given Julian Date
+        MeanLon = 280.460 + 0.9856474 * J2
+        MeanAnon = 357.528 + 0.9856003 * J2
+        cont = False
+        while cont is False:
+            if MeanAnon > 360:
+                MeanAnon -= 360
+            elif MeanAnon < 0:
+                MeanAnon += 360
+            else:
+                cont = True
+        cont = False
+        while cont is False:
+            if MeanLon > 360:
+                MeanLon -= 360
+            elif MeanLon < 0:
+                MeanLon += 360
+            else:
+                cont = True
+        EcclipticLon = MeanLon + 1.915*math.sin(MeanAnon) + 0.020*math.sin(2*MeanAnon)
+        SolarDist = 1.00014 - 0.01671*math.cos(MeanAnon) - 0.00014*math.cos(2*MeanAnon)
+
+        # The Next section here calculates the Unit vector pointed at the target
+
+        Cs = coord.SkyCoord(ra=RA*u.degree, dec=Dec*u.degree)
+
+        print Cs.ra
+        print Cs.dec
+        print MeanAnon, MeanLon, SolarDist, RA, Dec
