@@ -4,7 +4,10 @@ from General import Mathamatics
 import math
 import astropy.coordinates as coord
 from astropy import units as u
+from astropy import constants as const
 import jdcal
+import matplotlib.pyplot as plt
+import time
 run = [False]
 
 
@@ -19,7 +22,7 @@ class PlotFunctionality(object):
     def plot(name, start, showfit, shouldfit, degree, fig, offsety):
         name = str(name)
         sp = fits.open(name)
-        AdvancedPlotting.coordconvert(name)
+        # AdvancedPlotting.coordconvert(name)
         wavelength = np.float64(sp[0].data[start-1, :, 0])
         flux = np.float64(sp[0].data[start-1, :, 1])
 
@@ -174,24 +177,43 @@ class AdvancedPlotting(PlotFunctionality):
 
         # Gets the flux and normalizes it by calling the functional fitting function
         targetflux.append(PlotFunctionality.fitfunction(degree, newtargetwave, newtargetflux, 0)['y_new'])
-
+        targetflux = targetflux[0]
+        targetflux = targetflux[51:-51]
         # This does the actual shifting
-        for i in range(2*diff):
+        for i in range(102):
             # More local name space variables that are jangly but okay
             templateflux = []
             usetemplateflux = []
             usetargetflux = []
-
+            usetemplatewave = []
+            usetargetwave = []
+            wshift = newtemplatewave
             # Calculares the new Wavelength valuses for the template in each run of the cross correlation loop
-            wshift = [x + diff - i + 1 for x in newtemplatewave]
-            start = Mathamatics.smallest(wshift)
+            #wshift = [x + 51 - i for x in newtemplatewave]
+            count = 0
+            if i < 51:
+                for q in range(51 - i):
+                    wshift.insert(0,0)
+                    count += 1
+            elif i == 51:
+                pass
+            else:
+                for q in range(i-51):
+                    wshift.append(0)
+                    count += 1
+
+            wshift = wshift[count:-count]
+            #print 'wave', wshift
+            #start = Mathamatics.smallest(wshift)
 
             # Same thing as above but for the template as opposed to the target
             templateflux.append(PlotFunctionality.fitfunction(degree, wshift, newtemplateflux, 0)['y_new'])
-
+            templateflux = templateflux[0]
+            print 'length', len(templateflux)
             # This is the section of code that is ment to deal with removing the edges of the arrays (ie the sections
             # not lines up with each other) in order to not throw off the cross correlation
             # in all honest if I had to guess this is where the problems lie
+            """
             if Mathamatics.smallest(wshift) > Mathamatics.smallest(newtargetwave):
                 for k in range(len(newtargetwave)):
                     if newtargetwave[k] < start:
@@ -199,6 +221,8 @@ class AdvancedPlotting(PlotFunctionality):
                     else:
                         usetemplateflux.append(templateflux[0][k])
                         usetargetflux.append(targetflux[0][k])
+                        usetargetwave.append(newtargetwave[k])
+                        usetemplatewave.append(newtemplatewave[k])
             elif Mathamatics.smallest(wshift) == Mathamatics.smallest(newtargetwave):
                 pass
             else:
@@ -208,16 +232,28 @@ class AdvancedPlotting(PlotFunctionality):
                     else:
                         usetargetflux.append(targetflux[0][k])
                         usetemplateflux.append(templateflux[0][k])
+                        usetargetwave.append(newtargetwave[k])
+                        usetemplatewave.append(newtemplatewave[k])
             # This is the line that does the actual correlation, passing in the adjusted fluxes
-            correlation.append(np.correlate(usetargetflux, usetemplateflux))
+            fig=plt.figure(figsize=(10, 7))
+            ccorfig = fig.add_subplot(1, 1, 1)
+            ccorfig.plot(usetemplatewave, usetemplateflux)
+            ccorfig.plot(usetargetwave, usetargetflux)
 
+            plt.pause(.25)
+            plt.show()
+            """
+            correlation.append(np.correlate(usetargetflux, usetemplateflux))
+            #cont = raw_input('Press Enter to continue...')
+            plt.close()
             # This is a missnomer, wave is not in any way related to this, this is more appropriately titles
             # offsett or something, but either way its called cor wave because I wrote this late at night
             # so yea, thats a thing
-            corwave.append(diff-i)
-
+            corwave.append(i)
         # returns a dictionary of values (y and x values respectivly)
+        print correlation, corwave
         return {'correlation': correlation, 'corwave': corwave}
+        #return{'correlation':usetemplateflux, 'corwave':usetemplatewave, 'targetflux':usetargetflux, 'targetwave':usetargetwave}
 
     @staticmethod
     def listcomp(list1, list2):
@@ -234,6 +270,7 @@ class AdvancedPlotting(PlotFunctionality):
             listarray.append(line)
         return listarray
 
+"""
     @staticmethod
     def coordconvert(name):
         hdulist = fits.open(name)
@@ -275,6 +312,7 @@ class AdvancedPlotting(PlotFunctionality):
                 cont = True
         EcclipticLon = MeanLon + 1.915*math.sin(MeanAnon) + 0.020*math.sin(2*MeanAnon)
         SolarDist = 1.00014 - 0.01671*math.cos(MeanAnon) - 0.00014*math.cos(2*MeanAnon)
+        HJD = J2 - (SolarDist/const.c)*(math.sin)
 
         # The Next section here calculates the Unit vector pointed at the target
 
@@ -283,3 +321,4 @@ class AdvancedPlotting(PlotFunctionality):
         print Cs.ra
         print Cs.dec
         print MeanAnon, MeanLon, SolarDist, RA, Dec
+"""

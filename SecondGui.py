@@ -185,7 +185,7 @@ class Ui_Header(object):
         QtCore.QMetaObject.connectSlotsByName(Header)
 
     def retranslateUi(self, Header):
-        Header.setWindowTitle(_translate("Header", "Basic Spectral Plotter", None))
+        Header.setWindowTitle(_translate("Header", "SAUL - Spectral Analysis UtiLity", None))
         self.stackIm.setText(_translate("Header", "Stack Images", None))
         self.pathListLabel.setText(_translate("Header", "Path List File Name", None))
         self.singleFileLabel.setText(_translate("Header", "Single File Name", None))

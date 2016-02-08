@@ -81,7 +81,7 @@ class MyForm(QtGui.QMainWindow):
             funcconf[3] = lastrun[3]
 
         # These control most of the button assignments in the main GUI
-        self.ui.consol.append('<font color = "green"> Spectral Image Plotter Version 0.4<br>Written by Paddy Clancy and Thomas Boudreaux  - 2016</font><br>')
+        self.ui.consol.append('<font color = "green"> SAUL Version 0.5<br>Written by Paddy Clancy and Thomas Boudreaux  - 2016</font><br>')
         self.ui.consol.append('<font color = "blue"> Module and OS Checks OK</font><br>')
         self.ui.consol.append('<font color = "blue"> type "lcom" for a list of avalibel commands</font><br>')
         self.ui.function1.setStyleSheet("background-color: red; color: black")
@@ -247,8 +247,6 @@ class MyForm(QtGui.QMainWindow):
        infotxt = infofile.read()
        self.ui.consol.append(infotxt)
 
-    # Lists the directories in the working directory in the consol
-    # This is due to be replaced when the lauguage is implimented with the ls command built into the language
 
     def functiontie1(self):
         text = BSPSEss.pyrun(UserFunctions[0])
@@ -338,11 +336,19 @@ class MyForm(QtGui.QMainWindow):
 
         # Fetch the values and strings stored in relevent text fields
         degree = self.ui.amplitude.toPlainText()
-        pathfilename = self.ui.pathListInput.toPlainText()
-        numToStack = self.ui.numStack.value()
-        filename = self.ui.singleFileInput.toPlainText()
+        plotparm[0] = degree
+        try:
+            if usearray[0] is True:
+                pathfilename = self.ui.pathListInput.toPlainText()
+                numToStack = self.ui.numStack.value()
+                plotparm[1] = pathfilename; plotparm[2] = numToStack
+            else:
+               filename = self.ui.singleFileInput.toPlainText()
+               plotparm[3] = filename
+        except IOError:
+            self.ui.consol.append('<font color = "red"> No Such File found, please check spelling and try again</font>')
+
         order = self.ui.startOrd.value()
-        plotparm[0] = degree; plotparm[1] = pathfilename; plotparm[2] = numToStack; plotparm[3] = filename
         # Determins whether to use stack plot or nstack plot, would like to figure out a better way to to this than arrays
         #   but that is currently not a super high priority
         if usearray[0] is True:
@@ -564,13 +570,15 @@ class Plotter():
     @staticmethod
     def corplot(degree, templatename, objectname, order, num, larger, smaller):
         # Creates a matplotlib figure of given size (will at some point be configuarble in the forcoming settings menu)
-        fig=plt.figure(figsize=(10, 7))
+        # fig=plt.figure(figsize=(10, 7))
         # Adds the ccorfig subplot
-        ccorfig = fig.add_subplot(1, 1, 1)
+        # ccorfig = fig.add_subplot(1, 1, 1)
         # fetches the data from the ccor function in Advanced Plotting by calling the function, data is returnted as a
         #   2 element dictionary, so then when its plotted below there its is called with the dictionaty nameing
         data = AdvancedPlotting.ccor(objectname, templatename, degree, order, num, larger, smaller)
+        """
         ccorfig.plot(data['corwave'], data['correlation'])
+        #ccorfig.plot(data['targetwave'], data['targetflux'])
         ccorfig.set_xlabel('Offset')
         ccorfig.set_ylabel('Correlation Coefficient')
         ccorfig.set_title('Cross Correlation')
@@ -586,6 +594,7 @@ class Plotter():
         # connects to the key press event function
         fig.canvas.mpl_connect('key_press_event', plotcontrol)
         plt.show()
+        """
 
     # The plot controller for the plot that plots (enough plots for you yet?) stacked plots (there we go)
     @staticmethod
