@@ -10,6 +10,7 @@ pyrun - run a python file
 tie - tie a python script to a function button
 lfunc - list infomration about user functions
 reload - reloads the program, thus allowing any code changed made to take affect
+quit - close the program
 -------
 command syntax:
 view [filename]
@@ -24,3 +25,4 @@ pyrun [filename]
 tie [script] [function] [optional: name of button after tie]
 lfunc [options -a (list what functions are ties to what)]
 reload
+quit
