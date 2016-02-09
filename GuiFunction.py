@@ -110,8 +110,9 @@ class AdvancedPlotting(PlotFunctionality):
         # local namespace arrays and variables used throuout, I don't have a problem useing these here because they are
         # local
         targetflux = []
+        templateflux = []
         correlation =[]
-        corwave = []
+        offset = []
 
         # These call the wfextract function to get the flux and wavelength for the target and template as a dictionary
         targetdata = PlotFunctionality.wfextract(targetpath, order)
@@ -171,89 +172,36 @@ class AdvancedPlotting(PlotFunctionality):
                 newtemplatewave = templatedata['wavelength'].tolist()
                 newtemplateflux = templatedata['flux'].tolist()
 
-        # finds the differenec between the largest and smallest wavelength and then rounds that up to the nearest int
-        diff = largest - smallest
-        diff = int(math.ceil(diff))
-
         # Gets the flux and normalizes it by calling the functional fitting function
         targetflux.append(PlotFunctionality.fitfunction(degree, newtargetwave, newtargetflux, 0)['y_new'])
         targetflux = targetflux[0]
         targetflux = targetflux[51:-51]
+        templateflux.append(PlotFunctionality.fitfunction(degree, newtemplatewave, newtemplateflux, 0)['y_new'])
+        templateflux = templateflux[0]
         # This does the actual shifting
         for i in range(102):
-            # More local name space variables that are jangly but okay
-            templateflux = []
-            usetemplateflux = []
-            usetargetflux = []
-            usetemplatewave = []
-            usetargetwave = []
-            wshift = newtemplatewave
-            # Calculares the new Wavelength valuses for the template in each run of the cross correlation loop
-            #wshift = [x + 51 - i for x in newtemplatewave]
-            count = 0
-            if i < 51:
-                for q in range(51 - i):
-                    wshift.insert(0,0)
-                    count += 1
-            elif i == 51:
-                pass
-            else:
-                for q in range(i-51):
-                    wshift.append(0)
-                    count += 1
+            shiftflux = templateflux
+            shiftflux = shiftflux[i:-(102-i)]
+            correlation.append(np.correlate(targetflux, shiftflux))
+            offset.append(i)
+        return{'correlation':correlation, 'offset':offset}
 
-            wshift = wshift[count:-count]
-            #print 'wave', wshift
-            #start = Mathamatics.smallest(wshift)
+    @staticmethod
+    def waveshower(fig, path1, path2, order, degree):
+        flux1 = []
+        flux2 = []
+        data1 = PlotFunctionality.wfextract(path1, order)
+        data2 = PlotFunctionality.wfextract(path2, order)
+        flux1.append(PlotFunctionality.fitfunction(degree, data1['wavelength'], data1['flux'], order)['y_new'])
+        flux2.append(PlotFunctionality.fitfunction(degree, data2['wavelength'], data2['flux'], order)['y_new'])
+        waves = fig.add_subplot(2,1,2)
 
-            # Same thing as above but for the template as opposed to the target
-            templateflux.append(PlotFunctionality.fitfunction(degree, wshift, newtemplateflux, 0)['y_new'])
-            templateflux = templateflux[0]
-            print 'length', len(templateflux)
-            # This is the section of code that is ment to deal with removing the edges of the arrays (ie the sections
-            # not lines up with each other) in order to not throw off the cross correlation
-            # in all honest if I had to guess this is where the problems lie
-            """
-            if Mathamatics.smallest(wshift) > Mathamatics.smallest(newtargetwave):
-                for k in range(len(newtargetwave)):
-                    if newtargetwave[k] < start:
-                        pass
-                    else:
-                        usetemplateflux.append(templateflux[0][k])
-                        usetargetflux.append(targetflux[0][k])
-                        usetargetwave.append(newtargetwave[k])
-                        usetemplatewave.append(newtemplatewave[k])
-            elif Mathamatics.smallest(wshift) == Mathamatics.smallest(newtargetwave):
-                pass
-            else:
-                for k in range(len(newtargetwave)):
-                    if wshift[k] < start:
-                        pass
-                    else:
-                        usetargetflux.append(targetflux[0][k])
-                        usetemplateflux.append(templateflux[0][k])
-                        usetargetwave.append(newtargetwave[k])
-                        usetemplatewave.append(newtemplatewave[k])
-            # This is the line that does the actual correlation, passing in the adjusted fluxes
-            fig=plt.figure(figsize=(10, 7))
-            ccorfig = fig.add_subplot(1, 1, 1)
-            ccorfig.plot(usetemplatewave, usetemplateflux)
-            ccorfig.plot(usetargetwave, usetargetflux)
+        waves.plot(data1['wavelength'], flux1[0])
+        waves.plot(data2['wavelength'], flux2[0])
 
-            plt.pause(.25)
-            plt.show()
-            """
-            correlation.append(np.correlate(usetargetflux, usetemplateflux))
-            #cont = raw_input('Press Enter to continue...')
-            plt.close()
-            # This is a missnomer, wave is not in any way related to this, this is more appropriately titles
-            # offsett or something, but either way its called cor wave because I wrote this late at night
-            # so yea, thats a thing
-            corwave.append(i)
-        # returns a dictionary of values (y and x values respectivly)
-        print correlation, corwave
-        return {'correlation': correlation, 'corwave': corwave}
-        #return{'correlation':usetemplateflux, 'corwave':usetemplatewave, 'targetflux':usetargetflux, 'targetwave':usetargetwave}
+        waves.set_xlabel('wavelength (Angstroms)')
+        waves.set_ylabel('Normalized Flux')
+        waves.set_title('spectra viewer')
 
     @staticmethod
     def listcomp(list1, list2):

@@ -36,6 +36,7 @@ readfile = open('UserFunc.conf', 'rb')
 plotparm = [None] * 10
 funcconf = [['1','Null', 'Function1'], ['2', 'Null', 'Function2'], ['3', 'Null', 'Function3'], ['4', 'Null', 'Function4']]
 jumpcore = [False]
+compare = [False]
 
 # The main GUI Class that controlles the rest og the program
 class MyForm(QtGui.QMainWindow):
@@ -552,7 +553,7 @@ class CCWindow(QtGui.QMainWindow):
             templatename = self.ui.tempfilename.toPlainText()
             objectname = self.ui.targetfilename.toPlainText()
             self.ui.infobox.append('<font color ="green">Cross Correlating Orders, use "a" to advance</font><br>')
-            Plotter.corplot(degree, templatename, objectname, 1, self.length, self.smallerwaves, self.largerwaves)
+            Plotter.corplot(degree, templatename, objectname, 1, self.length, self.smallerwaves, self.largerwaves, compare[0])
             plotparm[4] = degree; plotparm[5] = templatename; plotparm[6] = objectname; plotparm[7] = self.length
             plotparm[8] = self.smallerwaves; plotparm[9] = self.largerwaves
             jumpcore[0] = True
@@ -568,7 +569,7 @@ class Plotter():
     # as my younger naive self called it, rather it has been a slow logical change in the code base
     # whatever, maybe one day.
     @staticmethod
-    def corplot(degree, templatename, objectname, order, num, larger, smaller):
+    def corplot(degree, templatename, objectname, order, num, larger, smaller, show):
         # Creates a matplotlib figure of given size (will at some point be configuarble in the forcoming settings menu)
         # fig=plt.figure(figsize=(10, 7))
         # Adds the ccorfig subplot
@@ -576,9 +577,15 @@ class Plotter():
         # fetches the data from the ccor function in Advanced Plotting by calling the function, data is returnted as a
         #   2 element dictionary, so then when its plotted below there its is called with the dictionaty nameing
         data = AdvancedPlotting.ccor(objectname, templatename, degree, order, num, larger, smaller)
-        """
-        ccorfig.plot(data['corwave'], data['correlation'])
-        #ccorfig.plot(data['targetwave'], data['targetflux'])
+        fig = plt.figure(figsize=(10, 10))
+        if show is False:
+            ccorfig = fig.add_subplot(1, 1, 1)
+        else:
+            ccorfig = fig.add_subplot(2,1,1)
+            AdvancedPlotting.waveshower(fig, templatename, objectname, order, degree)
+
+        ccorfig.plot(data['offset'], data['correlation'])
+
         ccorfig.set_xlabel('Offset')
         ccorfig.set_ylabel('Correlation Coefficient')
         ccorfig.set_title('Cross Correlation')
@@ -590,11 +597,15 @@ class Plotter():
             # eventually this whole function if gonna be reorganized to allow for multiple figures to be displayed over
             if keydown == 'a' or keydown == 'A' and order < 62:
                 plt.close()
-                Plotter.corplot(degree, templatename, objectname, order + 1, num, larger, smaller)
+                Plotter.corplot(degree, templatename, objectname, order + 1, num, larger, smaller, compare[0])
+            elif keydown == 'c' or keydown == 'C':
+                plt.close()
+                compare[0] = not compare[0]
+                Plotter.corplot(degree, templatename, objectname, order, num, larger, smaller, compare[0])
         # connects to the key press event function
         fig.canvas.mpl_connect('key_press_event', plotcontrol)
         plt.show()
-        """
+
 
     # The plot controller for the plot that plots (enough plots for you yet?) stacked plots (there we go)
     @staticmethod
