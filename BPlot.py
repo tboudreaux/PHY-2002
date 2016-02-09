@@ -406,7 +406,7 @@ class OrderJump(QtGui.QMainWindow):
                 Plotter.nstackplot(plotparm[3], order, plotparm[0], fit[0])
         else:
             plt.close()
-            Plotter.corplot(plotparm[4], plotparm[5], plotparm[6], order, plotparm[7], plotparm[8], plotparm[9])
+            Plotter.corplot(plotparm[4], plotparm[5], plotparm[6], order, plotparm[7], plotparm[8], plotparm[9], compare[0])
 
 
     def closser(self):
