@@ -552,12 +552,19 @@ class CCWindow(QtGui.QMainWindow):
             degree = self.ui.fitdegree.value()
             templatename = self.ui.tempfilename.toPlainText()
             objectname = self.ui.targetfilename.toPlainText()
-            self.ui.infobox.append('<font color ="green">Cross Correlating Orders, use "a" to advance</font><br>')
-            Plotter.corplot(degree, templatename, objectname, 1, self.length, self.smallerwaves, self.largerwaves, compare[0])
+
+            try:
+                Plotter.corplot(degree, templatename, objectname, 1, self.length, self.smallerwaves, self.largerwaves, compare[0])
+                self.ui.infobox.append('<font color ="green">Cross Correlating Orders, use "a" to advance</font><br>')
+                self.jumpTo()
+            except ValueError:
+                self.ui.infobox.append('<font color ="red">Please Make sure that file names are entered in the boxs</font>')
+            except IOError:
+                self.ui.infobox.append('<font color ="red">Please Make sure that file names are spelled correctly</font>')
             plotparm[4] = degree; plotparm[5] = templatename; plotparm[6] = objectname; plotparm[7] = self.length
             plotparm[8] = self.smallerwaves; plotparm[9] = self.largerwaves
             jumpcore[0] = True
-            self.jumpTo()
+
 
 # This is plotter code, at some point it may be nice to move this class (During the great reorginazation of code to come)
 

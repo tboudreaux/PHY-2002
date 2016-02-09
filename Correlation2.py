@@ -36,13 +36,13 @@ class Ui_CrossCore(object):
         self.MainTab = QtGui.QWidget()
         self.MainTab.setObjectName(_fromUtf8("MainTab"))
         self.listpath = QtGui.QTextEdit(self.MainTab)
-        self.listpath.setGeometry(QtCore.QRect(10, 70, 341, 31))
+        self.listpath.setGeometry(QtCore.QRect(10, 70, 381, 31))
         self.listpath.setObjectName(_fromUtf8("listpath"))
         self.tempfilename = QtGui.QTextEdit(self.MainTab)
-        self.tempfilename.setGeometry(QtCore.QRect(10, 160, 341, 31))
+        self.tempfilename.setGeometry(QtCore.QRect(10, 160, 381, 31))
         self.tempfilename.setObjectName(_fromUtf8("tempfilename"))
         self.targetfilename = QtGui.QTextEdit(self.MainTab)
-        self.targetfilename.setGeometry(QtCore.QRect(10, 230, 341, 31))
+        self.targetfilename.setGeometry(QtCore.QRect(10, 230, 381, 31))
         self.targetfilename.setObjectName(_fromUtf8("targetfilename"))
         self.ynlist = QtGui.QCheckBox(self.MainTab)
         self.ynlist.setGeometry(QtCore.QRect(10, 40, 96, 22))
@@ -169,7 +169,7 @@ class Ui_CrossCore(object):
         CrossCore.addToolBar(QtCore.Qt.TopToolBarArea, self.toolBar)
 
         self.retranslateUi(CrossCore)
-        self.tabWidget.setCurrentIndex(1)
+        self.tabWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(CrossCore)
 
     def retranslateUi(self, CrossCore):
