@@ -6,6 +6,8 @@ import astropy.coordinates as coord
 from astropy import units as u
 from astropy import constants as const
 import jdcal
+from scipy.optimize import curve_fit
+from scipy import asarray as arr,exp
 import matplotlib.pyplot as plt
 import time
 run = [False]
