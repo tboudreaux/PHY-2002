@@ -209,6 +209,7 @@ class AdvancedPlotting(PlotFunctionality):
         targetflux = targetflux[0]
         # trims down the target flux array to the fixed window size, at some point this will be user controllable
         targetflux = targetflux[51:-51]
+        newtargetwave = newtargetwave[51:-51]
         # Here we obtain the right honorable template flux of the land and do do unto it the normalization which has
         # been decreade should be done unto it and it was done unto it, and I dont know why I type these things sometimes
         templateflux.append(PlotFunctionality.fitfunction(degree, newtemplatewave, newtemplateflux, 0)['y_new'])
@@ -218,8 +219,16 @@ class AdvancedPlotting(PlotFunctionality):
         for i in range(102):
             # creates a new array equal to the total template flux array
             shiftflux = templateflux
+            shiftwave = newtemplatewave
             #crops the array so that only the part that lies under the part of the template being inveseigated matters
             shiftflux = shiftflux[i:-(102-i)]
+            shiftwave = shiftwave[i:-(102-i)]
+
+           # plt.plot(newtargetwave, targetflux)
+           #  plt.plot(shiftwave, shiftflux)
+           #  plt.show()
+           #  plt.pause(0.25)
+           #  plt.close()
             #correlates the two arrays of fluxes and appends that to an array
             correlation.append(np.correlate(targetflux, shiftflux))
             # appends whatever the offset relative to 0 is (reconnizing that the offset is half on oneseid and half on another)
