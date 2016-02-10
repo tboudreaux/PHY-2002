@@ -291,6 +291,8 @@ class MyForm(QtGui.QMainWindow):
        infotxt = infofile.read()
        self.ui.consol.append(infotxt)
 
+    # Lists the directories in the working directory in the consol
+    # This is due to be replaced when the language is implimented with the ls command built into the language
 
     def functiontie1(self):
         text = BSPSEss.pyrun(UserFunctions[0])
@@ -708,7 +710,7 @@ class Plotter():
                 num = len(patharray)
             stacknum = num
 
-        # This applies an offset to stacked / Nomralized orders to that the velocity offset can be more clearly seen
+        # This applies an offset to stacked / Normalized orders to that the velocity offset can be more clearly seen
         offset = 0
         for i in range(stacknum):
             name = patharray[i]
