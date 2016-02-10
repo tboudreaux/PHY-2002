@@ -5,6 +5,10 @@ import math
 import astropy.coordinates as coord
 from astropy import units as u
 import jdcal
+from scipy.optimize import curve_fit
+from scipy import asarray as arr,exp
+
+
 run = [False]
 
 
@@ -283,3 +287,33 @@ class AdvancedPlotting(PlotFunctionality):
         print Cs.ra
         print Cs.dec
         print MeanAnon, MeanLon, SolarDist, RA, Dec
+
+
+    @staticmethod
+    def gaussianfit(wavelength,flux):
+
+        n = len(wavelength)                             # amount of data
+        mean = sum(wavelength*flux)/n                   # find the average
+        sigma = sum(flux*(wavelength-mean)**2)/n        # find the sigma
+
+        def gaus(wavelength,a,wavelength0,sigma):
+            return a*exp(-(wavelength-wavelength0)**2/(2*sigma**2))
+
+        gaussy,gaussx = curve_fit(gaus,wavelength,flux,p0=[1,mean,sigma])
+
+        maximum = max(gaussy)
+
+        return {'gaussy': gaussy,'gaussx': gaussx,'maximum': maximum}
+
+    ## TOUCH THE COW
+    ## DO IT NOW
+    @staticmethod
+    def wavelengthselection(wavelength,a,b):
+        # get a,b from gui
+        i = 0
+        selection = []
+        while wavelength[i]<b:
+            if wavelength[i] >= a or wavelength[i] <= b:
+                selection.append(wavelength[i])
+
+        return selection
