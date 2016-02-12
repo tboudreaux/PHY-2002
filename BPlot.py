@@ -622,7 +622,6 @@ class Plotter():
                 compare[0] = not compare[0]
                 Plotter.corplot(degree, templatename, objectname, order, num, larger, smaller, compare[0])
             elif keydown == 'r' or keydown == 'R':
-
                 for i in range(62-order):
                     plt.close()
                     Plotter.corplot(degree, templatename, objectname, order+i, num, larger, smaller, compare[0])
