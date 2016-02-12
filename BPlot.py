@@ -16,6 +16,7 @@ from consolcontrol import *
 from JumpToOrder import Ui_JumpToOrder
 from Editor import Ui_MainWindow
 import time
+import random
 
 # Checks os for compatability
 PreChecks.oscheck()
@@ -606,8 +607,8 @@ class Plotter():
 
         ccorfig.set_xlabel('Offset')
         ccorfig.set_ylabel('Correlation Coefficient')
-        ccorfig.set_title('Cross Correlation')
-
+        ccorfig.set_title('Cross Correlation, order number: ' + str(order))
+        location = order
         # This allows one to move between orders in C
         def plotcontrol(event):
             keydown = event.key
@@ -620,6 +621,12 @@ class Plotter():
                 plt.close()
                 compare[0] = not compare[0]
                 Plotter.corplot(degree, templatename, objectname, order, num, larger, smaller, compare[0])
+            elif keydown == 'r' or keydown == 'R':
+
+                for i in range(62-order):
+                    plt.close()
+                    Plotter.corplot(degree, templatename, objectname, order+i, num, larger, smaller, compare[0])
+                    plt.pause(0.25)
         # connects to the key press event function
         fig.canvas.mpl_connect('key_press_event', plotcontrol)
         plt.show()

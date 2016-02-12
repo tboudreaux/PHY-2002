@@ -6,6 +6,8 @@ import astropy.coordinates as coord
 from astropy import units as u
 from astropy import constants as const
 import jdcal
+from scipy.optimize import curve_fit
+from scipy import asarray as arr, exp
 import matplotlib.pyplot as plt
 import time
 run = [False]
@@ -224,11 +226,11 @@ class AdvancedPlotting(PlotFunctionality):
             shiftflux = shiftflux[i:-(102-i)]
             shiftwave = shiftwave[i:-(102-i)]
 
-           # plt.plot(newtargetwave, targetflux)
-           #  plt.plot(shiftwave, shiftflux)
-           #  plt.show()
-           #  plt.pause(0.25)
-           #  plt.close()
+            # plt.plot(newtargetwave, targetflux)
+            # plt.plot(shiftwave, shiftflux)
+            # plt.show()
+            # plt.pause(0.25)
+            # plt.close()
             #correlates the two arrays of fluxes and appends that to an array
             correlation.append(np.correlate(targetflux, shiftflux))
             # appends whatever the offset relative to 0 is (reconnizing that the offset is half on oneseid and half on another)
@@ -249,8 +251,8 @@ class AdvancedPlotting(PlotFunctionality):
         data1 = PlotFunctionality.wfextract(path1, order)
         data2 = PlotFunctionality.wfextract(path2, order)
         # Normalizes the data from the two functions
-        flux1.append(PlotFunctionality.fitfunction(degree, data1['wavelength'], data1['flux'], order)['y_new'])
-        flux2.append(PlotFunctionality.fitfunction(degree, data2['wavelength'], data2['flux'], order)['y_new'])
+        flux1.append(PlotFunctionality.fitfunction(degree, data1['wavelength'], data1['flux'], 0)['y_new'])
+        flux2.append(PlotFunctionality.fitfunction(degree, data2['wavelength'], data2['flux'], 0)['y_new'])
         # creats the wubplot, and places it, using the system that I FINALY figured out, just so I wont forget, or so that
         # when I forget I will be able to reference this and relearn quicickly, the position (x, y, z) basically is what
         # fraction of the screen you will take up so (1, 1, 1) is all of the x all of the z and all of the y (2, 1, 1,)
