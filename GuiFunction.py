@@ -210,31 +210,41 @@ class AdvancedPlotting(PlotFunctionality):
         # we only want the first element of that
         targetflux = targetflux[0]
         # trims down the target flux array to the fixed window size, at some point this will be user controllable
-        targetflux = targetflux[51:-51]
-        newtargetwave = newtargetwave[51:-51]
+        targetflux = targetflux[100:-100]
+        newtargetwave = newtargetwave[100:-100]
         # Here we obtain the right honorable template flux of the land and do do unto it the normalization which has
         # been decreade should be done unto it and it was done unto it, and I dont know why I type these things sometimes
         templateflux.append(PlotFunctionality.fitfunction(degree, newtemplatewave, newtemplateflux, 0)['y_new'])
         # same thing as above, wanting only the first element and whatnot
         templateflux = templateflux[0]
         # This does the actual shifting
-        for i in range(102):
+        for i in range(200):
             # creates a new array equal to the total template flux array
             shiftflux = templateflux
             shiftwave = newtemplatewave
             #crops the array so that only the part that lies under the part of the template being inveseigated matters
-            shiftflux = shiftflux[i:-(102-i)]
-            shiftwave = shiftwave[i:-(102-i)]
+            shiftflux = shiftflux[i:-(200-i)]
+            shiftwave = shiftwave[i:-(100-i)]
 
             # plt.plot(newtargetwave, targetflux)
             # plt.plot(shiftwave, shiftflux)
             # plt.show()
             # plt.pause(0.25)
             # plt.close()
-            #correlates the two arrays of fluxes and appends that to an array
-            correlation.append(np.correlate(targetflux, shiftflux))
+            # correlates the two arrays of fluxes and appends that to an array
+            targetflux[:] = [x - 1 for x in targetflux]
+            shiftflux[:] = [x + 1 for x in shiftflux]
+            # correlation.append(np.correlate(targetflux, shiftflux))
+            z = targetflux + shiftflux
+            savez = z
+            z = sum(z)**2
+            z /= (len(shiftflux)-1)
+            z = math.sqrt(z)
+            bottom = math.sqrt((np.std(targetflux)**2)+(np.std(shiftflux)**2))
+            z /= bottom
+            correlation.append(z)
             # appends whatever the offset relative to 0 is (reconnizing that the offset is half on oneseid and half on another)
-            offset.append(51-i)
+            offset.append(100-i)
         return{'correlation':correlation, 'offset':offset}
 
     # This method deals with showing the wavelengths in the cross correlation chart, basically it allows one to see
@@ -253,6 +263,8 @@ class AdvancedPlotting(PlotFunctionality):
         # Normalizes the data from the two functions
         flux1.append(PlotFunctionality.fitfunction(degree, data1['wavelength'], data1['flux'], 0)['y_new'])
         flux2.append(PlotFunctionality.fitfunction(degree, data2['wavelength'], data2['flux'], 0)['y_new'])
+        flux1[:] = [x - 1 for x in flux1]
+        flux2[:] = [x -1 for x in flux2]
         # creats the wubplot, and places it, using the system that I FINALY figured out, just so I wont forget, or so that
         # when I forget I will be able to reference this and relearn quicickly, the position (x, y, z) basically is what
         # fraction of the screen you will take up so (1, 1, 1) is all of the x all of the z and all of the y (2, 1, 1,)
