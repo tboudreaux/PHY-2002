@@ -138,7 +138,7 @@ class AdvancedPlotting(PlotFunctionality):
 
     # correlation math / logic
     @staticmethod
-    def ccor(targetpath, templatepath, degree, order, numberignore, largerwave, smallerwave):
+    def ccor(targetpath, templatepath, degree, order, numberignore, largerwave, smallerwave, value):
         # local namespace arrays and variables used throuout, I don't have a problem useing these here because they are
         # local
         targetflux = []
@@ -210,21 +210,21 @@ class AdvancedPlotting(PlotFunctionality):
         # we only want the first element of that
         targetflux = targetflux[0]
         # trims down the target flux array to the fixed window size, at some point this will be user controllable
-        targetflux = targetflux[100:-100]
-        newtargetwave = newtargetwave[100:-100]
+        targetflux = targetflux[(value/2):-(value/2)]
+        newtargetwave = newtargetwave[(value/2):-(value/2)]
         # Here we obtain the right honorable template flux of the land and do do unto it the normalization which has
         # been decreade should be done unto it and it was done unto it, and I dont know why I type these things sometimes
         templateflux.append(PlotFunctionality.fitfunction(degree, newtemplatewave, newtemplateflux, 0)['y_new'])
         # same thing as above, wanting only the first element and whatnot
         templateflux = templateflux[0]
         # This does the actual shifting
-        for i in range(200):
+        for i in range(value):
             # creates a new array equal to the total template flux array
             shiftflux = templateflux
             shiftwave = newtemplatewave
             #crops the array so that only the part that lies under the part of the template being inveseigated matters
-            shiftflux = shiftflux[i:-(200-i)]
-            shiftwave = shiftwave[i:-(100-i)]
+            shiftflux = shiftflux[i:-(value-i)]
+            shiftwave = shiftwave[i:-(value-i)]
 
             # plt.plot(newtargetwave, targetflux)
             # plt.plot(shiftwave, shiftflux)
@@ -244,7 +244,7 @@ class AdvancedPlotting(PlotFunctionality):
             z /= bottom
             correlation.append(z)
             # appends whatever the offset relative to 0 is (reconnizing that the offset is half on oneseid and half on another)
-            offset.append(100-i)
+            offset.append((value/2)-i)
         return{'correlation':correlation, 'offset':offset}
 
     # This method deals with showing the wavelengths in the cross correlation chart, basically it allows one to see

@@ -38,6 +38,24 @@ plotparm = [None] * 10
 funcconf = [['1','Null', 'Function1'], ['2', 'Null', 'Function2'], ['3', 'Null', 'Function3'], ['4', 'Null', 'Function4']]
 jumpcore = [False]
 compare = [False]
+simplefilearray = []
+foundit = False
+whilecounter = 0
+masterfilearray = []
+flist = os.listdir('.')
+
+for name in flist:
+    if 'PathTo' in name:
+        foundit = True
+        simplefilearray.append(name)
+
+if len(simplefilearray) is not 0:
+    for name in simplefilearray:
+        tempopen = open(name, 'rb')
+        tempopen = tempopen.readlines()
+        tempopen = [x[:-1] for x in tempopen]
+        tempopen.insert(0, name)
+        masterfilearray.append(tempopen)
 
 # The main GUI Class that controlles the rest og the program
 class MyForm(QtGui.QMainWindow):
@@ -48,7 +66,7 @@ class MyForm(QtGui.QMainWindow):
         self.ui = Ui_Header()
         self.ui.setupUi(self)
         self.com = Plotter()
-
+        pathbool = False
         # These next few lines control the Custom User Function Persistence Features
         lastrun = readfile.readlines()
         for o in range(4):
@@ -82,10 +100,22 @@ class MyForm(QtGui.QMainWindow):
             self.ui.userFuntion4.setText(lastrun[3][2])
             funcconf[3] = lastrun[3]
 
+        if len(masterfilearray) is not 0:
+            pathbool = True
+            for k in range(len(masterfilearray)):
+                starname = masterfilearray[k][0][6:]
+                self.ui.listWidget.addItem('Star name: ' + starname)
+                self.ui.listWidget.addItem('File name: PathTo' + starname)
+                for p in range(len(masterfilearray[k])):
+                    if p is not 0:
+                        self.ui.listWidget.addItem(masterfilearray[k][p])
         # These control most of the button assignments in the main GUI
         self.ui.consol.append('<font color = "green"> SAUL Version 0.5<br>Written by Paddy Clancy and Thomas Boudreaux  - 2016</font><br>')
         self.ui.consol.append('<font color = "blue"> Module and OS Checks OK</font><br>')
         self.ui.consol.append('<font color = "blue"> type "lcom" for a list of avalibel commands</font><br>')
+        if pathbool is True:
+            self.ui.consol.append('<font color = "green"> Path Files Successfully located in working directory</font><br>')
+            self.ui.generatePathFiles.setStyleSheet("background-color: green; color: white")
         self.ui.function1.setStyleSheet("background-color: red; color: black")
         # These are the GUI functional ties for the main window
         self.ui.generatePathFiles.clicked.connect(self.generatepath)
@@ -299,7 +329,7 @@ class MyForm(QtGui.QMainWindow):
     def generatepath(self):
         count = 0
         namearray = []
-
+        self.ui.listWidget.clear()
         # Generates a list with unique names for all objects
         for root, dirs, files in os.walk('.', topdown=True):
             for file in files:
@@ -433,8 +463,8 @@ class Editor(QtGui.QMainWindow):
         self.ui.Save.clicked.connect(self.save)
 
     def save(self):
-        with open(self.ui.FileName.text(), 'wt') as file:
-            file.write(self.ui.textEdit.toPlainText())
+        with open(self.ui.FileName.text(), 'wt') as writefile:
+            writefile.write(self.ui.textEdit.toPlainText())
 
 
 # this is the cross correlation GUI
@@ -443,7 +473,14 @@ class CCWindow(QtGui.QMainWindow):
         QtGui.QWidget.__init__(self, parent)
         self.ui = Ui_CrossCore()
         self.ui.setupUi(self)
-
+        if len(masterfilearray) is not 0:
+            for k in range(len(masterfilearray)):
+                starname = masterfilearray[k][0][6:]
+                self.ui.FileBox.addItem('Star name: ' + starname)
+                for p in range(len(masterfilearray[k])):
+                    if p is not 0:
+                        self.ui.FileBox.addItem(masterfilearray[k][p])
+            self.ui.infobox.append('<font color = "green">Files Succesfully loaded</font>')
         self.smallerwaves = []
         self.largerwaves = []
         self.ranges = []
@@ -564,9 +601,9 @@ class CCWindow(QtGui.QMainWindow):
             degree = self.ui.fitdegree.value()
             templatename = self.ui.tempfilename.toPlainText()
             objectname = self.ui.targetfilename.toPlainText()
-
+            value = self.ui.ShiftSize.value()
             try:
-                Plotter.corplot(degree, templatename, objectname, 1, self.length, self.smallerwaves, self.largerwaves, compare[0])
+                Plotter.corplot(degree, templatename, objectname, 1, self.length, self.smallerwaves, self.largerwaves, compare[0], value)
                 self.ui.infobox.append('<font color ="green">Cross Correlating Orders, use "a" to advance</font><br>')
                 self.jumpTo()
             except ValueError:
@@ -588,14 +625,14 @@ class Plotter():
     # as my younger naive self called it, rather it has been a slow logical change in the code base
     # whatever, maybe one day.
     @staticmethod
-    def corplot(degree, templatename, objectname, order, num, larger, smaller, show):
+    def corplot(degree, templatename, objectname, order, num, larger, smaller, show, value):
         # Creates a matplotlib figure of given size (will at some point be configuarble in the forcoming settings menu)
         # fig=plt.figure(figsize=(10, 7))
         # Adds the ccorfig subplot
         # ccorfig = fig.add_subplot(1, 1, 1)
         # fetches the data from the ccor function in Advanced Plotting by calling the function, data is returnted as a
         #   2 element dictionary, so then when its plotted below there its is called with the dictionaty nameing
-        data = AdvancedPlotting.ccor(objectname, templatename, degree, order, num, larger, smaller)
+        data = AdvancedPlotting.ccor(objectname, templatename, degree, order, num, larger, smaller, value)
         fig = plt.figure(figsize=(10, 10))
         if show is False:
             ccorfig = fig.add_subplot(1, 1, 1)
@@ -616,15 +653,15 @@ class Plotter():
             # eventually this whole function if gonna be reorganized to allow for multiple figures to be displayed over
             if keydown == 'a' or keydown == 'A' and order < 62:
                 plt.close()
-                Plotter.corplot(degree, templatename, objectname, order + 1, num, larger, smaller, compare[0])
+                Plotter.corplot(degree, templatename, objectname, order + 1, num, larger, smaller, compare[0], value)
             elif keydown == 'c' or keydown == 'C':
                 plt.close()
                 compare[0] = not compare[0]
-                Plotter.corplot(degree, templatename, objectname, order, num, larger, smaller, compare[0])
+                Plotter.corplot(degree, templatename, objectname, order, num, larger, smaller, compare[0], value)
             elif keydown == 'r' or keydown == 'R':
                 for i in range(62-order):
                     plt.close()
-                    Plotter.corplot(degree, templatename, objectname, order+i, num, larger, smaller, compare[0])
+                    Plotter.corplot(degree, templatename, objectname, order+i, num, larger, smaller, compare[0], value)
                     plt.pause(0.25)
         # connects to the key press event function
         fig.canvas.mpl_connect('key_press_event', plotcontrol)
