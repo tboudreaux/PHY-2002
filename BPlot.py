@@ -56,7 +56,7 @@ if len(simplefilearray) is not 0:
         tempopen = [x[:-1] for x in tempopen]
         tempopen.insert(0, name)
         masterfilearray.append(tempopen)
-
+print masterfilearray
 # The main GUI Class that controlles the rest og the program
 class MyForm(QtGui.QMainWindow):
     #I nitilazation of the GUI
@@ -330,6 +330,10 @@ class MyForm(QtGui.QMainWindow):
         count = 0
         namearray = []
         self.ui.listWidget.clear()
+        masterfilearray = None
+        masterfilearray = []
+        smallarray = []
+        largearray = []
         # Generates a list with unique names for all objects
         for root, dirs, files in os.walk('.', topdown=True):
             for file in files:
@@ -347,6 +351,7 @@ class MyForm(QtGui.QMainWindow):
             self.ui.listWidget.addItem('Star name: ' + starname)
             self.ui.listWidget.addItem('File name: PathTo' + starname)
             nameforfile = 'PathTo' + starname
+            smallarray.append(nameforfile)
             printlist = open(nameforfile, 'w')
             for root, dirs, files in os.walk('.', topdown=True):
                 for file in files:
@@ -358,9 +363,12 @@ class MyForm(QtGui.QMainWindow):
                         if starname in objname1:
                             print >>printlist, name
                             self.ui.listWidget.addItem(name)
+                            smallarray.append(name)
                             count += 1
                             progress = (count/len(namearray))*100
                             self.ui.PathFileProgress.setValue(progress)
+                            masterfilearray.append(smallarray)
+        print masterfilearray
 
         if len(namearray) > 0:
             self.ui.consol.append('<font color = "green"> Path Files Successfully generated</font><br>')
@@ -473,6 +481,7 @@ class CCWindow(QtGui.QMainWindow):
         QtGui.QWidget.__init__(self, parent)
         self.ui = Ui_CrossCore()
         self.ui.setupUi(self)
+        print masterfilearray
         if len(masterfilearray) is not 0:
             for k in range(len(masterfilearray)):
                 starname = masterfilearray[k][0][6:]
@@ -481,6 +490,8 @@ class CCWindow(QtGui.QMainWindow):
                     if p is not 0:
                         self.ui.FileBox.addItem(masterfilearray[k][p])
             self.ui.infobox.append('<font color = "green">Files Succesfully loaded</font>')
+        else:
+            self.ui.infobox.append('<font color = "red">No Files Found or loaded, did you generate path files?</font>')
         self.smallerwaves = []
         self.largerwaves = []
         self.ranges = []
