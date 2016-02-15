@@ -499,17 +499,17 @@ class CCWindow(QtGui.QMainWindow):
         self.largerwaves = []
         self.ranges = []
 
-        try:
+        try:            # looks at a text file to get numbers and stuff (food is not exempt from the stuff category)
             self.profiles = {'CHIRON':'chiron.pconf'}
-            profile1 =  open(self.profiles['CHIRON'], 'rb')
+            profile1 =  open(self.profiles['CHIRON'], 'rb')  # opens the file for python
             self.ui.SystemProfiles.addItem('CHIRON')
-            profile1 = profile1.readlines()
+            profile1 = profile1.readlines()  # converts each line into a single element in an array
             self.length = len(profile1)
             self.window2 = None
 
             for i in range(self.length):
-                profile1[i] = profile1[i].split('-')
-                profile1[i][1] = profile1[i][1][:-1]
+                profile1[i] = profile1[i].split('-')  # reads through a string and splits at the '-' and creates a multi dimensional array
+                profile1[i][1] = profile1[i][1][:-1]  # gets rid of the newline character
                 self.smallerwaves.append(profile1[i][0])
                 self.largerwaves.append(profile1[i][1])
                 self.smallerwaves[i] = float(self.smallerwaves[i])

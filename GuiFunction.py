@@ -7,7 +7,7 @@ from astropy import units as u
 from astropy import constants as const
 import jdcal
 from scipy.optimize import curve_fit
-from scipy import asarray as arr, exp
+from scipy import asarray as arr,exp
 import matplotlib.pyplot as plt
 import time
 from astropy.modeling import models,fitting
@@ -391,16 +391,27 @@ class AdvancedPlotting(PlotFunctionality):
 
     ## TOUCH THE COW
     ## DO IT NOW
-    @staticmethod
-    def wavelengthselection(wavelength,a,b):
-        # get a,b from gui
-        i = 0
-        selection = []
-        while wavelength[i]<b:
-            if wavelength[i] >= a or wavelength[i] <= b:
-                selection.append(wavelength[i])
 
-        return selection
+
+
+
+
+  #############################################################
+  ## Code to pull from text file. I'll figure this out later ##
+  #############################################################
+
+  #  @staticmethod
+  #     def waveselection():
+  #      try:
+  #          wave1 = open('lines.sec','r') # opens file to read line wavelengths
+  #          wave1 = wave1.readlines()
+  #          length = len(wave1)
+
+  #          for i in range(length):
+  #              wave1[i] = wave1[i].split('-') # splits the strings
+  #              wave1[i][1] = wave1[i][1][:-1] # gets rid of the newline character
+  #              wave1[i] = float(wave1[i])
+  #      return wave1
 
     @staticmethod
     def gaussianfit(x,y,a,mean,stddev):
