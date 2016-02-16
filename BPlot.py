@@ -34,7 +34,7 @@ commands = []
 commandnum = [0, 1]
 UserFunctions = ['open', 'open', 'open', 'open']
 readfile = open('UserFunc.conf', 'rb')
-plotparm = [None] * 10
+plotparm = [None] * 11
 funcconf = [['1','Null', 'Function1'], ['2', 'Null', 'Function2'], ['3', 'Null', 'Function3'], ['4', 'Null', 'Function4']]
 jumpcore = [False]
 compare = [False]
@@ -456,7 +456,7 @@ class OrderJump(QtGui.QMainWindow):
                 Plotter.nstackplot(plotparm[3], order, plotparm[0], fit[0])
         else:
             plt.close()
-            Plotter.corplot(plotparm[4], plotparm[5], plotparm[6], order, plotparm[7], plotparm[8], plotparm[9], compare[0])
+            Plotter.corplot(plotparm[4], plotparm[5], plotparm[6], order, plotparm[7], plotparm[8], plotparm[9], compare[0], plotparm[10])
 
 
     def closser(self):
@@ -622,7 +622,7 @@ class CCWindow(QtGui.QMainWindow):
             except IOError:
                 self.ui.infobox.append('<font color ="red">Please Make sure that file names are spelled correctly</font>')
             plotparm[4] = degree; plotparm[5] = templatename; plotparm[6] = objectname; plotparm[7] = self.length
-            plotparm[8] = self.smallerwaves; plotparm[9] = self.largerwaves
+            plotparm[8] = self.smallerwaves; plotparm[9] = self.largerwaves; plotparm[10] = value
             jumpcore[0] = True
 
 
@@ -771,6 +771,8 @@ class Plotter():
                 plt.close()
                 Plotter.nstackplot(name, start+1, degree, shouldfit)
         fig.canvas.mpl_connect('key_press_event', plotcontrol)
+
+
 
 
 # Bascically the most important section of code in the whole code because it makes everything start, its also the

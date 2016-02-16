@@ -206,17 +206,27 @@ class AdvancedPlotting(PlotFunctionality):
 
         # Gets the target flux and normalizes it by calling the functional fitting function
         targetflux.append(PlotFunctionality.fitfunction(degree, newtargetwave, newtargetflux, 0)['y_new'])
+        savetarget = targetflux[0]
         # the targetflux array (and acrually all arrays returned from fitfunction) are multidimensional, in this case
         # we only want the first element of that
         targetflux = targetflux[0]
+        targetflux[:] = [x - 1 for x in targetflux]
         # trims down the target flux array to the fixed window size, at some point this will be user controllable
         targetflux = targetflux[(value/2):-(value/2)]
         newtargetwave = newtargetwave[(value/2):-(value/2)]
+
+        # plt.plot(targetflux)
+        # plt.draw()
+        # time.sleep(10)
+        # plt.close()
         # Here we obtain the right honorable template flux of the land and do do unto it the normalization which has
         # been decreade should be done unto it and it was done unto it, and I dont know why I type these things sometimes
         templateflux.append(PlotFunctionality.fitfunction(degree, newtemplatewave, newtemplateflux, 0)['y_new'])
+
         # same thing as above, wanting only the first element and whatnot
         templateflux = templateflux[0]
+        templateflux[:] = [x - 1 for x in templateflux]
+
         # This does the actual shifting
         for i in range(value):
             # creates a new array equal to the total template flux array
@@ -226,23 +236,26 @@ class AdvancedPlotting(PlotFunctionality):
             shiftflux = shiftflux[i:-(value-i)]
             shiftwave = shiftwave[i:-(value-i)]
 
-            # plt.plot(newtargetwave, targetflux)
-            # plt.plot(shiftwave, shiftflux)
-            # plt.show()
-            # plt.pause(0.25)
-            # plt.close()
+
             # correlates the two arrays of fluxes and appends that to an array
-            targetflux[:] = [x - 1 for x in targetflux]
-            shiftflux[:] = [x + 1 for x in shiftflux]
+
             # correlation.append(np.correlate(targetflux, shiftflux))
-            z = targetflux + shiftflux
+            z = targetflux - shiftflux
             savez = z
-            z = sum(z)**2
+            z = [x**2 for x in z]
+            z = sum(z)
             z /= (len(shiftflux)-1)
             z = math.sqrt(z)
             bottom = math.sqrt((np.std(targetflux)**2)+(np.std(shiftflux)**2))
             z /= bottom
             correlation.append(z)
+
+            plt.plot(targetflux, label=str(z))
+            plt.plot(shiftflux)
+            plt.legend()
+            plt.show()
+            plt.pause(0.1)
+            plt.close()
             # appends whatever the offset relative to 0 is (reconnizing that the offset is half on oneseid and half on another)
             offset.append((value/2)-i)
         return{'correlation':correlation, 'offset':offset}
