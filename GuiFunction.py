@@ -5,9 +5,10 @@ import math
 import astropy.coordinates as coord
 from astropy import units as u
 from astropy import constants as const
+from astropy.modeling import models, fitting
 import jdcal
 from scipy.optimize import curve_fit
-from scipy import asarray as arr,exp
+from scipy import asarray as ar,exp
 import matplotlib.pyplot as plt
 import time
 from astropy.modeling import models,fitting
@@ -373,54 +374,95 @@ class AdvancedPlotting(PlotFunctionality):
         print Cs.dec
         print MeanAnon, MeanLon, SolarDist, RA, Dec
 
+    @staticmethod
+    def gaussianfit(filename, hydrogenalpha,hydrogenbeta,heliumalpha):
+        allwave = []
+        allflux = []
+        xvalue = []
+        yvalue = []
+        maxvalue = []
+        for run in range(62):
+            data = PlotFunctionality.wfextract(filename,run)
+            for ted in range(len(data['wavelength'])):
+                allwave.append(data['wavelength'][ted])
+                allflux.append(data['flux'][ted])
+        selection = AdvancedPlotting.waveselection(hydrogenalpha,hydrogenbeta,heliumalpha)
+        # newwave = data['wavelength']
+        # newflux = data['flux']
+        wavenew = []
+        fluxnew = []
+        print len(selection)
+        for i in range(len(selection)):
+            lower = min(range(len(allwave)), key = lambda k: abs(allwave[k]-selection[i][0]))
+            upper = min(range(len(allwave)), key = lambda k: abs(allwave[k]-selection[i][1]))
+            print "upper:", upper, "lower:",lower
 
-    def gaussianfit(self,filename):
+            for j in range(len(allwave)):
+                if lower<j<upper:
+                    #print "count",j
+                    wavenew.append(float(allwave[j]))
+                    fluxnew.append(float(allflux[j]))
 
-        data = PlotFunctionality.wfextract(filename,0)
-        [Li,Ui] = self.waveselection(data['wavelength'])
-        newwave = data['wavelength'][Li:Ui]
-        newflux = data['flux'][Li:Ui]
-        n = len(newwave)                             # amount of data
-        mean = sum(newwave*newflux)/n                   # find the average
-        sigma = sum(newflux*(newwave-mean)**2)/n        # find the sigma
+            x = ar(wavenew)
+            y = ar(fluxnew)
+            n = len(x)
+            print n # amount of data
+            mean = sum(x * y)/n                   # find the average
+            sigma = sum(y*(x-mean)**2)/n        # find the sigma
+            def gaus(x,a,x0,sigma):
+                return a*exp(-(x-x0)**2/(2*sigma**2))
 
-        def gaus(newwave,a,wavelength0,sigma):
-            return a*exp(-(newwave-wavelength0)**2/(2*sigma**2))
+            gaussy,gaussx = curve_fit(gaus,x,y,p0=[1,mean,sigma])
 
-        gaussy,gaussx = curve_fit(gaus,newwave,newflux,p0=[1,mean,sigma])
+            # g_init = models.Gaussian1D(amplitude = max(fluxnew), mean = meancalc, stddev = sigma)
+            # fit_g = fitting.LevMarLSQFitter()
+            # g = fit_g(g_init, wavenew, fluxnew)
 
-        maximum = max(gaussy)
+            plt.plot(x, gaus(x, *gaussy))
+            plt.show()
+            plt.pause(5)
 
-        return {'gaussy': gaussy,'gaussx': gaussx,'maximum': maximum}
+            #maximum = max(g)
+            wavenew = None
+            fluxnew = None
+            wavenew = []
+            fluxnew = []
+            xvalue.append(gaussx)
+            yvalue.append(gaussy)
+            maxvalue.append(maximum)
 
+        return {'gaussx': xvalue,'gaussy': yvalue,'maximum': maxvalue}
     ## TOUCH THE COW
     ## DO IT NOW
+##################################
+## Code to pull from text file. ##
+##################################
 
     @staticmethod
-    def waveselection(wavelength,flux):
-        lower = 4853
-        upper = 4866
-        [LI,UI] = np.where(4853<wavelength<4866)
-        return {'lower':LI,'upper':UI}
+    def waveselection(hydrogena,hydrogenb,heliuma):
+       wave1 = open('lines.sec','rb') # opens file to read line wavelengths
+       wave1 = wave1.readlines()
+       length = len(wave1)
 
-
-
-  #############################################################
-  ## Code to pull from text file. I'll figure this out later ##
-  #############################################################
-
-  #  @staticmethod
-  #     def waveselection():
-  #      try:
-  #          wave1 = open('lines.sec','r') # opens file to read line wavelengths
-  #          wave1 = wave1.readlines()
-  #          length = len(wave1)
-
-  #          for i in range(length):
-  #              wave1[i] = wave1[i].split('-') # splits the strings
-  #              wave1[i][1] = wave1[i][1][:-1] # gets rid of the newline character
-  #              wave1[i] = float(wave1[i])
-  #      return wave1
+       for i in range(length):
+           wave1[i] = wave1[i].split('-') # splits the strings
+           wave1[i][1] = wave1[i][1][:-1] # gets rid of the newline character
+           print wave1[i]
+           wave1[i] = [float(x) for x in wave1[i]]
+       wave2=[]
+       if hydrogena is False:
+           pass
+       elif hydrogena is True:
+           wave2.append(wave1[0])
+       if hydrogenb is False:
+           pass
+       elif hydrogenb is True:
+           wave2.append(wave1[1])
+       if heliuma is False:
+           pass
+       elif heliuma is True:
+           wave2.append(wave1[2])
+       return wave2
 
     @staticmethod
     def gaussianfit(x,y,a,mean,stddev):

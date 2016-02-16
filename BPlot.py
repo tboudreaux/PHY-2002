@@ -150,9 +150,6 @@ class MyForm(QtGui.QMainWindow):
         self.window4 = GaussianWindow(self)
         self.window4.show()
 
-
-
-
     # Easter Egg
     def secret(self):
         r = random.randrange(1, 5)
@@ -454,6 +451,26 @@ class GaussianWindow(QtGui.QMainWindow):
         QtGui.QWidget.__init__(self, parent)
         self.ui = Ui_GaussianFitter()
         self.ui.setupUi(self)
+        self.ui.quit.clicked.connect(self.closer) # for the quit button
+        self.ui.HydrogenA.stateChanged.connect(lambda : halphause.__setitem__(0, not halphause[0]))
+        self.ui.HydrogenB.stateChanged.connect(lambda : hbetause.__setitem__(0, not hbetause[0]))
+        self.ui.HeliumA.stateChanged.connect(lambda : heliumause.__setitem__(0, not heliumause[0]))
+        self.ui.pushButton.clicked.connect(self.plot)
+        if len(masterfilearray) is not 0:
+            for k in range(len(masterfilearray)):
+                starname = masterfilearray[k][0][6:]
+                self.ui.listWidget.addItem('Star name: ' + starname)
+                for p in range(len(masterfilearray[k])):
+                    if p is not 0:
+                        self.ui.listWidget.addItem(masterfilearray[k][p])
+            self.ui.infobox.append('<font color = "green">Files Succesfully loaded</font>')
+        else:
+            self.ui.infobox.append('<font color = "red">No Files Found or loaded, did you generate path files?</font>')
+    def closer(self):
+        self.close()
+    def plot(self):
+        filename = self.ui.lineEdit.text()
+        Gauss = AdvancedPlotting.gaussianfit(filename,halphause[0],hbetause[0],heliumause[0])
 
 
 
