@@ -39,6 +39,7 @@ funcconf = [['1','Null', 'Function1'], ['2', 'Null', 'Function2'], ['3', 'Null',
 jumpcore = [False]
 compare = [False]
 
+
 # The main GUI Class that controlles the rest og the program
 class MyForm(QtGui.QMainWindow):
     #I nitilazation of the GUI
@@ -103,6 +104,7 @@ class MyForm(QtGui.QMainWindow):
         self.ui.info.clicked.connect(self.info)
         self.ui.Reset.clicked.connect(self.NI)
 
+
         # These initialize the other windows as empty objects in the Main GUI controller
         self.window2 = None
         self.window3 = None
@@ -111,6 +113,12 @@ class MyForm(QtGui.QMainWindow):
     ###########################
     ##  GUI tie in functions ##
     ###########################
+
+    def gaussian(self):
+        a1 = self.ui.singleFileInput.toPlainText()
+
+
+
 
     # Easter Egg
     def secret(self):
