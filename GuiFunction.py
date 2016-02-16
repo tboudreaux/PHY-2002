@@ -64,7 +64,7 @@ class PlotFunctionality(object):
     # deals with flux normalizing the data
     @staticmethod
     def fitfunction(degree, wavelength, flux, offset):
-        # two lists for latter use in the function
+        # two lists for later use in the function
         newwave = []
         newflux = []
 
@@ -373,17 +373,21 @@ class AdvancedPlotting(PlotFunctionality):
         print Cs.dec
         print MeanAnon, MeanLon, SolarDist, RA, Dec
 
-    @staticmethod
-    def gaussianfit(wavelength,flux):
 
-        n = len(wavelength)                             # amount of data
-        mean = sum(wavelength*flux)/n                   # find the average
-        sigma = sum(flux*(wavelength-mean)**2)/n        # find the sigma
+    def gaussianfit(self,filename):
 
-        def gaus(wavelength,a,wavelength0,sigma):
-            return a*exp(-(wavelength-wavelength0)**2/(2*sigma**2))
+        data = PlotFunctionality.wfextract(filename,0)
+        [Li,Ui] = self.waveselection(data['wavelength'])
+        newwave = data['wavelength'][Li:Ui]
+        newflux = data['flux'][Li:Ui]
+        n = len(newwave)                             # amount of data
+        mean = sum(newwave*newflux)/n                   # find the average
+        sigma = sum(newflux*(newwave-mean)**2)/n        # find the sigma
 
-        gaussy,gaussx = curve_fit(gaus,wavelength,flux,p0=[1,mean,sigma])
+        def gaus(newwave,a,wavelength0,sigma):
+            return a*exp(-(newwave-wavelength0)**2/(2*sigma**2))
+
+        gaussy,gaussx = curve_fit(gaus,newwave,newflux,p0=[1,mean,sigma])
 
         maximum = max(gaussy)
 
@@ -392,7 +396,12 @@ class AdvancedPlotting(PlotFunctionality):
     ## TOUCH THE COW
     ## DO IT NOW
 
-
+    @staticmethod
+    def waveselection(wavelength,flux):
+        lower = 4853
+        upper = 4866
+        [LI,UI] = np.where(4853<wavelength<4866)
+        return {'lower':LI,'upper':UI}
 
 
 
