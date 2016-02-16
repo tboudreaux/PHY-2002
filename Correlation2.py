@@ -59,6 +59,7 @@ class Ui_CrossCore(object):
         self.fitdegree = QtGui.QSpinBox(self.MainTab)
         self.fitdegree.setGeometry(QtCore.QRect(510, 240, 71, 31))
         self.fitdegree.setMinimum(1)
+        self.fitdegree.setProperty("value", 4)
         self.fitdegree.setObjectName(_fromUtf8("fitdegree"))
         self.label_6 = QtGui.QLabel(self.MainTab)
         self.label_6.setGeometry(QtCore.QRect(430, 230, 71, 51))

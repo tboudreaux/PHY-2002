@@ -45,7 +45,7 @@ foundit = False
 whilecounter = 0
 masterfilearray = []
 flist = os.listdir('.')
-
+halphause = [True]; hbetause = [True]; heliumause = [True]
 for name in flist:
     if 'PathTo' in name:
         foundit = True
@@ -58,7 +58,7 @@ if len(simplefilearray) is not 0:
         tempopen = [x[:-1] for x in tempopen]
         tempopen.insert(0, name)
         masterfilearray.append(tempopen)
-print masterfilearray
+
 # The main GUI Class that controlles the rest og the program
 class MyForm(QtGui.QMainWindow):
     #I nitilazation of the GUI
@@ -267,7 +267,6 @@ class MyForm(QtGui.QMainWindow):
                     UserFunctions[3] = script
                     self.ui.userFuntion4.clicked.connect(self.functiontie4)
                 datafile = open('UserFunc.conf', 'w')
-                print funcconf
                 for n in range(len(funcconf)):
                     printwords = funcconf[n][0] + ' ' + funcconf[n][1] + ' ' + funcconf[n][2]
                     #for k in range(3):
@@ -378,7 +377,7 @@ class MyForm(QtGui.QMainWindow):
                             progress = (count/len(namearray))*100
                             self.ui.PathFileProgress.setValue(progress)
                             masterfilearray.append(smallarray)
-        print masterfilearray
+
 
         if len(namearray) > 0:
             self.ui.consol.append('<font color = "green"> Path Files Successfully generated</font><br>')
@@ -472,8 +471,6 @@ class GaussianWindow(QtGui.QMainWindow):
         filename = self.ui.lineEdit.text()
         Gauss = AdvancedPlotting.gaussianfit(filename,halphause[0],hbetause[0],heliumause[0])
 
-
-
 # This is the order jump GUI, as before it currently is non functional, will fix at sometime
 class OrderJump(QtGui.QMainWindow):
     def __init__ (self, parent=None):
@@ -519,7 +516,6 @@ class CCWindow(QtGui.QMainWindow):
         QtGui.QWidget.__init__(self, parent)
         self.ui = Ui_CrossCore()
         self.ui.setupUi(self)
-        print masterfilearray
         if len(masterfilearray) is not 0:
             for k in range(len(masterfilearray)):
                 starname = masterfilearray[k][0][6:]
@@ -663,9 +659,7 @@ class CCWindow(QtGui.QMainWindow):
             plotparm[8] = self.smallerwaves; plotparm[9] = self.largerwaves; plotparm[10] = value
             jumpcore[0] = True
 
-
 # This is plotter code, at some point it may be nice to move this class (During the great reorginazation of code to come)
-
 class Plotter():
 
     # Corplot function that calls the ccofig function from GUI function to extract the required data
@@ -688,13 +682,20 @@ class Plotter():
         else:
             ccorfig = fig.add_subplot(2,1,1)
             AdvancedPlotting.waveshower(fig, templatename, objectname, order, degree)
-
-        ccorfig.plot(data['offset'], data['correlation'])
-
+        index = 0
+        maximum = data['fit'](data['offset'])[0]
+        for count in range(len(data['fit'](data['offset']))):
+            if data['fit'](data['offset'])[count] > maximum:
+                maximum = data['fit'](data['offset'])[count]
+                index = count
+        index = value/2 - index
+        velocity = index * data['dispersion']
+        ccorfig.plot(data['offset'], data['correlation'], label='Raw Data | Relative Velocity: ' + str(velocity))
+        ccorfig.plot(data['offset'], data['fit'](data['offset']), label='Gaussian Fit | x at max: ' + str(index))
         ccorfig.set_xlabel('Offset')
         ccorfig.set_ylabel('Correlation Coefficient')
         ccorfig.set_title('Cross Correlation, order number: ' + str(order))
-        location = order
+        plt.legend(loc = 'best')
         # This allows one to move between orders in C
         def plotcontrol(event):
             keydown = event.key

@@ -237,7 +237,7 @@ class AdvancedPlotting(PlotFunctionality):
 
             # correlates the two arrays of fluxes and appends that to an array
 
-            # correlation.append(np.correlate(targetflux, shiftflux))
+           # correlation.append(np.correlate(targetflux, shiftflux))
             z = templateflux - shiftflux
             savez = z
             z = [x**2 for x in z]
@@ -256,7 +256,15 @@ class AdvancedPlotting(PlotFunctionality):
             # plt.close()
             # appends whatever the offset relative to 0 is (reconnizing that the offset is half on oneseid and half on another)
             offset.append((value/2)-i)
-        return{'correlation':correlation, 'offset':offset}
+        savecor = correlation
+        correlation = [abs(x - max(savecor)) for x in savecor]
+        g_init = models.Gaussian1D(amplitude=max(correlation), mean=0, stddev=2.)
+        fit_g = fitting.LevMarLSQFitter()
+        g = fit_g(g_init, offset, correlation)
+        waverange = (max(newtargetwave)) - (min(newtargetwave))
+        pixrange = len(newtargetwave)
+        dispersion = waverange/pixrange
+        return{'correlation':correlation, 'offset':offset, 'fit':g, 'dispersion': dispersion}
 
     # This method deals with showing the wavelengths in the cross correlation chart, basically it allows one to see
     # what is being cross correlated, which is helpful for you know...SCIENCE
