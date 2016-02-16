@@ -39,7 +39,25 @@ plotparm = [None] * 10
 funcconf = [['1','Null', 'Function1'], ['2', 'Null', 'Function2'], ['3', 'Null', 'Function3'], ['4', 'Null', 'Function4']]
 jumpcore = [False]
 compare = [False]
+simplefilearray = []
+foundit = False
+whilecounter = 0
+masterfilearray = []
+flist = os.listdir('.')
+halphause = [True]; hbetause = [True]; heliumause = [True]
 
+for name in flist:
+    if 'PathTo' in name:
+        foundit = True
+        simplefilearray.append(name)
+
+if len(simplefilearray) is not 0:
+    for name in simplefilearray:
+        tempopen = open(name, 'rb')
+        tempopen = tempopen.readlines()
+        tempopen = [x[:-1] for x in tempopen]
+        tempopen.insert(0, name)
+        masterfilearray.append(tempopen)
 
 # The main GUI Class that controlles the rest og the program
 class MyForm(QtGui.QMainWindow):
@@ -119,9 +137,6 @@ class MyForm(QtGui.QMainWindow):
     def gaussian(self):
         self.window4 = GaussianWindow(self)
         self.window4.show()
-
-
-
 
     # Easter Egg
     def secret(self):
@@ -414,6 +429,26 @@ class GaussianWindow(QtGui.QMainWindow):
         QtGui.QWidget.__init__(self, parent)
         self.ui = Ui_GaussianFitter()
         self.ui.setupUi(self)
+        self.ui.quit.clicked.connect(self.closer) # for the quit button
+        self.ui.HydrogenA.stateChanged.connect(lambda : halphause.__setitem__(0, not halphause[0]))
+        self.ui.HydrogenB.stateChanged.connect(lambda : hbetause.__setitem__(0, not hbetause[0]))
+        self.ui.HeliumA.stateChanged.connect(lambda : heliumause.__setitem__(0, not heliumause[0]))
+        self.ui.pushButton.clicked.connect(self.plot)
+        if len(masterfilearray) is not 0:
+            for k in range(len(masterfilearray)):
+                starname = masterfilearray[k][0][6:]
+                self.ui.listWidget.addItem('Star name: ' + starname)
+                for p in range(len(masterfilearray[k])):
+                    if p is not 0:
+                        self.ui.listWidget.addItem(masterfilearray[k][p])
+            self.ui.infobox.append('<font color = "green">Files Succesfully loaded</font>')
+        else:
+            self.ui.infobox.append('<font color = "red">No Files Found or loaded, did you generate path files?</font>')
+    def closer(self):
+        self.close()
+    def plot(self):
+        filename = self.ui.lineEdit.text()
+        Gauss = AdvancedPlotting.gaussianfit(filename,halphause[0],hbetause[0],heliumause[0])
 
 
 
