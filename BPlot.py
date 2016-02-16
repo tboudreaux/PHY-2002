@@ -16,6 +16,7 @@ from Correlation2 import Ui_CrossCore
 from consolcontrol import *
 from JumpToOrder import Ui_JumpToOrder
 from Editor import Ui_MainWindow
+from GaussianFitter import Ui_GaussianFitter
 import time
 import random
 
@@ -130,7 +131,7 @@ class MyForm(QtGui.QMainWindow):
         self.ui.function1.clicked.connect(self.showfit)
         self.ui.function2.clicked.connect(self.correlate)
         self.ui.function3.clicked.connect(self.LS)
-        self.ui.function4.clicked.connect(self.NI)
+        self.ui.function4.clicked.connect(self.gaussian)
         self.ui.info.clicked.connect(self.info)
         self.ui.Reset.clicked.connect(self.NI)
 
@@ -139,13 +140,15 @@ class MyForm(QtGui.QMainWindow):
         self.window2 = None
         self.window3 = None
         self.window3 = None
+        self.window4 = None
 
     ###########################
     ##  GUI tie in functions ##
     ###########################
 
     def gaussian(self):
-        a1 = self.ui.singleFileInput.toPlainText()
+        self.window4 = GaussianWindow(self)
+        self.window4.show()
 
 
 
@@ -445,6 +448,14 @@ class MyForm(QtGui.QMainWindow):
         # order = self.ui.startOrd.value()
         self.window3 = OrderJump(self)
         self.window3.show()
+
+class GaussianWindow(QtGui.QMainWindow):
+    def __init__ (self, parent=None):
+        QtGui.QWidget.__init__(self, parent)
+        self.ui = Ui_GaussianFitter()
+        self.ui.setupUi(self)
+
+
 
 # This is the order jump GUI, as before it currently is non functional, will fix at sometime
 class OrderJump(QtGui.QMainWindow):
