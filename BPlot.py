@@ -19,6 +19,8 @@ from Editor import Ui_MainWindow
 from GaussianFitter import Ui_GaussianFitter
 import time
 import random
+from pylab import *
+from matplotlib.widgets import CheckButtons
 
 # Checks os for compatability
 PreChecks.oscheck()
@@ -46,6 +48,9 @@ whilecounter = 0
 masterfilearray = []
 flist = os.listdir('.')
 halphause = [True]; hbetause = [True]; heliumause = [True]
+FullCC = []
+FullO = []
+FullGaus = []
 for name in flist:
     if 'PathTo' in name:
         foundit = True
@@ -675,6 +680,7 @@ class Plotter():
         # ccorfig = fig.add_subplot(1, 1, 1)
         # fetches the data from the ccor function in Advanced Plotting by calling the function, data is returnted as a
         #   2 element dictionary, so then when its plotted below there its is called with the dictionaty nameing
+
         data = AdvancedPlotting.ccor(objectname, templatename, degree, order, num, larger, smaller, value)
         fig = plt.figure(figsize=(10, 10))
         if show is False:
@@ -691,6 +697,10 @@ class Plotter():
         index = value/2 - index
         velocity = index * data['dispersion']
         ccorfig.plot(data['offset'], data['correlation'], label='Raw Data | Relative Velocity: ' + str(velocity))
+        FullCC.append(data['correlation'])
+        FullO.append(data['offset'])
+        FullGaus.append(data['fit'](data['offset']))
+        number = 61
         ccorfig.plot(data['offset'], data['fit'](data['offset']), label='Gaussian Fit | x at max: ' + str(index))
         ccorfig.set_xlabel('Offset')
         ccorfig.set_ylabel('Correlation Coefficient')
@@ -712,11 +722,28 @@ class Plotter():
                 for i in range(62-order):
                     plt.close()
                     Plotter.corplot(degree, templatename, objectname, order+i, num, larger, smaller, compare[0], value)
-                    plt.pause(0.25)
+                plt.close()
+                Plotter.FullCor(FullCC, FullO, FullGaus, number)
+            elif keydown == 'm' or keydown == 'M':
+                Plotter.FullCor(FullCC, FullO, FullGaus, number)
         # connects to the key press event function
         fig.canvas.mpl_connect('key_press_event', plotcontrol)
         plt.show()
 
+    @staticmethod
+    def FullCor(CorelationCoef, Offsets, Gaussian, number):
+        a = np.floor(number**0.5).astype(int)
+        b = np.ceil(1.*number/a).astype(int)
+        fig = plt.figure(figsize=(2.*b,2.*a))
+        for i in range(1,number+1):
+            ax = fig.add_subplot(a,b,i)
+            checkloc = ax.axis([a, b, 0.1, 0.1])
+            check = CheckButtons(checkloc, ('use'), (True))
+            ax.plot(Offsets[i], CorelationCoef[i])
+            ax.plot(Offsets[i], Gaussian[i])
+            ax.set_title('Order:', i)
+        fig.set_tight_layout(True)
+        plt.show()
 
     # The plot controller for the plot that plots (enough plots for you yet?) stacked plots (there we go)
     @staticmethod
