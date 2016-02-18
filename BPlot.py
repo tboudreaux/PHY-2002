@@ -61,6 +61,7 @@ FullO = []
 FullGaus = []
 allplots = [False]
 checkPlots = [True]*62
+velocity = []
 for name in flist:
     if 'PathTo' in name:
         foundit = True
@@ -505,8 +506,9 @@ class OrderJump(QtGui.QMainWindow):
                 plt.close()
                 Plotter.nstackplot(plotparm[3], order, plotparm[0], fit[0])
         else:
-            plt.close()
-            Plotter.corplot(plotparm[4], plotparm[5], plotparm[6], order, plotparm[7], plotparm[8], plotparm[9], compare[0], plotparm[10], True)
+            pass
+            # plt.close()
+            # Plotter.corplot(plotparm[4], plotparm[5], plotparm[6], order, plotparm[7], plotparm[8], plotparm[9], compare[0], plotparm[10], True)
 
 
     def closser(self):
@@ -535,38 +537,62 @@ class MultiView(QtGui.QMainWindow):
         self.canvas = []
 
         widgets = dict()
-        checks = dict()
+
         ax = []
         widgets[1] = 'self.ui.widget'
-        for i in range(60):
+        for i in range(61):
             widgets[i+2] = 'self.ui.widget_' + str(i+2)
-        for q in range(61):
-            fig.append(Figure(figsize=(2.81,2.50), dpi=100))
-        for q in range(61):
+        for q in range(62):
+            fig.append(Figure(figsize=(2.81,2.50), dpi=100, facecolor='w'))
+        for q in range(62):
             self.canvas.append(FigureCanvas(fig[q]))
-        for q in range(61):
+        for q in range(62):
             self.canvas[q].setParent(eval(widgets[q+1]))
-        for q in range(61):
-            ax.append(fig[q].add_subplot(111))
-        for q in range(61):
+        for q in range(62):
+            ax.append(fig[q].add_subplot(111, xlabel='Offset(A)', ylabel='CC', title='order: '+ str(q+1)))
+        print len(FullO), len(FullCC), len(FullGaus)
+        for q in range(62):
             ax[q].plot(FullO[q], FullCC[q])
             ax[q].plot(FullO[q], FullGaus[q])
-        for q in range(62):
-            checks[q] = 'self.ui.Use_' + str(q+1)
-        for q in range(62):
-            eval(checks[q]).stateChanged.connect(self.flop(q))
+
 
         index = int(self.ui.Tabs.currentIndex())
         self.navi_toolbar = NavigationToolbar(self.canvas[9*index+self.number], self.ui.Toolbar)
         self.navi_toolbar.setParent(self.ui.Toolbar)
-        self.ui.Advance.clicked.connect(self.debug)
+        self.ui.Advance.clicked.connect(self.go)
+        self.window2 = None
 
     @staticmethod
     def flop(num):
         checkPlots[num] = not checkPlots[num]
 
-    def debug(self):
-        print checkPlots
+    def go(self):
+        checks = dict()
+        checkArray = []
+        useCheckArray = dict()
+        usevelocity = []
+        for q in range(62):
+            checks[q] = 'self.ui.Use_' + str(q+1)
+        for q in range(62):
+            checkArray.append(eval(checks[q]).isChecked())
+        for i in range(len(checkArray)):
+            if checkArray[i] is True:
+                useCheckArray[i] = checkArray[i]
+            else:
+                pass
+        for i in range(len(velocity)):
+            if checkArray[i] is True:
+                usevelocity.append(velocity[i])
+            else:
+                pass
+        meanVel = sum(usevelocity)/len(usevelocity)
+        Velstd = np.std(usevelocity)
+        usetext = 'Mean of Selected velocity: ' + str(meanVel) + '\nStandard Deviation in Selected Velocities: ' + str(Velstd)
+        self.window2 = Editor()
+        self.window2.ui.textEdit.append(usetext)
+        self.window2.ui.FileName.setText('CCorOutput.txt')
+        self.window2.show()
+
 
     def keyPressEvent(self, event):
         index = int(self.ui.Tabs.currentIndex())
@@ -662,7 +688,7 @@ class CCWindow(QtGui.QMainWindow):
         self.ui.useUser.stateChanged.connect(self.user)
         self.ui.multiplotshow.stateChanged.connect(lambda : allplots.__setitem__(0, not allplots[0]))
         self.window2 = None
-        self.window3 = None
+
 
     def user(self):
         self.useuser = not self.useuser
@@ -754,10 +780,10 @@ class CCWindow(QtGui.QMainWindow):
                 if allplots[0] is False:
                     Plotter.corplot(degree, templatename, objectname, 1, self.length, self.smallerwaves, self.largerwaves, compare[0], value, True)
                     self.ui.infobox.append('<font color ="green">Cross Correlating Orders, use "a" to advance</font><br>')
-                    self.jumpTo()
                 elif allplots[0] is True:
-                    Plotter.corplot(degree, templatename, objectname, 1, self.length, self.smallerwaves, self.largerwaves, compare[0], value, False)
                     self.ui.infobox.append('<font color = "green">Calculating Cross Correlation Coefficients for all orders</font>')
+                    self.ui.infobox.append('<font color = "green">This can take some time, please be paitient</font>')
+                    Plotter.corplot(degree, templatename, objectname, 1, self.length, self.smallerwaves, self.largerwaves, compare[0], value, False)
                 run = True
             except ValueError:
                 self.ui.infobox.append('<font color ="red">Please Make sure that file names are entered in the boxs</font>')
@@ -770,8 +796,13 @@ class CCWindow(QtGui.QMainWindow):
                 if allplots[0] is False:
                     pass
                 elif allplots[0] is True:
-                    self.window3 = MultiView()
-                    self.window3.show()
+                    try:
+                        self.window3 = MultiView()
+                        self.window3.show()
+                    except ValueError:
+                        self.ui.infobox.append('<font color ="red">Please Make sure that file names are entered in the boxs</font>')
+                    except IOError:
+                        self.ui.infobox.append('<font color ="red">Please Make sure that file names are spelled correctly</font>')
                 else:
                     self.ui.infobox.append('<font color = "red">An unknown error has occured, please make sure all inputs are correct</font>')
 
@@ -792,7 +823,8 @@ class Plotter():
         # ccorfig = fig.add_subplot(1, 1, 1)
         # fetches the data from the ccor function in Advanced Plotting by calling the function, data is returnted as a
         #   2 element dictionary, so then when its plotted below there its is called with the dictionaty nameing
-        if doPlot is True:
+        if doPlot is True and order < 62:
+            print 'here'
             finished = [False]
             data = AdvancedPlotting.ccor(objectname, templatename, degree, order, num, larger, smaller, value)
             fig = plt.figure(figsize=(10, 10))
@@ -808,8 +840,8 @@ class Plotter():
                     maximum = data['fit'](data['offset'])[count]
                     index = count
             index = value/2 - index
-            velocity = index * data['dispersion']
-            ccorfig.plot(data['offset'], data['correlation'], label='Raw Data | Relative Velocity: ' + str(velocity))
+            tempvelocity = index * data['dispersion']
+            ccorfig.plot(data['offset'], data['correlation'], label='Raw Data | Relative Velocity: ' + str(tempvelocity))
             ccorfig.plot(data['offset'], data['fit'](data['offset']), label='Gaussian Fit | x at max: ' + str(index))
             ccorfig.set_xlabel('Offset')
             ccorfig.set_ylabel('Correlation Coefficient')
@@ -820,28 +852,19 @@ class Plotter():
                 keydown = event.key
                 # A advances in the cross correlation, nothing is printed out as of yet, it just produced the plot
                 # eventually this whole function if gonna be reorganized to allow for multiple figures to be displayed over
-                if keydown == 'a' or keydown == 'A' and order < 62:
+                if keydown == 'a' or keydown == 'A':
                     plt.close()
                     Plotter.corplot(degree, templatename, objectname, order + 1, num, larger, smaller, compare[0], value, doPlot)
                 elif keydown == 'c' or keydown == 'C':
                     plt.close()
                     compare[0] = not compare[0]
                     Plotter.corplot(degree, templatename, objectname, order, num, larger, smaller, compare[0], value, doPlot)
-                elif keydown == 'r' or keydown == 'R':
-                    plt.close()
-                    useOrder = 0
-                    finished[0] = True
-                    for i in range(62):
-                        plt.close()
-                        Plotter.corplot(degree, templatename, objectname, useOrder+i, num, larger, smaller, compare[0], value, False)
-                        print 'Here'
-
             # connects to the key press event function
             fig.canvas.mpl_connect('key_press_event', plotcontrol)
             plt.show()
         else:
-            for i in range(61):
-                data = AdvancedPlotting.ccor(objectname, templatename, degree, order+i, num, larger, smaller, value)
+            for i in range(62):
+                data = AdvancedPlotting.ccor(objectname, templatename, degree, i, num, larger, smaller, value)
                 index = 0
                 maximum = data['fit'](data['offset'])[0]
                 for count in range(len(data['fit'](data['offset']))):
@@ -849,25 +872,16 @@ class Plotter():
                         maximum = data['fit'](data['offset'])[count]
                         index = count
                 index = value/2 - index
-                velocity = index * data['dispersion']
+                velocity.append(index * data['dispersion'])
                 FullCC.append(data['correlation'])
                 FullO.append(data['offset'])
                 FullGaus.append(data['fit'](data['offset']))
-
-    @staticmethod
-    def FullCor(CorelationCoef, Offsets, Gaussian, number):
-        a = np.floor(number**0.5).astype(int)
-        b = np.ceil(1.*number/a).astype(int)
-        fig = plt.figure(figsize=(2.*b,2.*a))
-        for i in range(1,number+1):
-            ax = fig.add_subplot(a,b,i)
-            checkloc = ax.axis([a, b, 0.1, 0.1])
-            check = CheckButtons(checkloc, ('use'), (True))
-            ax.plot(Offsets[i], CorelationCoef[i])
-            ax.plot(Offsets[i], Gaussian[i])
-            ax.set_title('Order:', i)
-        fig.set_tight_layout(True)
-        plt.show()
+            if allplots[0] is False:
+                CCWindow.window3 = MultiView()
+                CCWindow.window3.show()
+            else:
+                pass
+        print 'now here'
 
     # The plot controller for the plot that plots (enough plots for you yet?) stacked plots (there we go)
     @staticmethod
@@ -937,6 +951,9 @@ class Plotter():
             elif keydown == 'e' or keydown == 'E':
                 plt.close()
                 Plotter.stackplot(stackfile, allimages, num + 1, start, degree, shouldfit)
+            elif keydown == 'j' or keydown == 'J':
+                MyForm.window3 = OrderJump()
+                MyForm.window3.show()
 
         # Connects to the matplot lib keypress function
         fig.canvas.mpl_connect('key_press_event', plotcontrol)
@@ -960,6 +977,9 @@ class Plotter():
             elif keydown == 'd' or keydown == 'D':
                 plt.close()
                 Plotter.nstackplot(name, start+1, degree, shouldfit)
+            elif keydown == 'j' or keydown == 'J':
+                MyForm.window3 = OrderJump()
+                MyForm.window3.show()
         fig.canvas.mpl_connect('key_press_event', plotcontrol)
 
 

@@ -24,7 +24,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>6</number>
+     <number>0</number>
     </property>
     <widget class="QWidget" name="firstTab">
      <property name="enabled">
@@ -1621,46 +1621,6 @@
        <bool>true</bool>
       </property>
      </widget>
-     <zorder>widget_54</zorder>
-     <zorder>widget_48</zorder>
-     <zorder>Use_46</zorder>
-     <zorder>widget_53</zorder>
-     <zorder>widget_49</zorder>
-     <zorder>widget_47</zorder>
-     <zorder>Use_54</zorder>
-     <zorder>Use_51</zorder>
-     <zorder>Use_52</zorder>
-     <zorder>line_11</zorder>
-     <zorder>widget_52</zorder>
-     <zorder>Use_49</zorder>
-     <zorder>widget_46</zorder>
-     <zorder>widget_51</zorder>
-     <zorder>Use_50</zorder>
-     <zorder>line_12</zorder>
-     <zorder>Use_48</zorder>
-     <zorder>widget_50</zorder>
-     <zorder>Use_53</zorder>
-     <zorder>Use_47</zorder>
-     <zorder>line_13</zorder>
-     <zorder>Use_58</zorder>
-     <zorder>widget_59</zorder>
-     <zorder>widget_61</zorder>
-     <zorder>widget_59</zorder>
-     <zorder>Use_60</zorder>
-     <zorder>Use_61</zorder>
-     <zorder>Use_55</zorder>
-     <zorder>Use_56</zorder>
-     <zorder>widget_55</zorder>
-     <zorder>Use_57</zorder>
-     <zorder>widget_62</zorder>
-     <zorder>widget_56</zorder>
-     <zorder>Use_59</zorder>
-     <zorder>widget_58</zorder>
-     <zorder>widget_60</zorder>
-     <zorder>Use_62</zorder>
-     <zorder>line_14</zorder>
-     <zorder>widget_57</zorder>
-     <zorder>Use_61</zorder>
     </widget>
     <widget class="QWidget" name="tab">
      <attribute name="title">
