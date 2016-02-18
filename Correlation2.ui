@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>800</width>
-    <height>600</height>
+    <height>625</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -31,7 +31,7 @@
         <property name="geometry">
          <rect>
           <x>10</x>
-          <y>70</y>
+          <y>40</y>
           <width>381</width>
           <height>31</height>
          </rect>
@@ -41,7 +41,7 @@
         <property name="geometry">
          <rect>
           <x>10</x>
-          <y>160</y>
+          <y>110</y>
           <width>381</width>
           <height>31</height>
          </rect>
@@ -51,7 +51,7 @@
         <property name="geometry">
          <rect>
           <x>10</x>
-          <y>230</y>
+          <y>180</y>
           <width>381</width>
           <height>31</height>
          </rect>
@@ -61,7 +61,7 @@
         <property name="geometry">
          <rect>
           <x>10</x>
-          <y>40</y>
+          <y>10</y>
           <width>96</width>
           <height>22</height>
          </rect>
@@ -83,9 +83,9 @@
        <widget class="QPushButton" name="correlate">
         <property name="geometry">
          <rect>
-          <x>629</x>
+          <x>419</x>
           <y>240</y>
-          <width>131</width>
+          <width>341</width>
           <height>29</height>
          </rect>
         </property>
@@ -93,24 +93,11 @@
          <string>Correlate</string>
         </property>
        </widget>
-       <widget class="QPushButton" name="return_2">
-        <property name="geometry">
-         <rect>
-          <x>630</x>
-          <y>190</y>
-          <width>131</width>
-          <height>29</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>Return</string>
-        </property>
-       </widget>
        <widget class="QSpinBox" name="fitdegree">
         <property name="geometry">
          <rect>
-          <x>510</x>
-          <y>240</y>
+          <x>290</x>
+          <y>230</y>
           <width>71</width>
           <height>31</height>
          </rect>
@@ -125,8 +112,8 @@
        <widget class="QLabel" name="label_6">
         <property name="geometry">
          <rect>
-          <x>430</x>
-          <y>230</y>
+          <x>210</x>
+          <y>220</y>
           <width>71</width>
           <height>51</height>
          </rect>
@@ -139,7 +126,7 @@
         <property name="geometry">
          <rect>
           <x>10</x>
-          <y>140</y>
+          <y>90</y>
           <width>151</width>
           <height>17</height>
          </rect>
@@ -152,7 +139,7 @@
         <property name="geometry">
          <rect>
           <x>10</x>
-          <y>210</y>
+          <y>150</y>
           <width>151</width>
           <height>17</height>
          </rect>
@@ -164,8 +151,8 @@
        <widget class="QSpinBox" name="ShiftSize">
         <property name="geometry">
          <rect>
-          <x>510</x>
-          <y>180</y>
+          <x>110</x>
+          <y>230</y>
           <width>71</width>
           <height>31</height>
          </rect>
@@ -186,8 +173,8 @@
        <widget class="QLabel" name="label_10">
         <property name="geometry">
          <rect>
-          <x>420</x>
-          <y>170</y>
+          <x>10</x>
+          <y>220</y>
           <width>81</width>
           <height>51</height>
          </rect>
@@ -202,7 +189,7 @@
           <x>420</x>
           <y>30</y>
           <width>351</width>
-          <height>131</height>
+          <height>161</height>
          </rect>
         </property>
        </widget>
@@ -217,6 +204,19 @@
         </property>
         <property name="text">
          <string>Files</string>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="multiplotshow">
+        <property name="geometry">
+         <rect>
+          <x>630</x>
+          <y>200</y>
+          <width>171</width>
+          <height>22</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Show All Plots</string>
         </property>
        </widget>
       </widget>
@@ -508,6 +508,13 @@
         </property>
        </widget>
       </widget>
+     </widget>
+    </item>
+    <item row="1" column="0">
+     <widget class="QPushButton" name="return_2">
+      <property name="text">
+       <string>Return</string>
+      </property>
      </widget>
     </item>
    </layout>

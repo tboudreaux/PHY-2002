@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>TestWindow</class>
- <widget class="QMainWindow" name="TestWindow">
+ <class>MultiplotViewer</class>
+ <widget class="QMainWindow" name="MultiplotViewer">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>723</width>
-    <height>555</height>
+    <width>1155</width>
+    <height>970</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,13 +18,13 @@
     <property name="geometry">
      <rect>
       <x>0</x>
-      <y>10</y>
-      <width>731</width>
-      <height>501</height>
+      <y>0</y>
+      <width>1141</width>
+      <height>851</height>
      </rect>
     </property>
     <property name="currentIndex">
-     <number>6</number>
+     <number>0</number>
     </property>
     <widget class="QWidget" name="firstTab">
      <property name="enabled">
@@ -33,157 +33,103 @@
      <attribute name="title">
       <string>1-9</string>
      </attribute>
-     <widget class="QFrame" name="frame">
+     <widget class="QWidget" name="widget" native="true">
       <property name="geometry">
        <rect>
         <x>20</x>
-        <y>30</y>
-        <width>171</width>
-        <height>131</height>
+        <y>20</y>
+        <width>281</width>
+        <height>250</height>
        </rect>
       </property>
-      <property name="frameShape">
-       <enum>QFrame::StyledPanel</enum>
-      </property>
-      <property name="frameShadow">
-       <enum>QFrame::Raised</enum>
-      </property>
      </widget>
-     <widget class="QFrame" name="frame_2">
+     <widget class="QWidget" name="widget_2" native="true">
       <property name="geometry">
        <rect>
         <x>20</x>
-        <y>170</y>
-        <width>171</width>
-        <height>121</height>
+        <y>290</y>
+        <width>281</width>
+        <height>250</height>
        </rect>
       </property>
-      <property name="frameShape">
-       <enum>QFrame::StyledPanel</enum>
-      </property>
-      <property name="frameShadow">
-       <enum>QFrame::Raised</enum>
-      </property>
      </widget>
-     <widget class="QFrame" name="frame_3">
+     <widget class="QWidget" name="widget_3" native="true">
       <property name="geometry">
        <rect>
         <x>20</x>
-        <y>300</y>
-        <width>171</width>
-        <height>121</height>
+        <y>560</y>
+        <width>281</width>
+        <height>250</height>
        </rect>
-      </property>
-      <property name="frameShape">
-       <enum>QFrame::StyledPanel</enum>
-      </property>
-      <property name="frameShadow">
-       <enum>QFrame::Raised</enum>
       </property>
      </widget>
-     <widget class="QFrame" name="frame_4">
+     <widget class="QWidget" name="widget_4" native="true">
       <property name="geometry">
        <rect>
-        <x>270</x>
-        <y>30</y>
-        <width>171</width>
-        <height>131</height>
+        <x>430</x>
+        <y>20</y>
+        <width>281</width>
+        <height>250</height>
        </rect>
-      </property>
-      <property name="frameShape">
-       <enum>QFrame::StyledPanel</enum>
-      </property>
-      <property name="frameShadow">
-       <enum>QFrame::Raised</enum>
       </property>
      </widget>
-     <widget class="QFrame" name="frame_5">
+     <widget class="QWidget" name="widget_5" native="true">
       <property name="geometry">
        <rect>
-        <x>270</x>
-        <y>170</y>
-        <width>171</width>
-        <height>121</height>
+        <x>430</x>
+        <y>290</y>
+        <width>281</width>
+        <height>250</height>
        </rect>
-      </property>
-      <property name="frameShape">
-       <enum>QFrame::StyledPanel</enum>
-      </property>
-      <property name="frameShadow">
-       <enum>QFrame::Raised</enum>
       </property>
      </widget>
-     <widget class="QFrame" name="frame_6">
+     <widget class="QWidget" name="widget_6" native="true">
       <property name="geometry">
        <rect>
-        <x>270</x>
-        <y>300</y>
-        <width>171</width>
-        <height>121</height>
+        <x>430</x>
+        <y>560</y>
+        <width>281</width>
+        <height>250</height>
        </rect>
-      </property>
-      <property name="frameShape">
-       <enum>QFrame::StyledPanel</enum>
-      </property>
-      <property name="frameShadow">
-       <enum>QFrame::Raised</enum>
       </property>
      </widget>
-     <widget class="QFrame" name="frame_7">
+     <widget class="QWidget" name="widget_7" native="true">
       <property name="geometry">
        <rect>
-        <x>520</x>
-        <y>30</y>
-        <width>171</width>
-        <height>131</height>
+        <x>800</x>
+        <y>20</y>
+        <width>281</width>
+        <height>250</height>
        </rect>
-      </property>
-      <property name="frameShape">
-       <enum>QFrame::StyledPanel</enum>
-      </property>
-      <property name="frameShadow">
-       <enum>QFrame::Raised</enum>
       </property>
      </widget>
-     <widget class="QFrame" name="frame_8">
+     <widget class="QWidget" name="widget_8" native="true">
       <property name="geometry">
        <rect>
-        <x>520</x>
-        <y>170</y>
-        <width>171</width>
-        <height>121</height>
+        <x>800</x>
+        <y>290</y>
+        <width>281</width>
+        <height>250</height>
        </rect>
-      </property>
-      <property name="frameShape">
-       <enum>QFrame::StyledPanel</enum>
-      </property>
-      <property name="frameShadow">
-       <enum>QFrame::Raised</enum>
       </property>
      </widget>
-     <widget class="QFrame" name="frame_9">
+     <widget class="QWidget" name="widget_9" native="true">
       <property name="geometry">
        <rect>
-        <x>520</x>
-        <y>300</y>
-        <width>171</width>
-        <height>121</height>
+        <x>800</x>
+        <y>560</y>
+        <width>281</width>
+        <height>250</height>
        </rect>
-      </property>
-      <property name="frameShape">
-       <enum>QFrame::StyledPanel</enum>
-      </property>
-      <property name="frameShadow">
-       <enum>QFrame::Raised</enum>
       </property>
      </widget>
      <widget class="Line" name="line">
       <property name="geometry">
        <rect>
-        <x>220</x>
-        <y>-10</y>
+        <x>360</x>
+        <y>0</y>
         <width>20</width>
-        <height>491</height>
+        <height>821</height>
        </rect>
       </property>
       <property name="orientation">
@@ -193,10 +139,10 @@
      <widget class="Line" name="line_2">
       <property name="geometry">
        <rect>
-        <x>470</x>
-        <y>-20</y>
+        <x>750</x>
+        <y>-10</y>
         <width>20</width>
-        <height>491</height>
+        <height>831</height>
        </rect>
       </property>
       <property name="orientation">
@@ -206,8 +152,8 @@
      <widget class="QCheckBox" name="Use_1">
       <property name="geometry">
        <rect>
-        <x>200</x>
-        <y>80</y>
+        <x>330</x>
+        <y>120</y>
         <width>16</width>
         <height>20</height>
        </rect>
@@ -219,8 +165,8 @@
      <widget class="QCheckBox" name="Use_2">
       <property name="geometry">
        <rect>
-        <x>200</x>
-        <y>220</y>
+        <x>330</x>
+        <y>400</y>
         <width>16</width>
         <height>20</height>
        </rect>
@@ -232,8 +178,8 @@
      <widget class="QCheckBox" name="Use_3">
       <property name="geometry">
        <rect>
-        <x>200</x>
-        <y>350</y>
+        <x>330</x>
+        <y>670</y>
         <width>16</width>
         <height>20</height>
        </rect>
@@ -245,8 +191,8 @@
      <widget class="QCheckBox" name="Use_4">
       <property name="geometry">
        <rect>
-        <x>450</x>
-        <y>70</y>
+        <x>730</x>
+        <y>120</y>
         <width>16</width>
         <height>20</height>
        </rect>
@@ -258,8 +204,8 @@
      <widget class="QCheckBox" name="Use_5">
       <property name="geometry">
        <rect>
-        <x>450</x>
-        <y>220</y>
+        <x>730</x>
+        <y>400</y>
         <width>16</width>
         <height>20</height>
        </rect>
@@ -271,34 +217,8 @@
      <widget class="QCheckBox" name="Use_6">
       <property name="geometry">
        <rect>
-        <x>450</x>
-        <y>350</y>
-        <width>16</width>
-        <height>20</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string/>
-      </property>
-     </widget>
-     <widget class="QCheckBox" name="Use_7">
-      <property name="geometry">
-       <rect>
-        <x>700</x>
-        <y>350</y>
-        <width>16</width>
-        <height>20</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string/>
-      </property>
-     </widget>
-     <widget class="QCheckBox" name="Use_8">
-      <property name="geometry">
-       <rect>
-        <x>700</x>
-        <y>220</y>
+        <x>730</x>
+        <y>670</y>
         <width>16</width>
         <height>20</height>
        </rect>
@@ -310,8 +230,34 @@
      <widget class="QCheckBox" name="Use_9">
       <property name="geometry">
        <rect>
-        <x>700</x>
-        <y>70</y>
+        <x>1100</x>
+        <y>670</y>
+        <width>16</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="Use_8">
+      <property name="geometry">
+       <rect>
+        <x>1100</x>
+        <y>400</y>
+        <width>16</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="Use_7">
+      <property name="geometry">
+       <rect>
+        <x>1100</x>
+        <y>120</y>
         <width>16</width>
         <height>20</height>
        </rect>
@@ -323,13 +269,13 @@
     </widget>
     <widget class="QWidget" name="tab_3">
      <attribute name="title">
-      <string>10-19</string>
+      <string>10-18</string>
      </attribute>
-     <widget class="QCheckBox" name="Use_18">
+     <widget class="QCheckBox" name="Use_10">
       <property name="geometry">
        <rect>
-        <x>440</x>
-        <y>70</y>
+        <x>330</x>
+        <y>120</y>
         <width>16</width>
         <height>20</height>
        </rect>
@@ -338,11 +284,73 @@
        <string/>
       </property>
      </widget>
-     <widget class="QCheckBox" name="Use_17">
+     <widget class="QCheckBox" name="Use_11">
       <property name="geometry">
        <rect>
-        <x>690</x>
-        <y>70</y>
+        <x>330</x>
+        <y>400</y>
+        <width>16</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="Use_12">
+      <property name="geometry">
+       <rect>
+        <x>330</x>
+        <y>670</y>
+        <width>16</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QWidget" name="widget_14" native="true">
+      <property name="geometry">
+       <rect>
+        <x>430</x>
+        <y>290</y>
+        <width>281</width>
+        <height>250</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="Line" name="line_3">
+      <property name="geometry">
+       <rect>
+        <x>360</x>
+        <y>0</y>
+        <width>20</width>
+        <height>821</height>
+       </rect>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="Use_13">
+      <property name="geometry">
+       <rect>
+        <x>730</x>
+        <y>120</y>
+        <width>16</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="Use_14">
+      <property name="geometry">
+       <rect>
+        <x>730</x>
+        <y>400</y>
         <width>16</width>
         <height>20</height>
        </rect>
@@ -354,8 +362,8 @@
      <widget class="QCheckBox" name="Use_15">
       <property name="geometry">
        <rect>
-        <x>190</x>
-        <y>350</y>
+        <x>730</x>
+        <y>670</y>
         <width>16</width>
         <height>20</height>
        </rect>
@@ -364,325 +372,148 @@
        <string/>
       </property>
      </widget>
-     <widget class="QFrame" name="frame_11">
+     <widget class="QWidget" name="widget_11" native="true">
       <property name="geometry">
        <rect>
-        <x>10</x>
-        <y>170</y>
-        <width>171</width>
-        <height>121</height>
+        <x>20</x>
+        <y>290</y>
+        <width>281</width>
+        <height>250</height>
        </rect>
-      </property>
-      <property name="frameShape">
-       <enum>QFrame::StyledPanel</enum>
-      </property>
-      <property name="frameShadow">
-       <enum>QFrame::Raised</enum>
       </property>
      </widget>
-     <widget class="QCheckBox" name="Use_11">
+     <widget class="QWidget" name="widget_13" native="true">
       <property name="geometry">
        <rect>
-        <x>190</x>
-        <y>220</y>
-        <width>16</width>
-        <height>20</height>
+        <x>430</x>
+        <y>20</y>
+        <width>281</width>
+        <height>250</height>
        </rect>
-      </property>
-      <property name="text">
-       <string/>
       </property>
      </widget>
-     <widget class="QFrame" name="frame_10">
+     <widget class="QWidget" name="widget_17" native="true">
       <property name="geometry">
        <rect>
-        <x>10</x>
-        <y>300</y>
-        <width>171</width>
-        <height>121</height>
+        <x>800</x>
+        <y>290</y>
+        <width>281</width>
+        <height>250</height>
        </rect>
-      </property>
-      <property name="frameShape">
-       <enum>QFrame::StyledPanel</enum>
-      </property>
-      <property name="frameShadow">
-       <enum>QFrame::Raised</enum>
       </property>
      </widget>
-     <widget class="QCheckBox" name="Use_14">
+     <widget class="QWidget" name="widget_18" native="true">
       <property name="geometry">
        <rect>
-        <x>690</x>
-        <y>350</y>
-        <width>16</width>
-        <height>20</height>
+        <x>800</x>
+        <y>560</y>
+        <width>281</width>
+        <height>250</height>
        </rect>
-      </property>
-      <property name="text">
-       <string/>
       </property>
      </widget>
-     <widget class="QFrame" name="frame_17">
+     <widget class="QWidget" name="widget_12" native="true">
       <property name="geometry">
        <rect>
-        <x>510</x>
-        <y>30</y>
-        <width>171</width>
-        <height>131</height>
+        <x>20</x>
+        <y>560</y>
+        <width>281</width>
+        <height>250</height>
        </rect>
-      </property>
-      <property name="frameShape">
-       <enum>QFrame::StyledPanel</enum>
-      </property>
-      <property name="frameShadow">
-       <enum>QFrame::Raised</enum>
       </property>
      </widget>
-     <widget class="QFrame" name="frame_18">
+     <widget class="QWidget" name="widget_15" native="true">
       <property name="geometry">
        <rect>
-        <x>10</x>
-        <y>30</y>
-        <width>171</width>
-        <height>131</height>
+        <x>430</x>
+        <y>560</y>
+        <width>281</width>
+        <height>250</height>
        </rect>
-      </property>
-      <property name="frameShape">
-       <enum>QFrame::StyledPanel</enum>
-      </property>
-      <property name="frameShadow">
-       <enum>QFrame::Raised</enum>
-      </property>
-     </widget>
-     <widget class="QCheckBox" name="Use_12">
-      <property name="geometry">
-       <rect>
-        <x>190</x>
-        <y>80</y>
-        <width>16</width>
-        <height>20</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string/>
-      </property>
-     </widget>
-     <widget class="QFrame" name="frame_14">
-      <property name="geometry">
-       <rect>
-        <x>260</x>
-        <y>300</y>
-        <width>171</width>
-        <height>121</height>
-       </rect>
-      </property>
-      <property name="frameShape">
-       <enum>QFrame::StyledPanel</enum>
-      </property>
-      <property name="frameShadow">
-       <enum>QFrame::Raised</enum>
-      </property>
-     </widget>
-     <widget class="QCheckBox" name="Use_13">
-      <property name="geometry">
-       <rect>
-        <x>690</x>
-        <y>220</y>
-        <width>16</width>
-        <height>20</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string/>
-      </property>
-     </widget>
-     <widget class="QFrame" name="frame_15">
-      <property name="geometry">
-       <rect>
-        <x>510</x>
-        <y>300</y>
-        <width>171</width>
-        <height>121</height>
-       </rect>
-      </property>
-      <property name="frameShape">
-       <enum>QFrame::StyledPanel</enum>
-      </property>
-      <property name="frameShadow">
-       <enum>QFrame::Raised</enum>
-      </property>
-     </widget>
-     <widget class="Line" name="line_3">
-      <property name="geometry">
-       <rect>
-        <x>460</x>
-        <y>-20</y>
-        <width>20</width>
-        <height>491</height>
-       </rect>
-      </property>
-      <property name="orientation">
-       <enum>Qt::Vertical</enum>
-      </property>
-     </widget>
-     <widget class="QFrame" name="frame_12">
-      <property name="geometry">
-       <rect>
-        <x>260</x>
-        <y>30</y>
-        <width>171</width>
-        <height>131</height>
-       </rect>
-      </property>
-      <property name="frameShape">
-       <enum>QFrame::StyledPanel</enum>
-      </property>
-      <property name="frameShadow">
-       <enum>QFrame::Raised</enum>
-      </property>
-     </widget>
-     <widget class="QFrame" name="frame_13">
-      <property name="geometry">
-       <rect>
-        <x>260</x>
-        <y>170</y>
-        <width>171</width>
-        <height>121</height>
-       </rect>
-      </property>
-      <property name="frameShape">
-       <enum>QFrame::StyledPanel</enum>
-      </property>
-      <property name="frameShadow">
-       <enum>QFrame::Raised</enum>
-      </property>
-     </widget>
-     <widget class="QCheckBox" name="Use_10">
-      <property name="geometry">
-       <rect>
-        <x>440</x>
-        <y>350</y>
-        <width>16</width>
-        <height>20</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string/>
-      </property>
-     </widget>
-     <widget class="QFrame" name="frame_16">
-      <property name="geometry">
-       <rect>
-        <x>510</x>
-        <y>170</y>
-        <width>171</width>
-        <height>121</height>
-       </rect>
-      </property>
-      <property name="frameShape">
-       <enum>QFrame::StyledPanel</enum>
-      </property>
-      <property name="frameShadow">
-       <enum>QFrame::Raised</enum>
-      </property>
-     </widget>
-     <widget class="QCheckBox" name="Use_16">
-      <property name="geometry">
-       <rect>
-        <x>440</x>
-        <y>220</y>
-        <width>16</width>
-        <height>20</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string/>
       </property>
      </widget>
      <widget class="Line" name="line_4">
       <property name="geometry">
        <rect>
-        <x>210</x>
+        <x>750</x>
         <y>-10</y>
         <width>20</width>
-        <height>491</height>
+        <height>831</height>
        </rect>
       </property>
       <property name="orientation">
        <enum>Qt::Vertical</enum>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="Use_16">
+      <property name="geometry">
+       <rect>
+        <x>1100</x>
+        <y>120</y>
+        <width>16</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="Use_17">
+      <property name="geometry">
+       <rect>
+        <x>1100</x>
+        <y>400</y>
+        <width>16</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QWidget" name="widget_10" native="true">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>20</y>
+        <width>281</width>
+        <height>250</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="Use_18">
+      <property name="geometry">
+       <rect>
+        <x>1100</x>
+        <y>670</y>
+        <width>16</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QWidget" name="widget_16" native="true">
+      <property name="geometry">
+       <rect>
+        <x>800</x>
+        <y>20</y>
+        <width>281</width>
+        <height>250</height>
+       </rect>
       </property>
      </widget>
     </widget>
     <widget class="QWidget" name="tab_4">
      <attribute name="title">
-      <string>21-30</string>
+      <string>19-27</string>
      </attribute>
-     <widget class="QFrame" name="frame_19">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>300</y>
-        <width>171</width>
-        <height>121</height>
-       </rect>
-      </property>
-      <property name="frameShape">
-       <enum>QFrame::StyledPanel</enum>
-      </property>
-      <property name="frameShadow">
-       <enum>QFrame::Raised</enum>
-      </property>
-     </widget>
-     <widget class="Line" name="line_5">
-      <property name="geometry">
-       <rect>
-        <x>460</x>
-        <y>-20</y>
-        <width>20</width>
-        <height>491</height>
-       </rect>
-      </property>
-      <property name="orientation">
-       <enum>Qt::Vertical</enum>
-      </property>
-     </widget>
-     <widget class="QFrame" name="frame_20">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>170</y>
-        <width>171</width>
-        <height>121</height>
-       </rect>
-      </property>
-      <property name="frameShape">
-       <enum>QFrame::StyledPanel</enum>
-      </property>
-      <property name="frameShadow">
-       <enum>QFrame::Raised</enum>
-      </property>
-     </widget>
-     <widget class="QFrame" name="frame_21">
-      <property name="geometry">
-       <rect>
-        <x>260</x>
-        <y>30</y>
-        <width>171</width>
-        <height>131</height>
-       </rect>
-      </property>
-      <property name="frameShape">
-       <enum>QFrame::StyledPanel</enum>
-      </property>
-      <property name="frameShadow">
-       <enum>QFrame::Raised</enum>
-      </property>
-     </widget>
      <widget class="QCheckBox" name="Use_19">
       <property name="geometry">
        <rect>
-        <x>440</x>
-        <y>350</y>
+        <x>330</x>
+        <y>120</y>
         <width>16</width>
         <height>20</height>
        </rect>
@@ -694,8 +525,8 @@
      <widget class="QCheckBox" name="Use_20">
       <property name="geometry">
        <rect>
-        <x>190</x>
-        <y>220</y>
+        <x>330</x>
+        <y>400</y>
         <width>16</width>
         <height>20</height>
        </rect>
@@ -707,8 +538,8 @@
      <widget class="QCheckBox" name="Use_21">
       <property name="geometry">
        <rect>
-        <x>190</x>
-        <y>80</y>
+        <x>330</x>
+        <y>670</y>
         <width>16</width>
         <height>20</height>
        </rect>
@@ -717,43 +548,34 @@
        <string/>
       </property>
      </widget>
-     <widget class="QFrame" name="frame_22">
+     <widget class="QWidget" name="widget_19" native="true">
       <property name="geometry">
        <rect>
-        <x>260</x>
-        <y>170</y>
-        <width>171</width>
-        <height>121</height>
+        <x>20</x>
+        <y>20</y>
+        <width>281</width>
+        <height>250</height>
        </rect>
-      </property>
-      <property name="frameShape">
-       <enum>QFrame::StyledPanel</enum>
-      </property>
-      <property name="frameShadow">
-       <enum>QFrame::Raised</enum>
       </property>
      </widget>
-     <widget class="QFrame" name="frame_23">
+     <widget class="Line" name="line_5">
       <property name="geometry">
        <rect>
-        <x>260</x>
-        <y>300</y>
-        <width>171</width>
-        <height>121</height>
+        <x>360</x>
+        <y>0</y>
+        <width>20</width>
+        <height>821</height>
        </rect>
       </property>
-      <property name="frameShape">
-       <enum>QFrame::StyledPanel</enum>
-      </property>
-      <property name="frameShadow">
-       <enum>QFrame::Raised</enum>
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
       </property>
      </widget>
      <widget class="QCheckBox" name="Use_22">
       <property name="geometry">
        <rect>
-        <x>690</x>
-        <y>220</y>
+        <x>730</x>
+        <y>120</y>
         <width>16</width>
         <height>20</height>
        </rect>
@@ -762,27 +584,11 @@
        <string/>
       </property>
      </widget>
-     <widget class="QFrame" name="frame_24">
-      <property name="geometry">
-       <rect>
-        <x>510</x>
-        <y>300</y>
-        <width>171</width>
-        <height>121</height>
-       </rect>
-      </property>
-      <property name="frameShape">
-       <enum>QFrame::StyledPanel</enum>
-      </property>
-      <property name="frameShadow">
-       <enum>QFrame::Raised</enum>
-      </property>
-     </widget>
      <widget class="QCheckBox" name="Use_23">
       <property name="geometry">
        <rect>
-        <x>690</x>
-        <y>350</y>
+        <x>730</x>
+        <y>400</y>
         <width>16</width>
         <height>20</height>
        </rect>
@@ -794,8 +600,8 @@
      <widget class="QCheckBox" name="Use_24">
       <property name="geometry">
        <rect>
-        <x>190</x>
-        <y>350</y>
+        <x>730</x>
+        <y>670</y>
         <width>16</width>
         <height>20</height>
        </rect>
@@ -804,69 +610,97 @@
        <string/>
       </property>
      </widget>
-     <widget class="QFrame" name="frame_25">
+     <widget class="QWidget" name="widget_20" native="true">
       <property name="geometry">
        <rect>
-        <x>510</x>
-        <y>170</y>
-        <width>171</width>
-        <height>121</height>
+        <x>20</x>
+        <y>290</y>
+        <width>281</width>
+        <height>250</height>
        </rect>
-      </property>
-      <property name="frameShape">
-       <enum>QFrame::StyledPanel</enum>
-      </property>
-      <property name="frameShadow">
-       <enum>QFrame::Raised</enum>
       </property>
      </widget>
-     <widget class="QFrame" name="frame_26">
+     <widget class="QWidget" name="widget_21" native="true">
       <property name="geometry">
        <rect>
-        <x>510</x>
-        <y>30</y>
-        <width>171</width>
-        <height>131</height>
+        <x>20</x>
+        <y>560</y>
+        <width>281</width>
+        <height>250</height>
        </rect>
-      </property>
-      <property name="frameShape">
-       <enum>QFrame::StyledPanel</enum>
-      </property>
-      <property name="frameShadow">
-       <enum>QFrame::Raised</enum>
       </property>
      </widget>
-     <widget class="QCheckBox" name="Use_25">
+     <widget class="QWidget" name="widget_22" native="true">
       <property name="geometry">
        <rect>
-        <x>440</x>
-        <y>220</y>
-        <width>16</width>
-        <height>20</height>
+        <x>430</x>
+        <y>20</y>
+        <width>281</width>
+        <height>250</height>
        </rect>
       </property>
-      <property name="text">
-       <string/>
+     </widget>
+     <widget class="QWidget" name="widget_23" native="true">
+      <property name="geometry">
+       <rect>
+        <x>430</x>
+        <y>290</y>
+        <width>281</width>
+        <height>250</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QWidget" name="widget_24" native="true">
+      <property name="geometry">
+       <rect>
+        <x>430</x>
+        <y>560</y>
+        <width>281</width>
+        <height>250</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QWidget" name="widget_25" native="true">
+      <property name="geometry">
+       <rect>
+        <x>800</x>
+        <y>20</y>
+        <width>281</width>
+        <height>250</height>
+       </rect>
       </property>
      </widget>
      <widget class="Line" name="line_6">
       <property name="geometry">
        <rect>
-        <x>210</x>
+        <x>750</x>
         <y>-10</y>
         <width>20</width>
-        <height>491</height>
+        <height>831</height>
        </rect>
       </property>
       <property name="orientation">
        <enum>Qt::Vertical</enum>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="Use_25">
+      <property name="geometry">
+       <rect>
+        <x>1100</x>
+        <y>120</y>
+        <width>16</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string/>
       </property>
      </widget>
      <widget class="QCheckBox" name="Use_26">
       <property name="geometry">
        <rect>
-        <x>690</x>
-        <y>70</y>
+        <x>1100</x>
+        <y>400</y>
         <width>16</width>
         <height>20</height>
        </rect>
@@ -875,27 +709,21 @@
        <string/>
       </property>
      </widget>
-     <widget class="QFrame" name="frame_27">
+     <widget class="QWidget" name="widget_26" native="true">
       <property name="geometry">
        <rect>
-        <x>10</x>
-        <y>30</y>
-        <width>171</width>
-        <height>131</height>
+        <x>800</x>
+        <y>290</y>
+        <width>281</width>
+        <height>250</height>
        </rect>
-      </property>
-      <property name="frameShape">
-       <enum>QFrame::StyledPanel</enum>
-      </property>
-      <property name="frameShadow">
-       <enum>QFrame::Raised</enum>
       </property>
      </widget>
      <widget class="QCheckBox" name="Use_27">
       <property name="geometry">
        <rect>
-        <x>440</x>
-        <y>70</y>
+        <x>1100</x>
+        <y>670</y>
         <width>16</width>
         <height>20</height>
        </rect>
@@ -904,77 +732,26 @@
        <string/>
       </property>
      </widget>
+     <widget class="QWidget" name="widget_27" native="true">
+      <property name="geometry">
+       <rect>
+        <x>800</x>
+        <y>560</y>
+        <width>281</width>
+        <height>250</height>
+       </rect>
+      </property>
+     </widget>
     </widget>
     <widget class="QWidget" name="tab_5">
      <attribute name="title">
-      <string>31-40</string>
+      <string>28-36</string>
      </attribute>
-     <widget class="QFrame" name="frame_28">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>300</y>
-        <width>171</width>
-        <height>121</height>
-       </rect>
-      </property>
-      <property name="frameShape">
-       <enum>QFrame::StyledPanel</enum>
-      </property>
-      <property name="frameShadow">
-       <enum>QFrame::Raised</enum>
-      </property>
-     </widget>
-     <widget class="Line" name="line_7">
-      <property name="geometry">
-       <rect>
-        <x>460</x>
-        <y>-20</y>
-        <width>20</width>
-        <height>491</height>
-       </rect>
-      </property>
-      <property name="orientation">
-       <enum>Qt::Vertical</enum>
-      </property>
-     </widget>
-     <widget class="QFrame" name="frame_29">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>170</y>
-        <width>171</width>
-        <height>121</height>
-       </rect>
-      </property>
-      <property name="frameShape">
-       <enum>QFrame::StyledPanel</enum>
-      </property>
-      <property name="frameShadow">
-       <enum>QFrame::Raised</enum>
-      </property>
-     </widget>
-     <widget class="QFrame" name="frame_30">
-      <property name="geometry">
-       <rect>
-        <x>260</x>
-        <y>30</y>
-        <width>171</width>
-        <height>131</height>
-       </rect>
-      </property>
-      <property name="frameShape">
-       <enum>QFrame::StyledPanel</enum>
-      </property>
-      <property name="frameShadow">
-       <enum>QFrame::Raised</enum>
-      </property>
-     </widget>
      <widget class="QCheckBox" name="Use_28">
       <property name="geometry">
        <rect>
-        <x>440</x>
-        <y>350</y>
+        <x>330</x>
+        <y>120</y>
         <width>16</width>
         <height>20</height>
        </rect>
@@ -986,8 +763,8 @@
      <widget class="QCheckBox" name="Use_29">
       <property name="geometry">
        <rect>
-        <x>190</x>
-        <y>220</y>
+        <x>330</x>
+        <y>400</y>
         <width>16</width>
         <height>20</height>
        </rect>
@@ -999,8 +776,8 @@
      <widget class="QCheckBox" name="Use_30">
       <property name="geometry">
        <rect>
-        <x>190</x>
-        <y>80</y>
+        <x>330</x>
+        <y>670</y>
         <width>16</width>
         <height>20</height>
        </rect>
@@ -1009,43 +786,34 @@
        <string/>
       </property>
      </widget>
-     <widget class="QFrame" name="frame_31">
+     <widget class="QWidget" name="widget_28" native="true">
       <property name="geometry">
        <rect>
-        <x>260</x>
-        <y>170</y>
-        <width>171</width>
-        <height>121</height>
+        <x>20</x>
+        <y>20</y>
+        <width>281</width>
+        <height>250</height>
        </rect>
-      </property>
-      <property name="frameShape">
-       <enum>QFrame::StyledPanel</enum>
-      </property>
-      <property name="frameShadow">
-       <enum>QFrame::Raised</enum>
       </property>
      </widget>
-     <widget class="QFrame" name="frame_32">
+     <widget class="Line" name="line_7">
       <property name="geometry">
        <rect>
-        <x>260</x>
-        <y>300</y>
-        <width>171</width>
-        <height>121</height>
+        <x>360</x>
+        <y>0</y>
+        <width>20</width>
+        <height>821</height>
        </rect>
       </property>
-      <property name="frameShape">
-       <enum>QFrame::StyledPanel</enum>
-      </property>
-      <property name="frameShadow">
-       <enum>QFrame::Raised</enum>
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
       </property>
      </widget>
      <widget class="QCheckBox" name="Use_31">
       <property name="geometry">
        <rect>
-        <x>690</x>
-        <y>220</y>
+        <x>730</x>
+        <y>120</y>
         <width>16</width>
         <height>20</height>
        </rect>
@@ -1054,27 +822,11 @@
        <string/>
       </property>
      </widget>
-     <widget class="QFrame" name="frame_33">
-      <property name="geometry">
-       <rect>
-        <x>510</x>
-        <y>300</y>
-        <width>171</width>
-        <height>121</height>
-       </rect>
-      </property>
-      <property name="frameShape">
-       <enum>QFrame::StyledPanel</enum>
-      </property>
-      <property name="frameShadow">
-       <enum>QFrame::Raised</enum>
-      </property>
-     </widget>
      <widget class="QCheckBox" name="Use_32">
       <property name="geometry">
        <rect>
-        <x>690</x>
-        <y>350</y>
+        <x>730</x>
+        <y>400</y>
         <width>16</width>
         <height>20</height>
        </rect>
@@ -1086,8 +838,8 @@
      <widget class="QCheckBox" name="Use_33">
       <property name="geometry">
        <rect>
-        <x>190</x>
-        <y>350</y>
+        <x>730</x>
+        <y>670</y>
         <width>16</width>
         <height>20</height>
        </rect>
@@ -1096,69 +848,97 @@
        <string/>
       </property>
      </widget>
-     <widget class="QFrame" name="frame_34">
+     <widget class="QWidget" name="widget_29" native="true">
       <property name="geometry">
        <rect>
-        <x>510</x>
-        <y>170</y>
-        <width>171</width>
-        <height>121</height>
+        <x>20</x>
+        <y>290</y>
+        <width>281</width>
+        <height>250</height>
        </rect>
-      </property>
-      <property name="frameShape">
-       <enum>QFrame::StyledPanel</enum>
-      </property>
-      <property name="frameShadow">
-       <enum>QFrame::Raised</enum>
       </property>
      </widget>
-     <widget class="QFrame" name="frame_35">
+     <widget class="QWidget" name="widget_30" native="true">
       <property name="geometry">
        <rect>
-        <x>510</x>
-        <y>30</y>
-        <width>171</width>
-        <height>131</height>
+        <x>20</x>
+        <y>560</y>
+        <width>281</width>
+        <height>250</height>
        </rect>
-      </property>
-      <property name="frameShape">
-       <enum>QFrame::StyledPanel</enum>
-      </property>
-      <property name="frameShadow">
-       <enum>QFrame::Raised</enum>
       </property>
      </widget>
-     <widget class="QCheckBox" name="Use_34">
+     <widget class="QWidget" name="widget_31" native="true">
       <property name="geometry">
        <rect>
-        <x>440</x>
-        <y>220</y>
-        <width>16</width>
-        <height>20</height>
+        <x>430</x>
+        <y>20</y>
+        <width>281</width>
+        <height>250</height>
        </rect>
       </property>
-      <property name="text">
-       <string/>
+     </widget>
+     <widget class="QWidget" name="widget_32" native="true">
+      <property name="geometry">
+       <rect>
+        <x>430</x>
+        <y>290</y>
+        <width>281</width>
+        <height>250</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QWidget" name="widget_33" native="true">
+      <property name="geometry">
+       <rect>
+        <x>430</x>
+        <y>560</y>
+        <width>281</width>
+        <height>250</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QWidget" name="widget_34" native="true">
+      <property name="geometry">
+       <rect>
+        <x>800</x>
+        <y>20</y>
+        <width>281</width>
+        <height>250</height>
+       </rect>
       </property>
      </widget>
      <widget class="Line" name="line_8">
       <property name="geometry">
        <rect>
-        <x>210</x>
+        <x>750</x>
         <y>-10</y>
         <width>20</width>
-        <height>491</height>
+        <height>831</height>
        </rect>
       </property>
       <property name="orientation">
        <enum>Qt::Vertical</enum>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="Use_34">
+      <property name="geometry">
+       <rect>
+        <x>1100</x>
+        <y>120</y>
+        <width>16</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string/>
       </property>
      </widget>
      <widget class="QCheckBox" name="Use_35">
       <property name="geometry">
        <rect>
-        <x>690</x>
-        <y>70</y>
+        <x>1100</x>
+        <y>400</y>
         <width>16</width>
         <height>20</height>
        </rect>
@@ -1167,27 +947,21 @@
        <string/>
       </property>
      </widget>
-     <widget class="QFrame" name="frame_36">
+     <widget class="QWidget" name="widget_35" native="true">
       <property name="geometry">
        <rect>
-        <x>10</x>
-        <y>30</y>
-        <width>171</width>
-        <height>131</height>
+        <x>800</x>
+        <y>290</y>
+        <width>281</width>
+        <height>250</height>
        </rect>
-      </property>
-      <property name="frameShape">
-       <enum>QFrame::StyledPanel</enum>
-      </property>
-      <property name="frameShadow">
-       <enum>QFrame::Raised</enum>
       </property>
      </widget>
      <widget class="QCheckBox" name="Use_36">
       <property name="geometry">
        <rect>
-        <x>440</x>
-        <y>70</y>
+        <x>1100</x>
+        <y>670</y>
         <width>16</width>
         <height>20</height>
        </rect>
@@ -1196,77 +970,26 @@
        <string/>
       </property>
      </widget>
+     <widget class="QWidget" name="widget_36" native="true">
+      <property name="geometry">
+       <rect>
+        <x>800</x>
+        <y>560</y>
+        <width>281</width>
+        <height>250</height>
+       </rect>
+      </property>
+     </widget>
     </widget>
     <widget class="QWidget" name="tab_6">
      <attribute name="title">
-      <string>41-50</string>
+      <string>37-45</string>
      </attribute>
-     <widget class="QFrame" name="frame_37">
-      <property name="geometry">
-       <rect>
-        <x>20</x>
-        <y>300</y>
-        <width>171</width>
-        <height>121</height>
-       </rect>
-      </property>
-      <property name="frameShape">
-       <enum>QFrame::StyledPanel</enum>
-      </property>
-      <property name="frameShadow">
-       <enum>QFrame::Raised</enum>
-      </property>
-     </widget>
-     <widget class="Line" name="line_9">
-      <property name="geometry">
-       <rect>
-        <x>470</x>
-        <y>-20</y>
-        <width>20</width>
-        <height>491</height>
-       </rect>
-      </property>
-      <property name="orientation">
-       <enum>Qt::Vertical</enum>
-      </property>
-     </widget>
-     <widget class="QFrame" name="frame_38">
-      <property name="geometry">
-       <rect>
-        <x>20</x>
-        <y>170</y>
-        <width>171</width>
-        <height>121</height>
-       </rect>
-      </property>
-      <property name="frameShape">
-       <enum>QFrame::StyledPanel</enum>
-      </property>
-      <property name="frameShadow">
-       <enum>QFrame::Raised</enum>
-      </property>
-     </widget>
-     <widget class="QFrame" name="frame_39">
-      <property name="geometry">
-       <rect>
-        <x>270</x>
-        <y>30</y>
-        <width>171</width>
-        <height>131</height>
-       </rect>
-      </property>
-      <property name="frameShape">
-       <enum>QFrame::StyledPanel</enum>
-      </property>
-      <property name="frameShadow">
-       <enum>QFrame::Raised</enum>
-      </property>
-     </widget>
      <widget class="QCheckBox" name="Use_37">
       <property name="geometry">
        <rect>
-        <x>450</x>
-        <y>350</y>
+        <x>330</x>
+        <y>120</y>
         <width>16</width>
         <height>20</height>
        </rect>
@@ -1278,8 +1001,8 @@
      <widget class="QCheckBox" name="Use_38">
       <property name="geometry">
        <rect>
-        <x>200</x>
-        <y>220</y>
+        <x>330</x>
+        <y>400</y>
         <width>16</width>
         <height>20</height>
        </rect>
@@ -1291,8 +1014,8 @@
      <widget class="QCheckBox" name="Use_39">
       <property name="geometry">
        <rect>
-        <x>200</x>
-        <y>80</y>
+        <x>330</x>
+        <y>670</y>
         <width>16</width>
         <height>20</height>
        </rect>
@@ -1301,43 +1024,34 @@
        <string/>
       </property>
      </widget>
-     <widget class="QFrame" name="frame_40">
+     <widget class="QWidget" name="widget_37" native="true">
       <property name="geometry">
        <rect>
-        <x>270</x>
-        <y>170</y>
-        <width>171</width>
-        <height>121</height>
+        <x>20</x>
+        <y>20</y>
+        <width>281</width>
+        <height>250</height>
        </rect>
-      </property>
-      <property name="frameShape">
-       <enum>QFrame::StyledPanel</enum>
-      </property>
-      <property name="frameShadow">
-       <enum>QFrame::Raised</enum>
       </property>
      </widget>
-     <widget class="QFrame" name="frame_41">
+     <widget class="Line" name="line_9">
       <property name="geometry">
        <rect>
-        <x>270</x>
-        <y>300</y>
-        <width>171</width>
-        <height>121</height>
+        <x>360</x>
+        <y>0</y>
+        <width>20</width>
+        <height>821</height>
        </rect>
       </property>
-      <property name="frameShape">
-       <enum>QFrame::StyledPanel</enum>
-      </property>
-      <property name="frameShadow">
-       <enum>QFrame::Raised</enum>
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
       </property>
      </widget>
      <widget class="QCheckBox" name="Use_40">
       <property name="geometry">
        <rect>
-        <x>700</x>
-        <y>220</y>
+        <x>730</x>
+        <y>120</y>
         <width>16</width>
         <height>20</height>
        </rect>
@@ -1346,27 +1060,11 @@
        <string/>
       </property>
      </widget>
-     <widget class="QFrame" name="frame_42">
-      <property name="geometry">
-       <rect>
-        <x>520</x>
-        <y>300</y>
-        <width>171</width>
-        <height>121</height>
-       </rect>
-      </property>
-      <property name="frameShape">
-       <enum>QFrame::StyledPanel</enum>
-      </property>
-      <property name="frameShadow">
-       <enum>QFrame::Raised</enum>
-      </property>
-     </widget>
      <widget class="QCheckBox" name="Use_41">
       <property name="geometry">
        <rect>
-        <x>700</x>
-        <y>350</y>
+        <x>730</x>
+        <y>400</y>
         <width>16</width>
         <height>20</height>
        </rect>
@@ -1378,8 +1076,8 @@
      <widget class="QCheckBox" name="Use_42">
       <property name="geometry">
        <rect>
-        <x>200</x>
-        <y>350</y>
+        <x>730</x>
+        <y>670</y>
         <width>16</width>
         <height>20</height>
        </rect>
@@ -1388,69 +1086,97 @@
        <string/>
       </property>
      </widget>
-     <widget class="QFrame" name="frame_43">
+     <widget class="QWidget" name="widget_38" native="true">
       <property name="geometry">
        <rect>
-        <x>520</x>
-        <y>170</y>
-        <width>171</width>
-        <height>121</height>
+        <x>20</x>
+        <y>290</y>
+        <width>281</width>
+        <height>250</height>
        </rect>
-      </property>
-      <property name="frameShape">
-       <enum>QFrame::StyledPanel</enum>
-      </property>
-      <property name="frameShadow">
-       <enum>QFrame::Raised</enum>
       </property>
      </widget>
-     <widget class="QFrame" name="frame_44">
+     <widget class="QWidget" name="widget_39" native="true">
       <property name="geometry">
        <rect>
-        <x>520</x>
-        <y>30</y>
-        <width>171</width>
-        <height>131</height>
+        <x>20</x>
+        <y>560</y>
+        <width>281</width>
+        <height>250</height>
        </rect>
-      </property>
-      <property name="frameShape">
-       <enum>QFrame::StyledPanel</enum>
-      </property>
-      <property name="frameShadow">
-       <enum>QFrame::Raised</enum>
       </property>
      </widget>
-     <widget class="QCheckBox" name="Use_43">
+     <widget class="QWidget" name="widget_40" native="true">
       <property name="geometry">
        <rect>
-        <x>450</x>
-        <y>220</y>
-        <width>16</width>
-        <height>20</height>
+        <x>430</x>
+        <y>20</y>
+        <width>281</width>
+        <height>250</height>
        </rect>
       </property>
-      <property name="text">
-       <string/>
+     </widget>
+     <widget class="QWidget" name="widget_41" native="true">
+      <property name="geometry">
+       <rect>
+        <x>430</x>
+        <y>290</y>
+        <width>281</width>
+        <height>250</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QWidget" name="widget_42" native="true">
+      <property name="geometry">
+       <rect>
+        <x>430</x>
+        <y>560</y>
+        <width>281</width>
+        <height>250</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QWidget" name="widget_43" native="true">
+      <property name="geometry">
+       <rect>
+        <x>800</x>
+        <y>20</y>
+        <width>281</width>
+        <height>250</height>
+       </rect>
       </property>
      </widget>
      <widget class="Line" name="line_10">
       <property name="geometry">
        <rect>
-        <x>220</x>
+        <x>750</x>
         <y>-10</y>
         <width>20</width>
-        <height>491</height>
+        <height>831</height>
        </rect>
       </property>
       <property name="orientation">
        <enum>Qt::Vertical</enum>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="Use_43">
+      <property name="geometry">
+       <rect>
+        <x>1100</x>
+        <y>120</y>
+        <width>16</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string/>
       </property>
      </widget>
      <widget class="QCheckBox" name="Use_44">
       <property name="geometry">
        <rect>
-        <x>700</x>
-        <y>70</y>
+        <x>1100</x>
+        <y>400</y>
         <width>16</width>
         <height>20</height>
        </rect>
@@ -1459,106 +1185,69 @@
        <string/>
       </property>
      </widget>
-     <widget class="QFrame" name="frame_45">
+     <widget class="QWidget" name="widget_44" native="true">
       <property name="geometry">
        <rect>
-        <x>20</x>
-        <y>30</y>
-        <width>171</width>
-        <height>131</height>
+        <x>800</x>
+        <y>290</y>
+        <width>281</width>
+        <height>250</height>
        </rect>
-      </property>
-      <property name="frameShape">
-       <enum>QFrame::StyledPanel</enum>
-      </property>
-      <property name="frameShadow">
-       <enum>QFrame::Raised</enum>
       </property>
      </widget>
      <widget class="QCheckBox" name="Use_45">
       <property name="geometry">
        <rect>
-        <x>450</x>
-        <y>70</y>
+        <x>1100</x>
+        <y>670</y>
         <width>16</width>
         <height>20</height>
        </rect>
       </property>
       <property name="text">
        <string/>
+      </property>
+     </widget>
+     <widget class="QWidget" name="widget_45" native="true">
+      <property name="geometry">
+       <rect>
+        <x>800</x>
+        <y>560</y>
+        <width>281</width>
+        <height>250</height>
+       </rect>
       </property>
      </widget>
     </widget>
     <widget class="QWidget" name="tab_7">
      <attribute name="title">
-      <string>51-60</string>
+      <string>46-54</string>
      </attribute>
-     <widget class="QFrame" name="frame_46">
+     <widget class="QWidget" name="widget_54" native="true">
+      <property name="geometry">
+       <rect>
+        <x>800</x>
+        <y>560</y>
+        <width>281</width>
+        <height>250</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QWidget" name="widget_48" native="true">
       <property name="geometry">
        <rect>
         <x>20</x>
-        <y>300</y>
-        <width>171</width>
-        <height>121</height>
+        <y>560</y>
+        <width>281</width>
+        <height>250</height>
        </rect>
-      </property>
-      <property name="frameShape">
-       <enum>QFrame::StyledPanel</enum>
-      </property>
-      <property name="frameShadow">
-       <enum>QFrame::Raised</enum>
-      </property>
-     </widget>
-     <widget class="Line" name="line_11">
-      <property name="geometry">
-       <rect>
-        <x>470</x>
-        <y>-20</y>
-        <width>20</width>
-        <height>491</height>
-       </rect>
-      </property>
-      <property name="orientation">
-       <enum>Qt::Vertical</enum>
-      </property>
-     </widget>
-     <widget class="QFrame" name="frame_47">
-      <property name="geometry">
-       <rect>
-        <x>20</x>
-        <y>170</y>
-        <width>171</width>
-        <height>121</height>
-       </rect>
-      </property>
-      <property name="frameShape">
-       <enum>QFrame::StyledPanel</enum>
-      </property>
-      <property name="frameShadow">
-       <enum>QFrame::Raised</enum>
-      </property>
-     </widget>
-     <widget class="QFrame" name="frame_48">
-      <property name="geometry">
-       <rect>
-        <x>270</x>
-        <y>30</y>
-        <width>171</width>
-        <height>131</height>
-       </rect>
-      </property>
-      <property name="frameShape">
-       <enum>QFrame::StyledPanel</enum>
-      </property>
-      <property name="frameShadow">
-       <enum>QFrame::Raised</enum>
       </property>
      </widget>
      <widget class="QCheckBox" name="Use_46">
       <property name="geometry">
        <rect>
-        <x>450</x>
-        <y>350</y>
+        <x>330</x>
+        <y>120</y>
         <width>16</width>
         <height>20</height>
        </rect>
@@ -1567,98 +1256,41 @@
        <string/>
       </property>
      </widget>
-     <widget class="QCheckBox" name="Use_47">
+     <widget class="QWidget" name="widget_53" native="true">
       <property name="geometry">
        <rect>
-        <x>200</x>
-        <y>220</y>
-        <width>16</width>
-        <height>20</height>
+        <x>800</x>
+        <y>290</y>
+        <width>281</width>
+        <height>250</height>
        </rect>
       </property>
-      <property name="text">
-       <string/>
-      </property>
      </widget>
-     <widget class="QCheckBox" name="Use_48">
+     <widget class="QWidget" name="widget_49" native="true">
       <property name="geometry">
        <rect>
-        <x>200</x>
-        <y>80</y>
-        <width>16</width>
-        <height>20</height>
+        <x>430</x>
+        <y>20</y>
+        <width>281</width>
+        <height>250</height>
        </rect>
       </property>
-      <property name="text">
-       <string/>
-      </property>
      </widget>
-     <widget class="QFrame" name="frame_49">
+     <widget class="QWidget" name="widget_47" native="true">
       <property name="geometry">
        <rect>
-        <x>270</x>
-        <y>170</y>
-        <width>171</width>
-        <height>121</height>
+        <x>20</x>
+        <y>290</y>
+        <width>281</width>
+        <height>250</height>
        </rect>
       </property>
-      <property name="frameShape">
-       <enum>QFrame::StyledPanel</enum>
-      </property>
-      <property name="frameShadow">
-       <enum>QFrame::Raised</enum>
-      </property>
      </widget>
-     <widget class="QFrame" name="frame_50">
+     <widget class="QCheckBox" name="Use_54">
       <property name="geometry">
        <rect>
-        <x>270</x>
-        <y>300</y>
-        <width>171</width>
-        <height>121</height>
-       </rect>
-      </property>
-      <property name="frameShape">
-       <enum>QFrame::StyledPanel</enum>
-      </property>
-      <property name="frameShadow">
-       <enum>QFrame::Raised</enum>
-      </property>
-     </widget>
-     <widget class="QCheckBox" name="Use_49">
-      <property name="geometry">
-       <rect>
-        <x>700</x>
-        <y>220</y>
-        <width>16</width>
-        <height>20</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string/>
-      </property>
-     </widget>
-     <widget class="QFrame" name="frame_51">
-      <property name="geometry">
-       <rect>
-        <x>520</x>
-        <y>300</y>
-        <width>171</width>
-        <height>121</height>
-       </rect>
-      </property>
-      <property name="frameShape">
-       <enum>QFrame::StyledPanel</enum>
-      </property>
-      <property name="frameShadow">
-       <enum>QFrame::Raised</enum>
-      </property>
-     </widget>
-     <widget class="QCheckBox" name="Use_50">
-      <property name="geometry">
-       <rect>
-        <x>700</x>
-        <y>350</y>
+        <x>1100</x>
+        <y>670</y>
         <width>16</width>
         <height>20</height>
        </rect>
@@ -1670,8 +1302,8 @@
      <widget class="QCheckBox" name="Use_51">
       <property name="geometry">
        <rect>
-        <x>200</x>
-        <y>350</y>
+        <x>730</x>
+        <y>670</y>
         <width>16</width>
         <height>20</height>
        </rect>
@@ -1680,43 +1312,80 @@
        <string/>
       </property>
      </widget>
-     <widget class="QFrame" name="frame_52">
-      <property name="geometry">
-       <rect>
-        <x>520</x>
-        <y>170</y>
-        <width>171</width>
-        <height>121</height>
-       </rect>
-      </property>
-      <property name="frameShape">
-       <enum>QFrame::StyledPanel</enum>
-      </property>
-      <property name="frameShadow">
-       <enum>QFrame::Raised</enum>
-      </property>
-     </widget>
-     <widget class="QFrame" name="frame_53">
-      <property name="geometry">
-       <rect>
-        <x>520</x>
-        <y>30</y>
-        <width>171</width>
-        <height>131</height>
-       </rect>
-      </property>
-      <property name="frameShape">
-       <enum>QFrame::StyledPanel</enum>
-      </property>
-      <property name="frameShadow">
-       <enum>QFrame::Raised</enum>
-      </property>
-     </widget>
      <widget class="QCheckBox" name="Use_52">
       <property name="geometry">
        <rect>
-        <x>450</x>
-        <y>220</y>
+        <x>1100</x>
+        <y>120</y>
+        <width>16</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="Line" name="line_11">
+      <property name="geometry">
+       <rect>
+        <x>360</x>
+        <y>0</y>
+        <width>20</width>
+        <height>821</height>
+       </rect>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+     </widget>
+     <widget class="QWidget" name="widget_52" native="true">
+      <property name="geometry">
+       <rect>
+        <x>800</x>
+        <y>20</y>
+        <width>281</width>
+        <height>250</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="Use_49">
+      <property name="geometry">
+       <rect>
+        <x>730</x>
+        <y>120</y>
+        <width>16</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QWidget" name="widget_46" native="true">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>20</y>
+        <width>281</width>
+        <height>250</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QWidget" name="widget_51" native="true">
+      <property name="geometry">
+       <rect>
+        <x>430</x>
+        <y>560</y>
+        <width>281</width>
+        <height>250</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="Use_50">
+      <property name="geometry">
+       <rect>
+        <x>730</x>
+        <y>400</y>
         <width>16</width>
         <height>20</height>
        </rect>
@@ -1728,21 +1397,44 @@
      <widget class="Line" name="line_12">
       <property name="geometry">
        <rect>
-        <x>220</x>
+        <x>750</x>
         <y>-10</y>
         <width>20</width>
-        <height>491</height>
+        <height>831</height>
        </rect>
       </property>
       <property name="orientation">
        <enum>Qt::Vertical</enum>
       </property>
      </widget>
+     <widget class="QCheckBox" name="Use_48">
+      <property name="geometry">
+       <rect>
+        <x>330</x>
+        <y>670</y>
+        <width>16</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QWidget" name="widget_50" native="true">
+      <property name="geometry">
+       <rect>
+        <x>430</x>
+        <y>290</y>
+        <width>281</width>
+        <height>250</height>
+       </rect>
+      </property>
+     </widget>
      <widget class="QCheckBox" name="Use_53">
       <property name="geometry">
        <rect>
-        <x>700</x>
-        <y>70</y>
+        <x>1100</x>
+        <y>400</y>
         <width>16</width>
         <height>20</height>
        </rect>
@@ -1751,27 +1443,11 @@
        <string/>
       </property>
      </widget>
-     <widget class="QFrame" name="frame_54">
+     <widget class="QCheckBox" name="Use_47">
       <property name="geometry">
        <rect>
-        <x>20</x>
-        <y>30</y>
-        <width>171</width>
-        <height>131</height>
-       </rect>
-      </property>
-      <property name="frameShape">
-       <enum>QFrame::StyledPanel</enum>
-      </property>
-      <property name="frameShadow">
-       <enum>QFrame::Raised</enum>
-      </property>
-     </widget>
-     <widget class="QCheckBox" name="Use_54">
-      <property name="geometry">
-       <rect>
-        <x>450</x>
-        <y>70</y>
+        <x>330</x>
+        <y>400</y>
         <width>16</width>
         <height>20</height>
        </rect>
@@ -1780,15 +1456,68 @@
        <string/>
       </property>
      </widget>
+     <zorder>widget_54</zorder>
+     <zorder>widget_48</zorder>
+     <zorder>Use_46</zorder>
+     <zorder>widget_53</zorder>
+     <zorder>widget_49</zorder>
+     <zorder>widget_47</zorder>
+     <zorder>Use_54</zorder>
+     <zorder>Use_51</zorder>
+     <zorder>Use_52</zorder>
+     <zorder>line_11</zorder>
+     <zorder>widget_52</zorder>
+     <zorder>Use_49</zorder>
+     <zorder>widget_46</zorder>
+     <zorder>widget_51</zorder>
+     <zorder>Use_50</zorder>
+     <zorder>line_12</zorder>
+     <zorder>Use_48</zorder>
+     <zorder>widget_50</zorder>
+     <zorder>Use_53</zorder>
+     <zorder>Use_47</zorder>
+     <zorder>line_13</zorder>
+     <zorder>Use_58</zorder>
+     <zorder>widget_59</zorder>
+     <zorder>widget_61</zorder>
+     <zorder>widget_59</zorder>
+     <zorder>Use_60</zorder>
+     <zorder>Use_62</zorder>
+     <zorder>Use_55</zorder>
+     <zorder>Use_56</zorder>
+     <zorder>widget_55</zorder>
+     <zorder>Use_57</zorder>
+     <zorder>widget_62</zorder>
+     <zorder>widget_56</zorder>
+     <zorder>Use_59</zorder>
+     <zorder>widget_58</zorder>
+     <zorder>widget_60</zorder>
+     <zorder>Use_63</zorder>
+     <zorder>line_14</zorder>
+     <zorder>widget_57</zorder>
+     <zorder>Use_61</zorder>
     </widget>
-    <widget class="QWidget" name="tab_2">
+    <widget class="QWidget" name="tab">
      <attribute name="title">
-      <string>61-62</string>
+      <string>55-62</string>
      </attribute>
+     <widget class="QCheckBox" name="Use_55">
+      <property name="geometry">
+       <rect>
+        <x>330</x>
+        <y>120</y>
+        <width>16</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
      <widget class="QCheckBox" name="Use_56">
       <property name="geometry">
        <rect>
-        <x>550</x>
+        <x>330</x>
         <y>400</y>
         <width>16</width>
         <height>20</height>
@@ -1801,7 +1530,56 @@
      <widget class="QCheckBox" name="Use_57">
       <property name="geometry">
        <rect>
-        <x>160</x>
+        <x>330</x>
+        <y>670</y>
+        <width>16</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QWidget" name="widget_55" native="true">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>20</y>
+        <width>281</width>
+        <height>250</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="Line" name="line_13">
+      <property name="geometry">
+       <rect>
+        <x>360</x>
+        <y>0</y>
+        <width>20</width>
+        <height>821</height>
+       </rect>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="Use_58">
+      <property name="geometry">
+       <rect>
+        <x>730</x>
+        <y>120</y>
+        <width>16</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="Use_59">
+      <property name="geometry">
+       <rect>
+        <x>730</x>
         <y>400</y>
         <width>16</width>
         <height>20</height>
@@ -1811,39 +1589,158 @@
        <string/>
       </property>
      </widget>
-     <widget class="QFrame" name="frame_63">
+     <widget class="QCheckBox" name="Use_60">
+      <property name="geometry">
+       <rect>
+        <x>730</x>
+        <y>670</y>
+        <width>16</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QWidget" name="widget_56" native="true">
       <property name="geometry">
        <rect>
         <x>20</x>
-        <y>60</y>
-        <width>301</width>
-        <height>321</height>
+        <y>290</y>
+        <width>281</width>
+        <height>250</height>
        </rect>
-      </property>
-      <property name="frameShape">
-       <enum>QFrame::StyledPanel</enum>
-      </property>
-      <property name="frameShadow">
-       <enum>QFrame::Raised</enum>
       </property>
      </widget>
-     <widget class="QFrame" name="frame_64">
+     <widget class="QWidget" name="widget_57" native="true">
       <property name="geometry">
        <rect>
-        <x>400</x>
-        <y>60</y>
-        <width>301</width>
-        <height>321</height>
+        <x>20</x>
+        <y>560</y>
+        <width>281</width>
+        <height>250</height>
        </rect>
       </property>
-      <property name="frameShape">
-       <enum>QFrame::StyledPanel</enum>
+     </widget>
+     <widget class="QWidget" name="widget_58" native="true">
+      <property name="geometry">
+       <rect>
+        <x>430</x>
+        <y>20</y>
+        <width>281</width>
+        <height>250</height>
+       </rect>
       </property>
-      <property name="frameShadow">
-       <enum>QFrame::Raised</enum>
+     </widget>
+     <widget class="QWidget" name="widget_59" native="true">
+      <property name="geometry">
+       <rect>
+        <x>430</x>
+        <y>290</y>
+        <width>281</width>
+        <height>250</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QWidget" name="widget_60" native="true">
+      <property name="geometry">
+       <rect>
+        <x>430</x>
+        <y>560</y>
+        <width>281</width>
+        <height>250</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="Line" name="line_14">
+      <property name="geometry">
+       <rect>
+        <x>750</x>
+        <y>-10</y>
+        <width>20</width>
+        <height>831</height>
+       </rect>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="Use_62">
+      <property name="geometry">
+       <rect>
+        <x>1100</x>
+        <y>120</y>
+        <width>16</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QWidget" name="widget_61" native="true">
+      <property name="geometry">
+       <rect>
+        <x>800</x>
+        <y>20</y>
+        <width>281</width>
+        <height>250</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="Use_63">
+      <property name="geometry">
+       <rect>
+        <x>1100</x>
+        <y>400</y>
+        <width>16</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QWidget" name="widget_62" native="true">
+      <property name="geometry">
+       <rect>
+        <x>800</x>
+        <y>290</y>
+        <width>281</width>
+        <height>250</height>
+       </rect>
       </property>
      </widget>
     </widget>
+   </widget>
+   <widget class="QPushButton" name="Advance">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>890</y>
+      <width>1131</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Advance</string>
+    </property>
+   </widget>
+   <widget class="QFrame" name="Toolbar">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>850</y>
+      <width>1141</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::StyledPanel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">
@@ -1851,10 +1748,17 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>723</width>
-     <height>22</height>
+     <width>1155</width>
+     <height>23</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menuVersuib_IObe">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionQuit"/>
+   </widget>
+   <addaction name="menuVersuib_IObe"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <attribute name="toolBarArea">
@@ -1865,6 +1769,11 @@
    </attribute>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
+  <action name="actionQuit">
+   <property name="text">
+    <string>Quit</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources/>
