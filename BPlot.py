@@ -19,6 +19,7 @@ from Editor import Ui_MainWindow
 from GaussianFitter import Ui_GaussianFitter
 import time
 import random
+from matplotlib.backend_bases import key_press_handler
 from pylab import *
 from matplotlib.widgets import CheckButtons
 from MultiplotViewer import Ui_MultiplotViewer
@@ -59,6 +60,7 @@ FullCC = []
 FullO = []
 FullGaus = []
 allplots = [False]
+checkPlots = [True]*62
 for name in flist:
     if 'PathTo' in name:
         foundit = True
@@ -527,12 +529,13 @@ class MultiView(QtGui.QMainWindow):
         QtGui.QWidget.__init__(self, parent)
         self.ui = Ui_MultiplotViewer()
         self.ui.setupUi(self)
+        self.number = 0
         # self.ui.Return.clicked.connect(lambda : self.close())
-        print FullCC
         fig = []
         self.canvas = []
 
         widgets = dict()
+        checks = dict()
         ax = []
         widgets[1] = 'self.ui.widget'
         for i in range(60):
@@ -548,8 +551,61 @@ class MultiView(QtGui.QMainWindow):
         for q in range(61):
             ax[q].plot(FullO[q], FullCC[q])
             ax[q].plot(FullO[q], FullGaus[q])
-        self.navi_toolbar = NavigationToolbar(self.canvas[0], self.ui.Toolbar)
+        for q in range(62):
+            checks[q] = 'self.ui.Use_' + str(q+1)
+        for q in range(62):
+            eval(checks[q]).stateChanged.connect(self.flop(q))
+
+        index = int(self.ui.Tabs.currentIndex())
+        self.navi_toolbar = NavigationToolbar(self.canvas[9*index+self.number], self.ui.Toolbar)
         self.navi_toolbar.setParent(self.ui.Toolbar)
+        self.ui.Advance.clicked.connect(self.debug)
+
+    @staticmethod
+    def flop(num):
+        checkPlots[num] = not checkPlots[num]
+
+    def debug(self):
+        print checkPlots
+
+    def keyPressEvent(self, event):
+        index = int(self.ui.Tabs.currentIndex())
+        if event.key() is 49:
+            self.number = 1
+            self.navi_toolbar = NavigationToolbar(self.canvas[9*index+1], self.ui.Toolbar)
+            self.navi_toolbar.setParent(self.ui.Toolbar)
+        if event.key() is 50:
+            self.number = 2
+            self.navi_toolbar = NavigationToolbar(self.canvas[9*index+2], self.ui.Toolbar)
+            self.navi_toolbar.setParent(self.ui.Toolbar)
+        if event.key() is 51:
+            self.number = 3
+            self.navi_toolbar = NavigationToolbar(self.canvas[9*index+3], self.ui.Toolbar)
+            self.navi_toolbar.setParent(self.ui.Toolbar)
+        if event.key() is 52:
+            self.number = 4
+            self.navi_toolbar = NavigationToolbar(self.canvas[9*index+4], self.ui.Toolbar)
+            self.navi_toolbar.setParent(self.ui.Toolbar)
+        if event.key() is 53:
+            self.number = 5
+            self.navi_toolbar = NavigationToolbar(self.canvas[9*index+5], self.ui.Toolbar)
+            self.navi_toolbar.setParent(self.ui.Toolbar)
+        if event.key() is 54:
+            self.number = 6
+            self.navi_toolbar = NavigationToolbar(self.canvas[9*index+6], self.ui.Toolbar)
+            self.navi_toolbar.setParent(self.ui.Toolbar)
+        if event.key() is 55:
+            self.number = 7
+            self.navi_toolbar = NavigationToolbar(self.canvas[9*index+7], self.ui.Toolbar)
+            self.navi_toolbar.setParent(self.ui.Toolbar)
+        if event.key() is 56:
+            self.number = 8
+            self.navi_toolbar = NavigationToolbar(self.canvas[9*index+8], self.ui.Toolbar)
+            self.navi_toolbar.setParent(self.ui.Toolbar)
+        if event.key() is 57:
+            self.number = 9
+            self.navi_toolbar = NavigationToolbar(self.canvas[9*index+9], self.ui.Toolbar)
+            self.navi_toolbar.setParent(self.ui.Toolbar)
 
 
 
