@@ -22,7 +22,7 @@ import random
 from matplotlib.backend_bases import key_press_handler
 from pylab import *
 from matplotlib.widgets import CheckButtons
-from MultiplotViewer import Ui_MultiplotViewer
+from MultiplotViewerTesttwo import Ui_MultiplotViewer
 from PyQt4.uic import loadUiType
 
 from matplotlib.figure import Figure
@@ -76,7 +76,7 @@ if len(simplefilearray) is not 0:
         masterfilearray.append(tempopen)
 
 # The main GUI Class that controlles the rest og the program
-class MyForm(QtGui.QMainWindow):
+class MyForm(QtGui.QWidget):
     #I nitilazation of the GUI
     def __init__(self, parent=None):
         # Ininitlazation of the Widget
@@ -146,10 +146,10 @@ class MyForm(QtGui.QMainWindow):
         self.ui.FunctionFit.stateChanged.connect(self.fitter)
         self.ui.function1.clicked.connect(self.showfit)
         self.ui.function2.clicked.connect(self.correlate)
-        self.ui.function3.clicked.connect(self.LS)
+        self.ui.LS.clicked.connect(self.LS)
         self.ui.function4.clicked.connect(self.gaussian)
         self.ui.info.clicked.connect(self.info)
-        self.ui.Reset.clicked.connect(self.NI)
+        self.ui.Reset.clicked.connect(BSPSEss.reload)
 
 
         # These initialize the other windows as empty objects in the Main GUI controller
@@ -339,8 +339,6 @@ class MyForm(QtGui.QMainWindow):
         self.ui.consol.append('<font color = "black"> ---------------------------- <font><br>')
 
     # General Not Implimented function
-    def NI(self):
-        self.ui.consol.append('<font color = "red"> Button currently not implimented</font><br>')
 
     # controls the state of the fitting, also helps set the color of the "show fit" button
     def fitter(self):
@@ -411,15 +409,15 @@ class MyForm(QtGui.QMainWindow):
         plt.close(1)
 
         # Fetch the values and strings stored in relevent text fields
-        degree = self.ui.amplitude.toPlainText()
+        degree = self.ui.amplitude.value()
         plotparm[0] = degree
         try:
             if usearray[0] is True:
-                pathfilename = self.ui.pathListInput.toPlainText()
+                pathfilename = self.ui.pathListInput.text()
                 numToStack = self.ui.numStack.value()
                 plotparm[1] = pathfilename; plotparm[2] = numToStack
             else:
-               filename = self.ui.singleFileInput.toPlainText()
+               filename = self.ui.singleFileInput.text()
                plotparm[3] = filename
         except IOError:
             self.ui.consol.append('<font color = "red"> No Such File found, please check spelling and try again</font>')
@@ -488,8 +486,8 @@ class GaussianWindow(QtGui.QMainWindow):
         Gauss = AdvancedPlotting.gaussianfit(filename,halphause[0],hbetause[0],heliumause[0])
 
 # This is the order jump GUI, as before it currently is non functional, will fix at sometime
-class OrderJump(QtGui.QMainWindow):
-    def __init__ (self, parent=None):
+class OrderJump(QtGui.QDialog):
+    def __init__ (self, parent = None):
         QtGui.QWidget.__init__(self, parent)
         self.ui = Ui_JumpToOrder()
         self.ui.setupUi(self)
@@ -535,13 +533,12 @@ class MultiView(QtGui.QMainWindow):
         # self.ui.Return.clicked.connect(lambda : self.close())
         fig = []
         self.canvas = []
-
+        #self.showMaximized()
         widgets = dict()
 
         ax = []
-        widgets[1] = 'self.ui.widget'
-        for i in range(61):
-            widgets[i+2] = 'self.ui.widget_' + str(i+2)
+        for i in range(62):
+            widgets[i+1] = 'self.ui.widget_' + str(i+1)
         for q in range(62):
             fig.append(Figure(figsize=(2.81,2.50), dpi=100, facecolor='w'))
         for q in range(62):
@@ -556,9 +553,6 @@ class MultiView(QtGui.QMainWindow):
             ax[q].plot(FullO[q], FullGaus[q])
 
 
-        index = int(self.ui.Tabs.currentIndex())
-        self.navi_toolbar = NavigationToolbar(self.canvas[9*index+self.number], self.ui.Toolbar)
-        self.navi_toolbar.setParent(self.ui.Toolbar)
         self.ui.Advance.clicked.connect(self.go)
         self.window2 = None
 
@@ -572,7 +566,7 @@ class MultiView(QtGui.QMainWindow):
         useCheckArray = dict()
         usevelocity = []
         for q in range(62):
-            checks[q] = 'self.ui.Use_' + str(q+1)
+            checks[q] = 'self.ui.checkBox_' + str(q+1)
         for q in range(62):
             checkArray.append(eval(checks[q]).isChecked())
         for i in range(len(checkArray)):
@@ -592,46 +586,6 @@ class MultiView(QtGui.QMainWindow):
         self.window2.ui.textEdit.append(usetext)
         self.window2.ui.FileName.setText('CCorOutput.txt')
         self.window2.show()
-
-
-    def keyPressEvent(self, event):
-        index = int(self.ui.Tabs.currentIndex())
-        if event.key() is 49:
-            self.number = 1
-            self.navi_toolbar = NavigationToolbar(self.canvas[9*index+1], self.ui.Toolbar)
-            self.navi_toolbar.setParent(self.ui.Toolbar)
-        if event.key() is 50:
-            self.number = 2
-            self.navi_toolbar = NavigationToolbar(self.canvas[9*index+2], self.ui.Toolbar)
-            self.navi_toolbar.setParent(self.ui.Toolbar)
-        if event.key() is 51:
-            self.number = 3
-            self.navi_toolbar = NavigationToolbar(self.canvas[9*index+3], self.ui.Toolbar)
-            self.navi_toolbar.setParent(self.ui.Toolbar)
-        if event.key() is 52:
-            self.number = 4
-            self.navi_toolbar = NavigationToolbar(self.canvas[9*index+4], self.ui.Toolbar)
-            self.navi_toolbar.setParent(self.ui.Toolbar)
-        if event.key() is 53:
-            self.number = 5
-            self.navi_toolbar = NavigationToolbar(self.canvas[9*index+5], self.ui.Toolbar)
-            self.navi_toolbar.setParent(self.ui.Toolbar)
-        if event.key() is 54:
-            self.number = 6
-            self.navi_toolbar = NavigationToolbar(self.canvas[9*index+6], self.ui.Toolbar)
-            self.navi_toolbar.setParent(self.ui.Toolbar)
-        if event.key() is 55:
-            self.number = 7
-            self.navi_toolbar = NavigationToolbar(self.canvas[9*index+7], self.ui.Toolbar)
-            self.navi_toolbar.setParent(self.ui.Toolbar)
-        if event.key() is 56:
-            self.number = 8
-            self.navi_toolbar = NavigationToolbar(self.canvas[9*index+8], self.ui.Toolbar)
-            self.navi_toolbar.setParent(self.ui.Toolbar)
-        if event.key() is 57:
-            self.number = 9
-            self.navi_toolbar = NavigationToolbar(self.canvas[9*index+9], self.ui.Toolbar)
-            self.navi_toolbar.setParent(self.ui.Toolbar)
 
 
 
@@ -772,8 +726,8 @@ class CCWindow(QtGui.QMainWindow):
             self.ui.infobox.append('<font color="red">Multiple Correlation Not an opetion currently, please deselect and use single correlation</font><br>')
         else:
             degree = self.ui.fitdegree.value()
-            templatename = self.ui.tempfilename.toPlainText()
-            objectname = self.ui.targetfilename.toPlainText()
+            templatename = self.ui.tempfilename.text()
+            objectname = self.ui.targetfilename.text()
             value = self.ui.ShiftSize.value()
             run = False
             try:
