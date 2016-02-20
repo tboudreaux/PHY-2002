@@ -1,4 +1,4 @@
-# Echel Spectra viewer & analizer
+# Spectral Analysis Utility (SAUL)
 # Paddy Clancy and Thomas Boudreaux
 from General import *
 prerun = open('prerun.log','w')
