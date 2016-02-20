@@ -437,7 +437,7 @@ class AdvancedPlotting(PlotFunctionality):
         return new_jd
 
     @staticmethod
-    def gaussianfit(filename, hydrogenalpha,hydrogenbeta,heliumalpha):
+    def gaussianfit(filename, hydrogenalpha, hydrogenbeta, heliumalpha):
         allwave = []
         allflux = []
         xvalue = []
@@ -530,7 +530,7 @@ class AdvancedPlotting(PlotFunctionality):
        return wave2
 
     @staticmethod
-    def gaussianfit(x,y,a,mean,stddev):
+    def gaussianfitold(x,y,a,mean,stddev):
         g_init = models.Gaussian1D(a,mean,stddev)
         fit_g = fitting.LevMarLSQFitter()
         g = fit_g(g_init,x,y)

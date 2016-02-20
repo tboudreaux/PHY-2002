@@ -1,7 +1,7 @@
 # Echel Spectra viewer & analizer
 # Paddy Clancy and Thomas Boudreaux
 from General import *
-
+prerun = open('prerun.log','w')
 # GUI file import statements
 print >>prerun, 'Cheking for GUI files'
 try:
@@ -15,22 +15,6 @@ try:
 except ImportError:
     print >>prerun, 'Some or all GUI files missing, please check to make sure that you donwloaded the entire package and re-run'
     exit()
-import random
-import matplotlib.pyplot as plt
-import os
-from PyQt4 import QtGui, QtCore
-from consolcontrol import *
-from SecondGui import Ui_Header
-import webbrowser
-from GuiFunction import *
-from astropy.io import fits
-import sys
-from Correlation2 import Ui_CrossCore
-from consolcontrol import *
-from JumpToOrder import Ui_JumpToOrder
-from Editor import Ui_MainWindow
-from GaussianFitter import Ui_GaussianFitter
-import time
 
 # importer for pip module
 print >>prerun, 'Checking pip'
