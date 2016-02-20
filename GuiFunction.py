@@ -2,7 +2,6 @@ from astropy.io import fits
 import numpy as np
 from General import Mathamatics
 import math
-from astropy.modeling import models, fitting
 import jdcal
 from scipy.optimize import curve_fit
 from scipy import asarray as ar,exp

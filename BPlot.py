@@ -1,15 +1,6 @@
 # Echel Spectra viewer & analizer
 # Paddy Clancy and Thomas Boudreaux
-prerun=open('prerun.log', 'w')
-print 'Begining Pre-run Checks'
-print >>prerun, 'Begining Pre-run Checks'
-print >>prerun, 'Checking for General File'
-try:
-    from General import *
-    print >>prerun, 'General file OK'
-except ImportError:
-    print >>prerun, 'General file not located, please check to make sure that you downloaded the entire package and re-run'
-    exit()
+from General import *
 
 # GUI file import statements
 print >>prerun, 'Cheking for GUI files'
@@ -24,6 +15,22 @@ try:
 except ImportError:
     print >>prerun, 'Some or all GUI files missing, please check to make sure that you donwloaded the entire package and re-run'
     exit()
+import random
+import matplotlib.pyplot as plt
+import os
+from PyQt4 import QtGui, QtCore
+from consolcontrol import *
+from SecondGui import Ui_Header
+import webbrowser
+from GuiFunction import *
+from astropy.io import fits
+import sys
+from Correlation2 import Ui_CrossCore
+from consolcontrol import *
+from JumpToOrder import Ui_JumpToOrder
+from Editor import Ui_MainWindow
+from GaussianFitter import Ui_GaussianFitter
+import time
 
 # importer for pip module
 print >>prerun, 'Checking pip'
@@ -554,6 +561,8 @@ class GaussianWindow(QtGui.QMainWindow):
     def plot(self):
         filename = self.ui.lineEdit.text()
         Gauss = AdvancedPlotting.gaussianfit(filename,halphause[0],hbetause[0],heliumause[0])
+
+
 
 # This is the order jump GUI, as before it currently is non functional, will fix at sometime
 class OrderJump(QtGui.QDialog):
