@@ -385,18 +385,17 @@ class AdvancedPlotting(PlotFunctionality):
             y = ar(fluxnew)
             n = len(x)
             print n # amount of data
-            mean = sum(x * y)/n                   # find the average
-            sigma = sum(y*(x-mean)**2)/n        # find the sigma
-            def gaus(x,a,x0,sigma):
-                return a*exp(-(x-x0)**2/(2*sigma**2))
-
-            gaussy,gaussx = curve_fit(gaus,x,y,p0=[1,mean,sigma])
-
+            def gaus(x,a,x0,sigma,offset):
+                return (-a*exp(-(x-x0)**2/(2*sigma**2))) + offset   # where offset is the offset of the spectra
+            center = allwave[(upper-((upper-lower)/2))]
+            print(center)
+            gaussy,gaussx = curve_fit(gaus,x,y,p0=[.5,center,5,1])
+            print(gaussy)
             # g_init = models.Gaussian1D(amplitude = max(fluxnew), mean = meancalc, stddev = sigma)
             # fit_g = fitting.LevMarLSQFitter()
             # g = fit_g(g_init, wavenew, fluxnew)
 
-            plt.plot(x, gaus(x, *gaussy))
+            plt.plot(x,gaus(x,*gaussy))
             plt.show()
             plt.pause(5)
 
@@ -407,11 +406,15 @@ class AdvancedPlotting(PlotFunctionality):
             fluxnew = []
             xvalue.append(gaussx)
             yvalue.append(gaussy)
-            maxvalue.append(maximum)
+            #maxvalue.append(maximum)
 
         return {'gaussx': xvalue,'gaussy': yvalue,'maximum': maxvalue}
+
+
     ## TOUCH THE COW
     ## DO IT NOW
+
+
 ##################################
 ## Code to pull from text file. ##
 ##################################
