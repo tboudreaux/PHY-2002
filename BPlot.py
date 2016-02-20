@@ -24,15 +24,85 @@ from pylab import *
 from matplotlib.widgets import CheckButtons
 from MultiplotViewerTesttwo import Ui_MultiplotViewer
 from PyQt4.uic import loadUiType
+import pip
 
+cont = False
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_qt4agg import (
     FigureCanvasQTAgg as FigureCanvas,
     NavigationToolbar2QT as NavigationToolbar)
+print 'Begining Pre-run Checks'
+
+print 'Checking JPL Epemris is Installed'
+try:
+    imp.find_module('jplephem')
+    import jplephem
+    print 'jplephem OK'
+    jplfind = True
+    jplimport = True
+    jplinstall = False
+except ImportError:
+    print 'Error: JPL EPhemris is not installed - you will not be able to preform HJD corrections without this module'
+    while cont is False:
+        installjpl = raw_input('would you like to install jplepehm and de423[Y/n]: ')
+        print installjpl
+        if installjpl == 'Y':
+            pip.main(['install', 'jplephem'])
+            pip.main(['install', 'de423'])
+            cont = True
+            import jplephem
+            jplinstall = True
+            jplimport = True
+            jplfind = False
+        elif installjpl == 'n':
+            print 'Not installing JPL Ephemris - you will not be able to calculate Heliocentric / barycentric corrected velocities until JPL Epemris is installed\n program will function normally aside from this'
+            cont = True
+            jplfind = False
+            jplimport = False
+            jplinstall = False
+        else:
+            print 'Please Enter either Y or N'
+
+print 'Checking de423 Ephemris database is installed'
+try:
+    imp.find_module('de423')
+    import de423
+    de423find = True
+    de423import = True
+    de423install = False
+    print 'de423 OK'
+except ImportError:
+    print 'Error: de423 database is not installed - you will not be able to preform HJD corrections without this module '
+    while cont is False:
+        installjpl = raw_input('would you like to install de423 (~37MB) [Y/n]: ')
+        print installjpl
+        if installjpl == 'Y':
+            pip.main(['install', 'de423'])
+            cont = True
+            de423find = False
+            de423import = True
+            de423install = True
+            import de423
+        elif installjpl == 'n':
+            print 'Not installing de423 - you will not be able to calculate Heliocentric / barycentric corrected velocities until JPL Epemris is installed\n program will function normally aside from this'
+            cont = True
+            de423find = False
+            de423import = False
+            de423install = False
+        else:
+            print 'Please Enter either Y or N'
 
 # Checks os for compatability
-PreChecks.oscheck()
+mac = PreChecks.oscheck()
+code = []
+code.append(int(jplfind)); code.append(int(jplimport)); code.append(int(jplinstall)); code.append(int(de423find))
+code.append(int(de423import)); code.append(int(de423install)); code.append(int(mac))
+for precode in range(len(code)):
+    code[precode] = str(code[precode])
+code = ''.join(code)
+code = int(code, 2)
 
+print 'Pre-run Checks finished with code:', code
 # These are here to allow for global variables passe betweel all classes, at some point these
 # Should be replaced by local namespace variables, however I have yet to get around to that
 inputArray = []
@@ -751,6 +821,10 @@ class CCWindow(QtGui.QMainWindow):
                 self.ui.infobox.append('<font color ="red">Please Make sure that file names are entered in the boxs</font>')
             except IOError:
                 self.ui.infobox.append('<font color ="red">Please Make sure that file names are spelled correctly</font>')
+            print 'In Here'
+            objectHJD = AdvancedPlotting.coordconvert(objectname)
+            templateHJD = AdvancedPlotting.coordconvert(templatename)
+            print objectHJD, templateHJD
             plotparm[4] = degree; plotparm[5] = templatename; plotparm[6] = objectname; plotparm[7] = self.length
             plotparm[8] = self.smallerwaves; plotparm[9] = self.largerwaves; plotparm[10] = value
             jumpcore[0] = True

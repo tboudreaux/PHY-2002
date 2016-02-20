@@ -10,12 +10,16 @@ class PreChecks(object):
         print('Checking Operating System')
         if operatings == 'Windows':
             print('Program does not run on Windows machines, please use a UNIX Like system to run program')
+            mac = False
             exit()
         elif operatings == 'Darwin':
             mpl.interactive(True)
+            mac = True
             print('OS OK')
         else:
             print('OS OK')
+            mac = False
+        return mac
 
     @staticmethod
     def modimport():
