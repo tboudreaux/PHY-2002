@@ -1,134 +1,107 @@
 # Echel Spectra viewer & analizer
 # Paddy Clancy and Thomas Boudreaux
-from General import *
-
-import random
-import matplotlib.pyplot as plt
-import os
-from PyQt4 import QtGui, QtCore
-from consolcontrol import *
-from SecondGui import Ui_Header
-import webbrowser
-
-from astropy.io import fits
-import sys
-from Correlation2 import Ui_CrossCore
-from consolcontrol import *
-from JumpToOrder import Ui_JumpToOrder
-from Editor import Ui_MainWindow
-from GaussianFitter import Ui_GaussianFitter
-import time
-import random
-from matplotlib.backend_bases import key_press_handler
-from pylab import *
-from matplotlib.widgets import CheckButtons
-from MultiplotViewerTesttwo import Ui_MultiplotViewer
-from PyQt4.uic import loadUiType
-import pip
-
-cont = False
-from matplotlib.figure import Figure
-from matplotlib.backends.backend_qt4agg import (
-    FigureCanvasQTAgg as FigureCanvas,
-    NavigationToolbar2QT as NavigationToolbar)
+prerun=open('prerun.log', 'w')
 print 'Begining Pre-run Checks'
+print >>prerun, 'Begining Pre-run Checks'
+print >>prerun, 'Checking for General File'
+try:
+    from General import *
+    print >>prerun, 'General file OK'
+except ImportError:
+    print >>prerun, 'General file not located, please check to make sure that you downloaded the entire package and re-run'
+    exit()
 
-print 'Checking JPL Epemris is Installed'
+# GUI file import statements
+print >>prerun, 'Cheking for GUI files'
 try:
-    imp.find_module('jplephem')
-    import jplephem
-    print 'jplephem OK'
-    jplfind = True
-    jplimport = True
-    jplinstall = False
+    from Correlation2 import Ui_CrossCore
+    from JumpToOrder import Ui_JumpToOrder
+    from Editor import Ui_MainWindow
+    from GaussianFitter import Ui_GaussianFitter
+    from SecondGui import Ui_Header
+    from MultiplotViewerTesttwo import Ui_MultiplotViewer
+    print >>prerun, 'GUI files OK'
 except ImportError:
-    print 'Error: JPL EPhemris is not installed - you will not be able to preform HJD corrections without this module'
-    while cont is False:
-        installjpl = raw_input('would you like to install jplepehm and de423[Y/n]: ')
-        if installjpl == 'Y':
-            pip.main(['install', 'jplephem'])
-            pip.main(['install', 'de423'])
-            cont = True
-            import jplephem
-            jplinstall = True
-            jplimport = True
-            jplfind = False
-        elif installjpl == 'n':
-            print 'Not installing JPL Ephemris - you will not be able to calculate Heliocentric / barycentric corrected velocities until JPL Epemris is installed\n program will function normally aside from this'
-            cont = True
-            jplfind = False
-            jplimport = False
-            jplinstall = False
-        else:
-            print 'Please Enter either Y or N'
+    print >>prerun, 'Some or all GUI files missing, please check to make sure that you donwloaded the entire package and re-run'
+    exit()
 
-print 'Checking de423 Ephemris database is installed'
-cont = False
+# importer for pip module
+print >>prerun, 'Checking pip'
 try:
-    imp.find_module('de423')
-    import de423
-    de423find = True
-    de423import = True
-    de423install = False
-    print 'de423 OK'
+    import pip
+    print >>prerun, 'pip OK'
 except ImportError:
-    print 'Error: de423 database is not installed - you will not be able to preform HJD corrections without this module '
-    while cont is False:
-        installde = raw_input('would you like to install de423 (~37MB) [Y/n]: ')
-        if installde == 'Y':
-            pip.main(['install', 'de423'])
+    print >>prerun, 'pip not found, will try to continue running program, if all other dependanceied are installed program should run OK'
+
+packages = ['import random', 'import matplotlib.pyplot as plt', 'import os', 'from PyQt4 import QtGui, QtCore',
+            'import webbrowser', 'from astropy.io import fits', 'import sys', 'import time',
+            'from matplotlib.backend_bases import key_press_handler', 'from pylab import *',
+            'from matplotlib.widgets import CheckButtons', 'from PyQt4.uic import loadUiType', 'import jplephem',
+            'import de423', 'import jdcal', 'from matplotlib.figure import Figure',
+            'from matplotlib.backends.backend_qt4agg import (FigureCanvasQTAgg as FigureCanvas,NavigationToolbar2QT as NavigationToolbar)',
+            'import astropy.time as astrotime', 'import astropy.coordinates as coords', 'import astropy.units as unit',
+            'import astropy.constants as const', 'from astropy.modeling import models,fitting',
+            'from scipy import asarray as ar,exp', 'from scipy.optimize import curve_fit', 'import math',
+            'import numpy as np']
+
+code = []
+for importer in range(len(packages)):
+    cont = False
+    commandtemp = packages[importer].split(' ')
+    package = commandtemp[1]
+    try:
+        exec(packages[importer])
+        print >>prerun, package, 'OK'
+        code.append(1)
+        code.append(1)
+        code.append(1)
+    except ImportError:
+        print >>prerun, packages[importer], 'Not found in your python install, it is recomended that you use annaconda'
+        print packages[importer], 'Not found in your python install, it is recomended that you use annaconda'
+        while cont is False:
+            installpac = raw_input('Would you like to install ' + packages[importer] + ' [Y/n]: ')
+            if installpac == 'Y':
+                pip.main(['install', package])
+                try:
+                    exec(packages[importer])
+                    print >>prerun, package, 'OK'
+                    code.append(0)
+                    code.append(1)
+                    code.append(1)
+                except ImportError:
+                    print >>prerun, 'An Unkown Error has occured while importing or installing', package, 'Please consider using annaconda'
+                    code.append(0)
+                    code.append(1)
+                    code.append(0)
             cont = True
-            de423find = False
-            de423import = True
-            de423install = True
-            import de423
-        elif installde == 'n':
-            print 'Not installing de423 - you will not be able to calculate Heliocentric / barycentric corrected velocities until JPL Epemris is installed\n program will function normally aside from this'
-            cont = True
-            de423find = False
-            de423import = False
-            de423install = False
-        else:
-            print 'Please Enter either Y or N'
-cont = False
+            if installpac == 'n':
+                print >>prerun, package, 'will not be installed, the program cannot run without this packages and will now shutdown, please consider using anaconda'
+                print package, 'will not be installed, the program cannot run without this packages and will now shutdown, please consider using anaconda'
+                cont = True
+                code.append(0)
+                code.append(0)
+                code.append(0)
+                exit()
+            else:
+                print 'Please Enter either Y or n'
+print len(code)
+print >>prerun, 'Trying other program dependancy files'
 try:
-    imp.find_module('jdcal')
-    import jdcal
-    jdcalfind = True
-    jdcalimport = True
-    jdcalinstall = False
-    print 'jdcal OK'
+    from GuiFunction import *
+    from consolcontrol import *
 except ImportError:
-    print 'Error: Jdcal julian data converter not installed - you will not be able to preform HJD corrections without this module '
-    while cont is False:
-        installjdcal = raw_input('would you like to install jdcal [Y/n]: ')
-        if installjdcal == 'Y':
-            pip.main(['install', 'jdcal'])
-            cont = True
-            jdcalfind = False
-            jdcalimport = True
-            jdcalinstall = True
-            import de423
-        elif installjdcal == 'n':
-            print 'Not installing jdcal - you will not be able to calculate Heliocentric / barycentric corrected velocities until JPL Epemris is installed\n program will function normally aside from this'
-            cont = True
-            jdcalfind = False
-            jdcalimport = False
-            jdcalinstall = False
-        else:
-            print 'Please Enter either Y or N'
-from GuiFunction import *
+    print >>prerun, 'Some or all internal dependancies were not met, please make sure that you downloaded the entire package and re-run'
+    exit()
 # Checks os for compatability
 mac = PreChecks.oscheck()
-code = []
-code.append(int(jplfind)); code.append(int(jplimport)); code.append(int(jplinstall)); code.append(int(de423find))
-code.append(int(de423import)); code.append(int(de423install)); code.append(int(jdcalfind)); code.append(int(jdcalimport))
-code.append(int(jdcalinstall)); code.append(int(mac))
 for precode in range(len(code)):
     code[precode] = str(code[precode])
 code = ''.join(code)
+savecode = code
 code = int(code, 2)
 
+print >>prerun, 'Pre-run Checks finished with code:', code, '(', savecode, ')'
+prerun.close()
 print 'Pre-run Checks finished with code:', code
 # These are here to allow for global variables passe betweel all classes, at some point these
 # Should be replaced by local namespace variables, however I have yet to get around to that

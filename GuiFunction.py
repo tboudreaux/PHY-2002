@@ -7,7 +7,6 @@ import jdcal
 from scipy.optimize import curve_fit
 from scipy import asarray as ar,exp
 import matplotlib.pyplot as plt
-import time
 from astropy.modeling import models,fitting
 import jplephem
 import de423
@@ -15,6 +14,7 @@ import astropy.time as astrotime
 import astropy.coordinates as coords
 import astropy.units as unit
 import astropy.constants as const
+
 run = [False]
 
 
@@ -148,7 +148,8 @@ class AdvancedPlotting(PlotFunctionality):
         # local
         targetflux = []
         templateflux = []
-        correlation =[]
+        correlation = []
+        correlationbad = []
         offset = []
 
         # These call the wfextract function to get the flux and wavelength for the target and template as a dictionary
@@ -240,7 +241,8 @@ class AdvancedPlotting(PlotFunctionality):
 
             # correlates the two arrays of fluxes and appends that to an array
 
-           # correlation.append(np.correlate(targetflux, shiftflux))
+            correlationbad.append(np.correlate(templateflux, shiftflux))
+            print len(correlationbad)
             z = templateflux - shiftflux
             savez = z
             z = [x**2 for x in z]
@@ -251,7 +253,7 @@ class AdvancedPlotting(PlotFunctionality):
             z /= bottom
             correlation.append(z)
 
-            # plt.plot(templateflux, label=str(z))
+            # plt.plot(templateflux, label=str(np.correlate(templateflux, shiftflux)))
             # plt.plot(shiftflux)
             # plt.legend()
             # plt.show()
@@ -267,7 +269,8 @@ class AdvancedPlotting(PlotFunctionality):
         waverange = (max(newtargetwave)) - (min(newtargetwave))
         pixrange = len(newtargetwave)
         dispersion = waverange/pixrange
-        return{'correlation':correlation, 'offset':offset, 'fit':g, 'dispersion': dispersion}
+        #return{'correlation': correlation, 'offset': offset, 'fit': g, 'dispersion': dispersion}
+        return{'correlation': correlationbad, 'offset': offset, 'fit': g, 'dispersion': dispersion}
 
     # This method deals with showing the wavelengths in the cross correlation chart, basically it allows one to see
     # what is being cross correlated, which is helpful for you know...SCIENCE
