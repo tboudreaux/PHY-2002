@@ -9,7 +9,7 @@ from PyQt4 import QtGui, QtCore
 from consolcontrol import *
 from SecondGui import Ui_Header
 import webbrowser
-from GuiFunction import *
+
 from astropy.io import fits
 import sys
 from Correlation2 import Ui_CrossCore
@@ -45,7 +45,6 @@ except ImportError:
     print 'Error: JPL EPhemris is not installed - you will not be able to preform HJD corrections without this module'
     while cont is False:
         installjpl = raw_input('would you like to install jplepehm and de423[Y/n]: ')
-        print installjpl
         if installjpl == 'Y':
             pip.main(['install', 'jplephem'])
             pip.main(['install', 'de423'])
@@ -64,6 +63,7 @@ except ImportError:
             print 'Please Enter either Y or N'
 
 print 'Checking de423 Ephemris database is installed'
+cont = False
 try:
     imp.find_module('de423')
     import de423
@@ -74,16 +74,15 @@ try:
 except ImportError:
     print 'Error: de423 database is not installed - you will not be able to preform HJD corrections without this module '
     while cont is False:
-        installjpl = raw_input('would you like to install de423 (~37MB) [Y/n]: ')
-        print installjpl
-        if installjpl == 'Y':
+        installde = raw_input('would you like to install de423 (~37MB) [Y/n]: ')
+        if installde == 'Y':
             pip.main(['install', 'de423'])
             cont = True
             de423find = False
             de423import = True
             de423install = True
             import de423
-        elif installjpl == 'n':
+        elif installde == 'n':
             print 'Not installing de423 - you will not be able to calculate Heliocentric / barycentric corrected velocities until JPL Epemris is installed\n program will function normally aside from this'
             cont = True
             de423find = False
@@ -91,12 +90,40 @@ except ImportError:
             de423install = False
         else:
             print 'Please Enter either Y or N'
-
+cont = False
+try:
+    imp.find_module('jdcal')
+    import jdcal
+    jdcalfind = True
+    jdcalimport = True
+    jdcalinstall = False
+    print 'jdcal OK'
+except ImportError:
+    print 'Error: Jdcal julian data converter not installed - you will not be able to preform HJD corrections without this module '
+    while cont is False:
+        installjdcal = raw_input('would you like to install jdcal [Y/n]: ')
+        if installjdcal == 'Y':
+            pip.main(['install', 'jdcal'])
+            cont = True
+            jdcalfind = False
+            jdcalimport = True
+            jdcalinstall = True
+            import de423
+        elif installjdcal == 'n':
+            print 'Not installing jdcal - you will not be able to calculate Heliocentric / barycentric corrected velocities until JPL Epemris is installed\n program will function normally aside from this'
+            cont = True
+            jdcalfind = False
+            jdcalimport = False
+            jdcalinstall = False
+        else:
+            print 'Please Enter either Y or N'
+from GuiFunction import *
 # Checks os for compatability
 mac = PreChecks.oscheck()
 code = []
 code.append(int(jplfind)); code.append(int(jplimport)); code.append(int(jplinstall)); code.append(int(de423find))
-code.append(int(de423import)); code.append(int(de423install)); code.append(int(mac))
+code.append(int(de423import)); code.append(int(de423install)); code.append(int(jdcalfind)); code.append(int(jdcalimport))
+code.append(int(jdcalinstall)); code.append(int(mac))
 for precode in range(len(code)):
     code[precode] = str(code[precode])
 code = ''.join(code)
@@ -600,7 +627,6 @@ class MultiView(QtGui.QMainWindow):
         self.ui = Ui_MultiplotViewer()
         self.ui.setupUi(self)
         self.number = 0
-        # self.ui.Return.clicked.connect(lambda : self.close())
         fig = []
         self.canvas = []
         windowsize = self.size()
@@ -629,7 +655,6 @@ class MultiView(QtGui.QMainWindow):
         del FullCC[:]
         del FullO[:]
         del FullGaus[:]
-        print FullCC
 
         self.ui.Advance.clicked.connect(self.go)
         self.window2 = None
@@ -665,9 +690,9 @@ class MultiView(QtGui.QMainWindow):
         self.window2.ui.FileName.setText('CCorOutput.txt')
         self.window2.show()
 
-
-
 # this is the cross correlation GUI
+
+
 class CCWindow(QtGui.QMainWindow):
     def __init__ (self, parent = None):
         QtGui.QWidget.__init__(self, parent)
@@ -822,9 +847,9 @@ class CCWindow(QtGui.QMainWindow):
             except IOError:
                 self.ui.infobox.append('<font color ="red">Please Make sure that file names are spelled correctly</font>')
             print 'In Here'
-            objectHJD = AdvancedPlotting.coordconvert(objectname)
-            templateHJD = AdvancedPlotting.coordconvert(templatename)
-            print objectHJD, templateHJD
+            #objectHJD = AdvancedPlotting.coordconvert(objectname)
+            #templateHJD = AdvancedPlotting.coordconvert(templatename)
+            # print objectHJD, templateHJD
             plotparm[4] = degree; plotparm[5] = templatename; plotparm[6] = objectname; plotparm[7] = self.length
             plotparm[8] = self.smallerwaves; plotparm[9] = self.largerwaves; plotparm[10] = value
             jumpcore[0] = True
@@ -1025,6 +1050,7 @@ class Plotter():
 
 # Bascically the most important section of code in the whole code because it makes everything start, its also the
 # only section of code in this entire program I don't really understand (I got this section from a tutorial)
+# scratch that I get it now (this line was written like 2 weeks after the pervious two)
 if __name__ == "__main__":
     app = QtGui.QApplication(sys.argv)
     myapp = MyForm()
