@@ -533,25 +533,33 @@ class MultiView(QtGui.QMainWindow):
         # self.ui.Return.clicked.connect(lambda : self.close())
         fig = []
         self.canvas = []
-        #self.showMaximized()
+        windowsize = self.size()
+        windowsize = str(windowsize)
+        windowwidth = int(windowsize[19:-6])
+        windowheight = int(windowsize[24:-1])
         widgets = dict()
-
+        windowheight -= (0.2)*windowheight
+        print windowheight
+        boxheight = windowheight/3
+        print boxheight
         ax = []
         for i in range(62):
             widgets[i+1] = 'self.ui.widget_' + str(i+1)
         for q in range(62):
-            fig.append(Figure(figsize=(2.81,2.50), dpi=100, facecolor='w'))
+            fig.append(Figure(figsize=(2.81,boxheight/100), dpi=85, facecolor='w'))
         for q in range(62):
             self.canvas.append(FigureCanvas(fig[q]))
         for q in range(62):
             self.canvas[q].setParent(eval(widgets[q+1]))
         for q in range(62):
             ax.append(fig[q].add_subplot(111, xlabel='Offset(A)', ylabel='CC', title='order: '+ str(q+1)))
-        print len(FullO), len(FullCC), len(FullGaus)
         for q in range(62):
             ax[q].plot(FullO[q], FullCC[q])
             ax[q].plot(FullO[q], FullGaus[q])
-
+        del FullCC[:]
+        del FullO[:]
+        del FullGaus[:]
+        print FullCC
 
         self.ui.Advance.clicked.connect(self.go)
         self.window2 = None
@@ -817,6 +825,7 @@ class Plotter():
             fig.canvas.mpl_connect('key_press_event', plotcontrol)
             plt.show()
         else:
+            del velocity[:]
             for i in range(62):
                 data = AdvancedPlotting.ccor(objectname, templatename, degree, i, num, larger, smaller, value)
                 index = 0
@@ -833,6 +842,7 @@ class Plotter():
             if allplots[0] is False:
                 CCWindow.window3 = MultiView()
                 CCWindow.window3.show()
+
             else:
                 pass
         print 'now here'
