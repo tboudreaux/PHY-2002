@@ -527,4 +527,4 @@ class AdvancedPlotting(PlotFunctionality):
        elif heliuma is True:
            wave2=wave1[2]
            AdvancedPlotting.gaussianfit(filename,wave2[1],wave2[0])
-
+       return 0
