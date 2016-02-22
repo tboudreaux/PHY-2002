@@ -241,7 +241,6 @@ class AdvancedPlotting(PlotFunctionality):
             # correlates the two arrays of fluxes and appends that to an array
 
             correlationbad.append(np.correlate(templateflux, shiftflux))
-            print len(correlationbad)
             z = templateflux - shiftflux
             savez = z
             z = [x**2 for x in z]
@@ -268,8 +267,8 @@ class AdvancedPlotting(PlotFunctionality):
         waverange = (max(newtargetwave)) - (min(newtargetwave))
         pixrange = len(newtargetwave)
         dispersion = waverange/pixrange
-        #return{'correlation': correlation, 'offset': offset, 'fit': g, 'dispersion': dispersion}
-        return{'correlation': correlationbad, 'offset': offset, 'fit': g, 'dispersion': dispersion}
+        return{'correlation': correlation, 'offset': offset, 'fit': g, 'dispersion': dispersion}
+        #return{'correlation': correlationbad, 'offset': offset, 'fit': g, 'dispersion': dispersion}
 
     # This method deals with showing the wavelengths in the cross correlation chart, basically it allows one to see
     # what is being cross correlated, which is helpful for you know...SCIENCE
@@ -350,12 +349,12 @@ class AdvancedPlotting(PlotFunctionality):
         JD = sum(jdcal.gcal2jd(Year, Month, Day))
 
         # Convert to JD2000
-        J2 = JD - 2451545.0
+        MJD = JD - 2451545.0
 
         # This calculates the distance to the sun on a given Julian Date, these at some point need to be modified, however
         # this should work for the time being
-        MeanLon = 280.460 + 0.9856474 * J2
-        MeanAnon = 357.528 + 0.9856003 * J2
+        MeanLon = 280.460 + 0.9856474 * MJD
+        MeanAnon = 357.528 + 0.9856003 * MJD
         cont = False
         # corrects for, and places the mean annomoly in the range of 360
         while cont is False:
@@ -380,11 +379,12 @@ class AdvancedPlotting(PlotFunctionality):
         # time = distance / speed
         c = 0.0020039888 # AU / second
         timedept = SolarDist/c
-        print timedept
+        HJD = MJD + (timedept/86400)
+        HJD += 2451545.0
 
         # The Next section here calculates the Unit vector pointed at the target
 
-        return SolarDist
+        return HJD
 
     @staticmethod
     def gaussianfit(filename, hydrogenalpha, hydrogenbeta, heliumalpha):
@@ -403,7 +403,6 @@ class AdvancedPlotting(PlotFunctionality):
         # newflux = data['flux']
         wavenew = []
         fluxnew = []
-        print len(selection)
         for i in range(len(selection)):
             lower = min(range(len(allwave)), key = lambda k: abs(allwave[k]-selection[i][0]))
             upper = min(range(len(allwave)), key = lambda k: abs(allwave[k]-selection[i][1]))

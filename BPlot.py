@@ -75,7 +75,6 @@ for importer in range(len(packages)):
                 exit()
             else:
                 print 'Please Enter either Y or n'
-print len(code)
 print >>prerun, 'Trying other program dependancy files'
 try:
     from GuiFunction import *
@@ -601,9 +600,7 @@ class MultiView(QtGui.QMainWindow):
         windowheight = int(windowsize[24:-1])
         widgets = dict()
         windowheight -= (0.2)*windowheight
-        print windowheight
         boxheight = windowheight/3
-        print boxheight
         ax = []
         for i in range(62):
             widgets[i+1] = 'self.ui.widget_' + str(i+1)
@@ -812,7 +809,6 @@ class CCWindow(QtGui.QMainWindow):
                 self.ui.infobox.append('<font color ="red">Please Make sure that file names are entered in the boxs</font>')
             except IOError:
                 self.ui.infobox.append('<font color ="red">Please Make sure that file names are spelled correctly</font>')
-            print 'In Here'
             HJD = AdvancedPlotting.coordconvert(objectname)
             print HJD
             plotparm[4] = degree; plotparm[5] = templatename; plotparm[6] = objectname; plotparm[7] = self.length
@@ -850,7 +846,6 @@ class Plotter():
         # fetches the data from the ccor function in Advanced Plotting by calling the function, data is returnted as a
         #   2 element dictionary, so then when its plotted below there its is called with the dictionaty nameing
         if doPlot is True and order < 62:
-            print 'here'
             finished = [False]
             data = AdvancedPlotting.ccor(objectname, templatename, degree, order, num, larger, smaller, value)
             fig = plt.figure(figsize=(10, 10))
@@ -906,10 +901,8 @@ class Plotter():
             if allplots[0] is False:
                 CCWindow.window3 = MultiView()
                 CCWindow.window3.show()
-
             else:
                 pass
-        print 'now here'
 
     # The plot controller for the plot that plots (enough plots for you yet?) stacked plots (there we go)
     @staticmethod
