@@ -813,9 +813,8 @@ class CCWindow(QtGui.QMainWindow):
             except IOError:
                 self.ui.infobox.append('<font color ="red">Please Make sure that file names are spelled correctly</font>')
             print 'In Here'
-            #objectHJD = AdvancedPlotting.coordconvert(objectname)
-            #templateHJD = AdvancedPlotting.coordconvert(templatename)
-            # print objectHJD, templateHJD
+            HJD = AdvancedPlotting.coordconvert(objectname)
+            print HJD
             plotparm[4] = degree; plotparm[5] = templatename; plotparm[6] = objectname; plotparm[7] = self.length
             plotparm[8] = self.smallerwaves; plotparm[9] = self.largerwaves; plotparm[10] = value
             jumpcore[0] = True

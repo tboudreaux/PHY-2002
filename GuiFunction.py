@@ -377,64 +377,14 @@ class AdvancedPlotting(PlotFunctionality):
         # calculates values for use in the HJD Calculation
         EcclipticLon = MeanLon + 1.915*math.sin(MeanAnon) + 0.020*math.sin(2*MeanAnon)
         SolarDist = 1.00014 - 0.01671*math.cos(MeanAnon) - 0.00014*math.cos(2*MeanAnon)
-        HJD = AdvancedPlotting.jd_corr(J2, name, jd_type='hjd')
-        print 'in function:', HJD
-        BJD = AdvancedPlotting.jd_corr(J2, name, jd_type='bjd')
-        print 'in function:', BJD
+        # time = distance / speed
+        c = 0.0020039888 # AU / second
+        timedept = SolarDist/c
+        print timedept
 
         # The Next section here calculates the Unit vector pointed at the target
 
-        return {'HJD': HJD, 'BJD': BJD}
-
-    # https://mail.scipy.org/pipermail/astropy/2014-April/003148.html
-    @staticmethod
-    def jd_corr(mjd, filename, jd_type='hjd'):
-        hdulist = fits.open(filename)
-        RA = hdulist[0].header['RA']
-        Dec = hdulist[0].header['Dec']
-        CTIO_LON = 30.1697
-        CTIO_LAT = 70.8065
-        # Initialise ephemeris from jplephem
-        eph = jplephem.Ephemeris(de423)
-
-        # Source unit-vector
-        ## Assume coordinates in ICRS
-        ## Set distance to unit (kilometers)
-        src_vec = coords.ICRS(ra=RA, dec=Dec, unit=(unit.degree, unit.degree), distance=coords.Distance(1, unit.km))
-
-        # Convert epochs to astropy.time.Time
-        ## Assume MJD(UTC)
-        t = astrotime.Time(mjd, scale='utc', format='mjd')#lat=CTIO_LAT, lon=CTIO_LON)
-
-        # Get Earth-Moon barycenter position
-        ## NB: jplephem uses Barycentric Dynamical Time, e.g. JD(TDB)
-        ## and gives positions relative to solar system barycenter
-        barycenter_earthmoon = eph.position('earthmoon', t.tdb.jd)
-
-        # Get Moon position vectors
-        moonvector = eph.position('moon', t.tdb.jd)
-
-        # Compute Earth position vectors
-        pos_earth = (barycenter_earthmoon - moonvector * eph.earth_share)*unit.km
-
-        if jd_type == 'bjd':
-            # Compute BJD correction
-            ## Assume source vectors parallel at Earth and Solar System Barycenter
-            ## i.e. source is at infinity
-            corr = np.dot(pos_earth.T, src_vec.cartesian.value)/const.c
-        elif jd_type == 'hjd':
-            # Compute HJD correction via Sun ephemeris
-            pos_sun = eph.position('sun', t.tdb.jd)*unit.km
-            sun_earth_vec = pos_earth - pos_sun
-            corr = np.dot(sun_earth_vec.T, src_vec.cartesian.value)/const.c
-        else:
-            return '<font color="red">ERROR, CORRECTION TYPE NOT SPECIFIED OR SPELLED WRONG</font>'
-
-        # TDB is the appropriate time scale for these ephemerides
-        dt = astrotime.TimeDelta(corr, scale='tdb', format='jd')
-        # Compute and return HJD/BJD as astropy.time.Time
-        new_jd = t + dt
-        return new_jd
+        return SolarDist
 
     @staticmethod
     def gaussianfit(filename, hydrogenalpha, hydrogenbeta, heliumalpha):
