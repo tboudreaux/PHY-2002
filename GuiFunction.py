@@ -437,7 +437,7 @@ class AdvancedPlotting(PlotFunctionality):
         return new_jd
 
     @staticmethod
-    def gaussianfit(filename, upper,lower):
+    def gaussianfit(filename, upper, lower):
         allwave = []
         allflux = []
         xvalue = []
@@ -511,7 +511,9 @@ class AdvancedPlotting(PlotFunctionality):
            wave1[i][1] = wave1[i][1][:-1] # gets rid of the newline character
            print wave1[i]
            wave1[i] = [float(x) for x in wave1[i]]
+           print wave1
        wave2=[0,0]
+       print wave2
        if hydrogena is False:
            pass
        elif hydrogena is True:
