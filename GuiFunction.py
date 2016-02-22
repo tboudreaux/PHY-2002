@@ -495,7 +495,6 @@ class AdvancedPlotting(PlotFunctionality):
     ## TOUCH THE COW
     ## DO IT NOW
 
-
 ##################################
 ## Code to pull from text file. ##
 ##################################
