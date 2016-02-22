@@ -461,7 +461,7 @@ class AdvancedPlotting(PlotFunctionality):
 
             for j in range(len(allwave)):
                 if lower<j<upper:
-                    #print "count",j
+                    # print "count",j
                     wavenew.append(float(allwave[j]))
                     fluxnew.append(float(allflux[j]))
 
@@ -475,9 +475,6 @@ class AdvancedPlotting(PlotFunctionality):
             print(center)
             gaussy,gaussx = curve_fit(gaus,x,y,p0=[.5,center,5,1])
             print(gaussy)
-            # g_init = models.Gaussian1D(amplitude = max(fluxnew), mean = meancalc, stddev = sigma)
-            # fit_g = fitting.LevMarLSQFitter()
-            # g = fit_g(g_init, wavenew, fluxnew)
 
             plt.plot(x,gaus(x,*gaussy))
             plt.show()
@@ -528,10 +525,3 @@ class AdvancedPlotting(PlotFunctionality):
        elif heliuma is True:
            wave2.append(wave1[2])
        return wave2
-
-    @staticmethod
-    def gaussianfitold(x,y,a,mean,stddev):
-        g_init = models.Gaussian1D(a,mean,stddev)
-        fit_g = fitting.LevMarLSQFitter()
-        g = fit_g(g_init,x,y)
-        return g
