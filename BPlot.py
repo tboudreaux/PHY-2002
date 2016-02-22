@@ -544,7 +544,7 @@ class GaussianWindow(QtGui.QMainWindow):
         self.close()
     def plot(self):
         filename = self.ui.lineEdit.text()
-        Gauss = AdvancedPlotting.gaussianfit(filename,halphause[0],hbetause[0],heliumause[0])
+        Gauss = AdvancedPlotting.wavelengthselection(filename,halphause[0],hbetause[0],heliumause[0])
 
 
 

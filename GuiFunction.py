@@ -437,7 +437,7 @@ class AdvancedPlotting(PlotFunctionality):
         return new_jd
 
     @staticmethod
-    def gaussianfit(filename, hydrogenalpha, hydrogenbeta, heliumalpha):
+    def gaussianfit(filename, upper,lower):
         allwave = []
         allflux = []
         xvalue = []
@@ -448,7 +448,7 @@ class AdvancedPlotting(PlotFunctionality):
             for ted in range(len(data['wavelength'])):
                 allwave.append(data['wavelength'][ted])
                 allflux.append(data['flux'][ted])
-        selection = AdvancedPlotting.waveselection(hydrogenalpha,hydrogenbeta,heliumalpha)
+        selection = [lower,upper]
         # newwave = data['wavelength']
         # newflux = data['flux']
         wavenew = []
@@ -501,7 +501,7 @@ class AdvancedPlotting(PlotFunctionality):
 ##################################
 
     @staticmethod
-    def waveselection(hydrogena,hydrogenb,heliuma):
+    def waveselection(filename,hydrogena,hydrogenb,heliuma):
        wave1 = open('lines.sec','rb') # opens file to read line wavelengths
        wave1 = wave1.readlines()
        length = len(wave1)
@@ -511,17 +511,20 @@ class AdvancedPlotting(PlotFunctionality):
            wave1[i][1] = wave1[i][1][:-1] # gets rid of the newline character
            print wave1[i]
            wave1[i] = [float(x) for x in wave1[i]]
-       wave2=[]
+       wave2=[0,0]
        if hydrogena is False:
            pass
        elif hydrogena is True:
-           wave2.append(wave1[0])
+           wave2=wave1[0]
+           AdvancedPlotting.gaussianfit(filename,wave2[1],wave2[0])
        if hydrogenb is False:
            pass
        elif hydrogenb is True:
-           wave2.append(wave1[1])
+           wave2=wave1[1]
+           AdvancedPlotting.gaussianfit(filename,wave2[1],wave2[0])
        if heliuma is False:
            pass
        elif heliuma is True:
-           wave2.append(wave1[2])
-       return wave2
+           wave2=wave1[2]
+           AdvancedPlotting.gaussianfit(filename,wave2[1],wave2[0])
+
