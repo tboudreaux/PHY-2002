@@ -95,6 +95,7 @@ prerun.close()
 print 'Pre-run Checks finished with code:', code
 # These are here to allow for global variables passe betweel all classes, at some point these
 # Should be replaced by local namespace variables, however I have yet to get around to that
+c = 299792.458
 inputArray = []
 usearray = [False, False]
 fit = [False]
@@ -831,7 +832,6 @@ class CCWindow(QtGui.QMainWindow):
 
 # This is plotter code, at some point it may be nice to move this class (During the great reorginazation of code to come)
 class Plotter():
-
     # Corplot function that calls the ccofig function from GUI function to extract the required data
     # incidentaly this will be completely reorganized in the great reorganization of code to come
     # I wrote the comment like a week ago now and I have yet to begin the great reorganization of code
@@ -855,15 +855,22 @@ class Plotter():
                 ccorfig = fig.add_subplot(2,1,1)
                 AdvancedPlotting.waveshower(fig, templatename, objectname, order, degree)
             index = 0
-            maximum = data['fit'](data['offset'])[0]
-            for count in range(len(data['fit'](data['offset']))):
-                if data['fit'](data['offset'])[count] > maximum:
-                    maximum = data['fit'](data['offset'])[count]
-                    index = count
-            index = value/2 - index
-            tempvelocity = index * data['dispersion']
-            ccorfig.plot(data['offset'], data['correlation'], label='Raw Data | Relative Velocity: ' + str(tempvelocity))
-            ccorfig.plot(data['offset'], data['fit'](data['offset']), label='Gaussian Fit | x at max: ' + str(index))
+            maximum = data['correlation'][0]
+            center = 0
+            # for count in range(len(data['fit'](data['offset']))):
+            #     if data['fit'](data['offset'])[count] > maximum:
+            #         maximum = data['fit'](data['offset'])[count]
+            for count in range(len(data['correlation'])):
+                if data['correlation'][count] > maximum:
+                    maximum = data['correlation'][count]
+                    center = count
+            FitX = data['offset'][center-5:center+15]
+            FitY = data['correlation'][center-5:center+15]
+            gaussy,gaussx = curve_fit(data['fit'],FitX,FitY,p0=[maximum,center,5, .05])
+            tempvelocity = gaussy[1] * data['dispersion']
+            UseVel = (tempvelocity/data['meantemp'])*(299792.458)
+            ccorfig.plot(data['offset'], data['correlation'], label='Raw Data | Relative Velocity: ' + str(UseVel))
+            ccorfig.plot(data['offset'], data['fit'](data['offset'], *gaussy), label='Gaussian Fit | x at max: ' + str(gaussy[1])) # + ' | Max of Guassian ' + str(maxdata))
             ccorfig.set_xlabel('Offset')
             ccorfig.set_ylabel('Correlation Coefficient')
             ccorfig.set_title('Cross Correlation, order number: ' + str(order))
@@ -895,6 +902,7 @@ class Plotter():
                         index = count
                 index = value/2 - index
                 velocity.append(index * data['dispersion'])
+                print 'velocity at order number', i, 'is', index*data['dispersion']
                 FullCC.append(data['correlation'])
                 FullO.append(data['offset'])
                 FullGaus.append(data['fit'](data['offset']))

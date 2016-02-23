@@ -227,6 +227,7 @@ class AdvancedPlotting(PlotFunctionality):
         templateflux = templateflux[0]
         templateflux = templateflux[(value/2):-(value/2)]
         templateflux[:] = [x - 1 for x in templateflux]
+        meantemp = sum(newtemplatewave)/len(newtemplatewave)
 
         # This does the actual shifting
         for i in range(value):
@@ -261,13 +262,15 @@ class AdvancedPlotting(PlotFunctionality):
             offset.append((value/2)-i)
         savecor = correlation
         correlation = [abs(x - max(savecor)) for x in savecor]
-        g_init = models.Gaussian1D(amplitude=max(correlation), mean=0, stddev=2.)
-        fit_g = fitting.LevMarLSQFitter()
-        g = fit_g(g_init, offset, correlation)
+        # g_init = models.Gaussian1D(amplitude=max(correlation), mean=0, stddev=2.)
+        # fit_g = fitting.LevMarLSQFitter()
+        # g = fit_g(g_init, offset, correlation)
+        def gaus(x,a,x0,sigma, offset):
+            return (-a*exp(-(x-x0)**2/(2*sigma**2))) + offset # where offset is the offset of the spectre
         waverange = (max(newtargetwave)) - (min(newtargetwave))
         pixrange = len(newtargetwave)
         dispersion = waverange/pixrange
-        return{'correlation': correlation, 'offset': offset, 'fit': g, 'dispersion': dispersion}
+        return{'correlation': correlation, 'offset': offset, 'fit': gaus, 'dispersion': dispersion, 'meantemp': meantemp}
         #return{'correlation': correlationbad, 'offset': offset, 'fit': g, 'dispersion': dispersion}
 
     # This method deals with showing the wavelengths in the cross correlation chart, basically it allows one to see
@@ -350,6 +353,7 @@ class AdvancedPlotting(PlotFunctionality):
 
         # Convert to JD2000
         MJD = JD - 2451545.0
+        # MJD = JD - 2400000.5
 
         # This calculates the distance to the sun on a given Julian Date, these at some point need to be modified, however
         # this should work for the time being
@@ -375,14 +379,13 @@ class AdvancedPlotting(PlotFunctionality):
                 cont = True
         # calculates values for use in the HJD Calculation
         EcclipticLon = MeanLon + 1.915*math.sin(MeanAnon) + 0.020*math.sin(2*MeanAnon)
+        # Solar Distance in AU
         SolarDist = 1.00014 - 0.01671*math.cos(MeanAnon) - 0.00014*math.cos(2*MeanAnon)
         # time = distance / speed
         c = 0.0020039888 # AU / second
-        timedept = SolarDist/c
-        HJD = MJD + (timedept/86400)
+        timedebt = SolarDist/c
+        HJD = MJD + (timedebt/86400)
         HJD += 2451545.0
-
-        # The Next section here calculates the Unit vector pointed at the target
 
         return HJD
 
