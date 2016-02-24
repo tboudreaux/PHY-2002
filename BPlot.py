@@ -799,12 +799,12 @@ class CCWindow(QtGui.QMainWindow):
             run = False
             try:
                 if allplots[0] is False:
-                    Plotter.corplot(degree, templatename, objectname, 1, self.length, self.smallerwaves, self.largerwaves, compare[0], value, True)
+                    Plotter.corplot(degree, templatename, objectname, 1, self.length, self.smallerwaves, self.largerwaves, compare[0], value, True, True)
                     self.ui.infobox.append('<font color ="green">Cross Correlating Orders, use "a" to advance</font><br>')
                 elif allplots[0] is True:
                     self.ui.infobox.append('<font color = "green">Calculating Cross Correlation Coefficients for all orders</font>')
                     self.ui.infobox.append('<font color = "green">This can take some time, please be paitient</font>')
-                    Plotter.corplot(degree, templatename, objectname, 1, self.length, self.smallerwaves, self.largerwaves, compare[0], value, False)
+                    Plotter.corplot(degree, templatename, objectname, 1, self.length, self.smallerwaves, self.largerwaves, compare[0], value, False, True)
                 run = True
             except ValueError:
                 self.ui.infobox.append('<font color ="red">Please Make sure that file names are entered in the boxs</font>')
@@ -838,13 +838,14 @@ class Plotter():
     # as my younger naive self called it, rather it has been a slow logical change in the code base
     # whatever, maybe one day.
     @staticmethod
-    def corplot(degree, templatename, objectname, order, num, larger, smaller, show, value, doPlot):
+    def corplot(degree, templatename, objectname, order, num, larger, smaller, show, value, doPlot, autofit, xcoord=None, ycoord=None):
         # Creates a matplotlib figure of given size (will at some point be configuarble in the forcoming settings menu)
         # fig=plt.figure(figsize=(10, 7))
         # Adds the ccorfig subplot
         # ccorfig = fig.add_subplot(1, 1, 1)
         # fetches the data from the ccor function in Advanced Plotting by calling the function, data is returnted as a
         #   2 element dictionary, so then when its plotted below there its is called with the dictionaty nameing
+        userFit = [False]
         if doPlot is True and order < 62:
             finished = [False]
             data = AdvancedPlotting.ccor(objectname, templatename, degree, order, num, larger, smaller, value)
@@ -857,20 +858,39 @@ class Plotter():
             index = 0
             maximum = data['correlation'][0]
             center = 0
-            # for count in range(len(data['fit'](data['offset']))):
-            #     if data['fit'](data['offset'])[count] > maximum:
-            #         maximum = data['fit'](data['offset'])[count]
-            for count in range(len(data['correlation'])):
-                if data['correlation'][count] > maximum:
-                    maximum = data['correlation'][count]
-                    center = count
-            FitX = data['offset'][center-5:center+15]
-            FitY = data['correlation'][center-5:center+15]
-            gaussy,gaussx = curve_fit(data['fit'],FitX,FitY,p0=[maximum,center,5, .05])
+            center2 = 0
+            if autofit is True:
+                for count in range(len(data['correlation'])):
+                    if data['correlation'][count] > maximum:
+                        maximum = data['correlation'][count]
+                        center2 = data['offset'][count]
+            else:
+                index = min(range(len(data['offset'])), key=lambda i: abs(data['offset'][i]-xcoord))
+                index = int(index)
+                center2 = data['offset'][index]
+                maximum = data['correlation'][index]
+            clean = np.linspace(-(value/2), value/2, 10*len(data['offset']))
+            FitX = data['offset'][center2-5:center2+5]
+            FitY = data['correlation'][center2-5:center2+5]
+            try:
+                gaussy,gaussx = curve_fit(data['fit'],FitX,FitY,p0=[maximum,center2,5, .05])
+            except (RuntimeError, TypeError):
+                print 'In here'
+                maximumfalback = 0
+                centerfallback = 0
+                for count in range(len(data['correlation'])):
+                    if data['correlation'][count] > maximum:
+                        maximumfalback = data['correlation'][count]
+                        centerfallback = data['offset'][count]
+                FitXFallback = data['offset'][centerfallback-5:centerfallback+5]
+                FitYFallback = data['correlation'][centerfallback-5:centerfallback+5]
+                gaussy,gaussx = curve_fit(data['fit'],FitXFallback,FitYFallback,p0=[maximumfalback,centerfallback,5, .05])
+
+
             tempvelocity = gaussy[1] * data['dispersion']
-            UseVel = (tempvelocity/data['meantemp'])*(299792.458)
+            UseVel = (tempvelocity/data['meantemp'])*c
             ccorfig.plot(data['offset'], data['correlation'], label='Raw Data | Relative Velocity: ' + str(UseVel))
-            ccorfig.plot(data['offset'], data['fit'](data['offset'], *gaussy), label='Gaussian Fit | x at max: ' + str(gaussy[1])) # + ' | Max of Guassian ' + str(maxdata))
+            ccorfig.plot(clean, data['fit'](clean, *gaussy), label='Gaussian Fit | x at max: ' + str(gaussy[1])) # + ' | Max of Guassian ' + str(maxdata))
             ccorfig.set_xlabel('Offset')
             ccorfig.set_ylabel('Correlation Coefficient')
             ccorfig.set_title('Cross Correlation, order number: ' + str(order))
@@ -882,14 +902,28 @@ class Plotter():
                 # eventually this whole function if gonna be reorganized to allow for multiple figures to be displayed over
                 if keydown == 'a' or keydown == 'A':
                     plt.close()
-                    Plotter.corplot(degree, templatename, objectname, order + 1, num, larger, smaller, compare[0], value, doPlot)
+                    userFit[0] = False
+                    Plotter.corplot(degree, templatename, objectname, order + 1, num, larger, smaller, compare[0], value, doPlot, not userFit[0])
                 elif keydown == 'c' or keydown == 'C':
                     plt.close()
                     compare[0] = not compare[0]
-                    Plotter.corplot(degree, templatename, objectname, order, num, larger, smaller, compare[0], value, doPlot)
+                    Plotter.corplot(degree, templatename, objectname, order, num, larger, smaller, compare[0], value, doPlot, not userFit[0], xcoord=xcoord, ycoord=ycoord)
+                elif keydown == 'r' or keydown == 'R':
+                    plt.close()
+                    xloc, yloc = event.xdata, event.ydata
+                    userFit[0] = True
+                    Plotter.corplot(degree, templatename, objectname, order, num, larger, smaller, compare[0], value, doPlot, not userFit[0], xcoord=xloc, ycoord=yloc)
             # connects to the key press event function
             fig.canvas.mpl_connect('key_press_event', plotcontrol)
             plt.show()
+
+            # def onClick(event):
+            #     userFit[0] = True
+            #     xloc, yloc = event.xdata, event.ydata
+            #     plt.close()
+            #     Plotter.corplot(degree, templatename, objectname, order, num, larger, smaller, compare[0], value, doPlot, not userFit[0], xcoord=xloc, ycoord=yloc)
+
+            # fig.canvas.mpl_connect('button_press_event', onClick)
         else:
             del velocity[:]
             for i in range(62):

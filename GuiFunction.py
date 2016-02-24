@@ -271,7 +271,7 @@ class AdvancedPlotting(PlotFunctionality):
         pixrange = len(newtargetwave)
         dispersion = waverange/pixrange
         return{'correlation': correlation, 'offset': offset, 'fit': gaus, 'dispersion': dispersion, 'meantemp': meantemp}
-        #return{'correlation': correlationbad, 'offset': offset, 'fit': g, 'dispersion': dispersion}
+        #return{'correlation': correlationbad, 'offset': offset, 'fit': gaus, 'dispersion': dispersion}
 
     # This method deals with showing the wavelengths in the cross correlation chart, basically it allows one to see
     # what is being cross correlated, which is helpful for you know...SCIENCE
