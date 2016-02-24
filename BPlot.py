@@ -863,34 +863,39 @@ class Plotter():
                 for count in range(len(data['correlation'])):
                     if data['correlation'][count] > maximum:
                         maximum = data['correlation'][count]
-                        center2 = data['offset'][count]
+                        center = data['offset'][count]
+                        index = count
             else:
                 index = min(range(len(data['offset'])), key=lambda i: abs(data['offset'][i]-xcoord))
                 index = int(index)
-                center2 = data['offset'][index]
+                center = data['offset'][index]
                 maximum = data['correlation'][index]
             clean = np.linspace(-(value/2), value/2, 10*len(data['offset']))
-            FitX = data['offset'][center2-5:center2+5]
-            FitY = data['correlation'][center2-5:center2+5]
+            print data['correlation']
+            FitX = data['offset'][index-5:index+5]
+            FitY = data['correlation'][index-5:index+5]
             try:
-                gaussy,gaussx = curve_fit(data['fit'],FitX,FitY,p0=[maximum,center2,5, .05])
+                gaussy,gaussx = curve_fit(data['fit'],FitX,FitY,p0=[maximum,center,5, .05])
+                print 'Fit SUCSSES'
             except (RuntimeError, TypeError):
-                print 'In here'
                 maximumfalback = 0
                 centerfallback = 0
+                indexfallback = 0
                 for count in range(len(data['correlation'])):
-                    if data['correlation'][count] > maximum:
+                    if data['correlation'][count] > maximumfalback:
                         maximumfalback = data['correlation'][count]
                         centerfallback = data['offset'][count]
-                FitXFallback = data['offset'][centerfallback-5:centerfallback+5]
-                FitYFallback = data['correlation'][centerfallback-5:centerfallback+5]
+                        indexfallback = count
+                        # print 'Here are the parameters:', maximumfalback, centerfallback, indexfallback
+                FitXFallback = data['offset'][indexfallback-5:indexfallback+5]
+                FitYFallback = data['correlation'][indexfallback-5:indexfallback+5]
                 gaussy,gaussx = curve_fit(data['fit'],FitXFallback,FitYFallback,p0=[maximumfalback,centerfallback,5, .05])
 
 
             tempvelocity = gaussy[1] * data['dispersion']
             UseVel = (tempvelocity/data['meantemp'])*c
             ccorfig.plot(data['offset'], data['correlation'], label='Raw Data | Relative Velocity: ' + str(UseVel))
-            ccorfig.plot(clean, data['fit'](clean, *gaussy), label='Gaussian Fit | x at max: ' + str(gaussy[1])) # + ' | Max of Guassian ' + str(maxdata))
+            ccorfig.plot(clean, data['fit'](clean, *gaussy), label='Gaussian Fit | x at max: ' + str(gaussy[1]))
             ccorfig.set_xlabel('Offset')
             ccorfig.set_ylabel('Correlation Coefficient')
             ccorfig.set_title('Cross Correlation, order number: ' + str(order))
@@ -916,14 +921,6 @@ class Plotter():
             # connects to the key press event function
             fig.canvas.mpl_connect('key_press_event', plotcontrol)
             plt.show()
-
-            # def onClick(event):
-            #     userFit[0] = True
-            #     xloc, yloc = event.xdata, event.ydata
-            #     plt.close()
-            #     Plotter.corplot(degree, templatename, objectname, order, num, larger, smaller, compare[0], value, doPlot, not userFit[0], xcoord=xloc, ycoord=yloc)
-
-            # fig.canvas.mpl_connect('button_press_event', onClick)
         else:
             del velocity[:]
             for i in range(62):

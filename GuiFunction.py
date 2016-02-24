@@ -148,7 +148,7 @@ class AdvancedPlotting(PlotFunctionality):
         targetflux = []
         templateflux = []
         correlation = []
-        correlationbad = []
+        correlationnp = []
         offset = []
 
         # These call the wfextract function to get the flux and wavelength for the target and template as a dictionary
@@ -241,7 +241,10 @@ class AdvancedPlotting(PlotFunctionality):
 
             # correlates the two arrays of fluxes and appends that to an array
 
-            correlationbad.append(np.correlate(templateflux, shiftflux))
+
+            correlationnpvalue = np.correlate(templateflux, shiftflux)
+            print correlationnpvalue
+            correlationnp.append(correlationnpvalue[0])
             z = templateflux - shiftflux
             savez = z
             z = [x**2 for x in z]
@@ -270,8 +273,8 @@ class AdvancedPlotting(PlotFunctionality):
         waverange = (max(newtargetwave)) - (min(newtargetwave))
         pixrange = len(newtargetwave)
         dispersion = waverange/pixrange
-        return{'correlation': correlation, 'offset': offset, 'fit': gaus, 'dispersion': dispersion, 'meantemp': meantemp}
-        #return{'correlation': correlationbad, 'offset': offset, 'fit': gaus, 'dispersion': dispersion}
+        #return{'correlation': correlation, 'offset': offset, 'fit': gaus, 'dispersion': dispersion, 'meantemp': meantemp}
+        return{'correlation': correlationnp, 'offset': offset, 'fit': gaus, 'dispersion': dispersion, 'meantemp': meantemp}
 
     # This method deals with showing the wavelengths in the cross correlation chart, basically it allows one to see
     # what is being cross correlated, which is helpful for you know...SCIENCE
