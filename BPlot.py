@@ -123,6 +123,7 @@ FullGaus = []
 allplots = [False]
 checkPlots = [True]*62
 velocity = []
+numorders = [62]
 for name in flist:
     if 'PathTo' in name:
         foundit = True
@@ -283,6 +284,12 @@ class MyForm(QtGui.QWidget):
                 self.window3.ui.FileName.setText(commandcomp[0])
                 string = None
 
+            elif string == '//setHET':
+                numorders[0] = 44
+
+            elif string == '//setCHIRON':
+                numorders[0] = 62
+
             #lists the number of open user functions
             elif string == '//lfunc':
                 count = 0
@@ -421,11 +428,12 @@ class MyForm(QtGui.QWidget):
         # Generates a list with unique names for all objects
         for root, dirs, files in os.walk('.', topdown=True):
             for file in files:
-                if 'achi' in file:
+                if 'achi' in file or 'bhrs' in file and '.fitsC' not in file:
                     filename = os.path.join(root, file)
                     sp = fits.open(filename)
                     hdu = sp[0].header
                     objname = (hdu['OBJECT'])
+                    objname = objname.split(' ')[0]
                     if objname not in namearray:
                         namearray.append(objname)
 
@@ -439,7 +447,7 @@ class MyForm(QtGui.QWidget):
             printlist = open(nameforfile, 'w')
             for root, dirs, files in os.walk('.', topdown=True):
                 for file in files:
-                    if 'achi' in file:
+                    if 'achi' in file or 'bhrs' in file and 'fitsC' not in file:
                         name = os.path.join(root, file)
                         sp = fits.open(name)
                         hdu = sp[0].header
@@ -603,19 +611,19 @@ class MultiView(QtGui.QMainWindow):
         windowheight -= (0.2)*windowheight
         boxheight = windowheight/3
         ax = []
-        for i in range(62):
+        for i in range(numorders[0]):
             widgets[i+1] = 'self.ui.widget_' + str(i+1)
-        for q in range(62):
+        for q in range(numorders[0]):
             fig.append(Figure(figsize=(2.81,boxheight/100), dpi=85, facecolor='w'))
-        for q in range(62):
+        for q in range(numorders[0]):
             self.canvas.append(FigureCanvas(fig[q]))
-        for q in range(62):
+        for q in range(numorders[0]):
             self.canvas[q].setParent(eval(widgets[q+1]))
-        for q in range(62):
+        for q in range(numorders[0]):
             ax.append(fig[q].add_subplot(111, xlabel='Offset(A)', ylabel='CC', title='order: '+ str(q+1)))
-        for q in range(62):
+        for q in range(numorders[0]):
             ax[q].plot(FullO[q], FullCC[q])
-            ax[q].plot(FullO[q], FullGaus[q])
+            ax[q].plot(FullO[q], FullGaus[q](FullO[q], *FullGaus[q]))#, label='Gaussian Fit | x at max: ' + str(FullGaus[q][1]))
         del FullCC[:]
         del FullO[:]
         del FullGaus[:]
@@ -632,9 +640,9 @@ class MultiView(QtGui.QMainWindow):
         checkArray = []
         useCheckArray = dict()
         usevelocity = []
-        for q in range(62):
+        for q in range(numorders[0]):
             checks[q] = 'self.ui.checkBox_' + str(q+1)
-        for q in range(62):
+        for q in range(numorders[0]):
             checkArray.append(eval(checks[q]).isChecked())
         for i in range(len(checkArray)):
             if checkArray[i] is True:
@@ -846,7 +854,7 @@ class Plotter():
         # fetches the data from the ccor function in Advanced Plotting by calling the function, data is returnted as a
         #   2 element dictionary, so then when its plotted below there its is called with the dictionaty nameing
         userFit = [False]
-        if doPlot is True and order < 62:
+        if doPlot is True and order < numorders[0]:
             finished = [False]
             data = AdvancedPlotting.ccor(objectname, templatename, degree, order, num, larger, smaller, value)
             fig = plt.figure(figsize=(10, 10))
@@ -886,15 +894,16 @@ class Plotter():
                         maximumfalback = data['correlation'][count]
                         centerfallback = data['offset'][count]
                         indexfallback = count
-                        # print 'Here are the parameters:', maximumfalback, centerfallback, indexfallback
+                        # print 'Here are the parameters:', maximum falback, centerfallback, indexfallback
                 FitXFallback = data['offset'][indexfallback-5:indexfallback+5]
                 FitYFallback = data['correlation'][indexfallback-5:indexfallback+5]
-                gaussy,gaussx = curve_fit(data['fit'],FitXFallback,FitYFallback,p0=[maximumfalback,centerfallback,5, .05])
+                gaussy,gaussx = curve_fit(data['fit'],FitXFallback,FitYFallback,p0=[maximumfalback,centerfallback,5])
 
 
             tempvelocity = gaussy[1] * data['dispersion']
             UseVel = (tempvelocity/data['meantemp'])*c
             ccorfig.plot(data['offset'], data['correlation'], label='Raw Data | Relative Velocity: ' + str(UseVel))
+            ccorfig.plot(data['offset'], data['correlation'], 's')
             ccorfig.plot(clean, data['fit'](clean, *gaussy), label='Gaussian Fit | x at max: ' + str(gaussy[1]))
             ccorfig.set_xlabel('Offset')
             ccorfig.set_ylabel('Correlation Coefficient')
@@ -913,6 +922,10 @@ class Plotter():
                     plt.close()
                     compare[0] = not compare[0]
                     Plotter.corplot(degree, templatename, objectname, order, num, larger, smaller, compare[0], value, doPlot, not userFit[0], xcoord=xcoord, ycoord=ycoord)
+                elif keydown == 'b' or keydown == 'b':
+                    plt.close()
+                    userFit[0] = False
+                    Plotter.corplot(degree, templatename, objectname, order - 1, num, larger, smaller, compare[0], value, doPlot, not userFit[0])
                 elif keydown == 'r' or keydown == 'R':
                     plt.close()
                     xloc, yloc = event.xdata, event.ydata
@@ -923,20 +936,25 @@ class Plotter():
             plt.show()
         else:
             del velocity[:]
-            for i in range(62):
+            for i in range(numorders[0]):
                 data = AdvancedPlotting.ccor(objectname, templatename, degree, i, num, larger, smaller, value)
                 index = 0
-                maximum = data['fit'](data['offset'])[0]
-                for count in range(len(data['fit'](data['offset']))):
-                    if data['fit'](data['offset'])[count] > maximum:
-                        maximum = data['fit'](data['offset'])[count]
+                center = 0
+                maximum = data['correlation'][0]
+                for count in range(len(data['correlation'])):
+                    if data['correlation'][count] > maximum:
+                        maximum = data['correlation'][count]
+                        center = data['offset'][count]
                         index = count
-                index = value/2 - index
+                #index = value/2 - index
                 velocity.append(index * data['dispersion'])
                 print 'velocity at order number', i, 'is', index*data['dispersion']
                 FullCC.append(data['correlation'])
                 FullO.append(data['offset'])
-                FullGaus.append(data['fit'](data['offset']))
+                FitX = data['offset'][index-5:index+5]
+                FitY = data['correlation'][index-5:index+5]
+                gaussy,gaussx = curve_fit(data['fit'],FitX,FitY,p0=[maximum,center,5, .05])
+                FullGaus.append(gaussy)
             if allplots[0] is False:
                 CCWindow.window3 = MultiView()
                 CCWindow.window3.show()

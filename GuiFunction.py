@@ -31,6 +31,8 @@ class PlotFunctionality(object):
         # These are due to be replaced by wfextract()
         wavelength = np.float64(sp[0].data[start-1, :, 0])
         flux = np.float64(sp[0].data[start-1, :, 1])
+        # fitsdata = sp[1].data
+        print sp
 
         # determins wherether to show the two things
         if showfit is True:
@@ -249,7 +251,7 @@ class AdvancedPlotting(PlotFunctionality):
             savez = z
             z = [x**2 for x in z]
             z = sum(z)
-            z /= (len(shiftflux)-1)
+            z /= (len(shiftflux))
             z = math.sqrt(z)
             bottom = math.sqrt((np.std(templateflux)**2)+(np.std(shiftflux)**2))
             z /= bottom
@@ -269,11 +271,11 @@ class AdvancedPlotting(PlotFunctionality):
         # fit_g = fitting.LevMarLSQFitter()
         # g = fit_g(g_init, offset, correlation)
         def gaus(x,a,x0,sigma, offset):
-            return (-a*exp(-(x-x0)**2/(2*sigma**2))) + offset # where offset is the offset of the spectre
+            return (-a*exp(-(x-x0)**2/(2*sigma**2))) # + offset # where offset is the offset of the spectre
         waverange = (max(newtargetwave)) - (min(newtargetwave))
         pixrange = len(newtargetwave)
         dispersion = waverange/pixrange
-        #return{'correlation': correlation, 'offset': offset, 'fit': gaus, 'dispersion': dispersion, 'meantemp': meantemp}
+        # return{'correlation': correlation, 'offset': offset, 'fit': gaus, 'dispersion': dispersion, 'meantemp': meantemp}
         return{'correlation': correlationnp, 'offset': offset, 'fit': gaus, 'dispersion': dispersion, 'meantemp': meantemp}
 
     # This method deals with showing the wavelengths in the cross correlation chart, basically it allows one to see
