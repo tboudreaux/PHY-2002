@@ -31,8 +31,11 @@ class PlotFunctionality(object):
         # These are due to be replaced by wfextract()
         wavelength = np.float64(sp[0].data[start-1, :, 0])
         flux = np.float64(sp[0].data[start-1, :, 1])
+        # wavelength = np.float64(sp[0].data[1, start-1, :])
+        # flux = np.float64(sp[0].data[2, start-1, :])
         # fitsdata = sp[1].data
-        print sp
+        data = sp[0].data
+        print sp[0].data.shape
 
         # determins wherether to show the two things
         if showfit is True:

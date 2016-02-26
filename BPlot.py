@@ -611,6 +611,8 @@ class MultiView(QtGui.QMainWindow):
         windowheight -= (0.2)*windowheight
         boxheight = windowheight/3
         ax = []
+        def gaus(x,a,x0,sigma, offset):
+            return (-a*exp(-(x-x0)**2/(2*sigma**2)))
         for i in range(numorders[0]):
             widgets[i+1] = 'self.ui.widget_' + str(i+1)
         for q in range(numorders[0]):
@@ -623,7 +625,7 @@ class MultiView(QtGui.QMainWindow):
             ax.append(fig[q].add_subplot(111, xlabel='Offset(A)', ylabel='CC', title='order: '+ str(q+1)))
         for q in range(numorders[0]):
             ax[q].plot(FullO[q], FullCC[q])
-            ax[q].plot(FullO[q], FullGaus[q](FullO[q], *FullGaus[q]))#, label='Gaussian Fit | x at max: ' + str(FullGaus[q][1]))
+            ax[q].plot(FullO[q], gaus(FullO[q], *FullGaus[q]))#, label='Gaussian Fit | x at max: ' + str(FullGaus[q][1]))
         del FullCC[:]
         del FullO[:]
         del FullGaus[:]
@@ -683,6 +685,7 @@ class CCWindow(QtGui.QMainWindow):
         self.smallerwaves = []
         self.largerwaves = []
         self.ranges = []
+        self.test = 7
 
         try:            # looks at a text file to get numbers and stuff (food is not exempt from the stuff category)
             self.profiles = {'CHIRON':'chiron.pconf'}
@@ -717,7 +720,6 @@ class CCWindow(QtGui.QMainWindow):
         self.ui.useUser.stateChanged.connect(self.user)
         self.ui.multiplotshow.stateChanged.connect(lambda : allplots.__setitem__(0, not allplots[0]))
         self.window2 = None
-
 
     def user(self):
         self.useuser = not self.useuser
@@ -839,14 +841,15 @@ class CCWindow(QtGui.QMainWindow):
 
 
 # This is plotter code, at some point it may be nice to move this class (During the great reorginazation of code to come)
-class Plotter():
+class Plotter(CCWindow):
     # Corplot function that calls the ccofig function from GUI function to extract the required data
     # incidentaly this will be completely reorganized in the great reorganization of code to come
     # I wrote the comment like a week ago now and I have yet to begin the great reorganization of code
     # as my younger naive self called it, rather it has been a slow logical change in the code base
     # whatever, maybe one day.
     @staticmethod
-    def corplot(degree, templatename, objectname, order, num, larger, smaller, show, value, doPlot, autofit, xcoord=None, ycoord=None):
+    def corplot(degree, templatename, objectname, order, num, larger, smaller, show, value, doPlot, autofit, xcoord=None,
+                ycoord=None, x1bound=5, x2bound=5):
         # Creates a matplotlib figure of given size (will at some point be configuarble in the forcoming settings menu)
         # fig=plt.figure(figsize=(10, 7))
         # Adds the ccorfig subplot
@@ -855,6 +858,10 @@ class Plotter():
         #   2 element dictionary, so then when its plotted below there its is called with the dictionaty nameing
         userFit = [False]
         if doPlot is True and order < numorders[0]:
+            global gcount
+            gcount = 0
+            global gdata
+            gdata = [None, None]
             finished = [False]
             data = AdvancedPlotting.ccor(objectname, templatename, degree, order, num, larger, smaller, value)
             fig = plt.figure(figsize=(10, 10))
@@ -874,14 +881,22 @@ class Plotter():
                         center = data['offset'][count]
                         index = count
             else:
-                index = min(range(len(data['offset'])), key=lambda i: abs(data['offset'][i]-xcoord))
-                index = int(index)
-                center = data['offset'][index]
-                maximum = data['correlation'][index]
+                try:
+                    index = min(range(len(data['offset'])), key=lambda i: abs(data['offset'][i]-xcoord))
+                    index = int(index)
+                    center = data['offset'][index]
+                    maximum = data['correlation'][index]
+                except TypeError:
+                    CCWindow.ui.infobox.append('Unable to refit')
+                    for count in range(len(data['correlation'])):
+                        if data['correlation'][count] > maximum:
+                            maximum = data['correlation'][count]
+                            center = data['offset'][count]
+                            index = count
             clean = np.linspace(-(value/2), value/2, 10*len(data['offset']))
             print data['correlation']
-            FitX = data['offset'][index-5:index+5]
-            FitY = data['correlation'][index-5:index+5]
+            FitX = data['offset'][index-3:index+3]
+            FitY = data['correlation'][index-3:index+3]
             try:
                 gaussy,gaussx = curve_fit(data['fit'],FitX,FitY,p0=[maximum,center,5, .05])
                 print 'Fit SUCSSES'
@@ -897,7 +912,7 @@ class Plotter():
                         # print 'Here are the parameters:', maximum falback, centerfallback, indexfallback
                 FitXFallback = data['offset'][indexfallback-5:indexfallback+5]
                 FitYFallback = data['correlation'][indexfallback-5:indexfallback+5]
-                gaussy,gaussx = curve_fit(data['fit'],FitXFallback,FitYFallback,p0=[maximumfalback,centerfallback,5])
+                gaussy,gaussx = curve_fit(data['fit'],FitXFallback,FitYFallback,p0=[maximumfalback,centerfallback,5, 0.05])
 
 
             tempvelocity = gaussy[1] * data['dispersion']
@@ -917,20 +932,41 @@ class Plotter():
                 if keydown == 'a' or keydown == 'A':
                     plt.close()
                     userFit[0] = False
-                    Plotter.corplot(degree, templatename, objectname, order + 1, num, larger, smaller, compare[0], value, doPlot, not userFit[0])
+                    Plotter.corplot(degree, templatename, objectname, order + 1, num, larger, smaller, compare[0],
+                                    value, doPlot, not userFit[0])
                 elif keydown == 'c' or keydown == 'C':
                     plt.close()
                     compare[0] = not compare[0]
-                    Plotter.corplot(degree, templatename, objectname, order, num, larger, smaller, compare[0], value, doPlot, not userFit[0], xcoord=xcoord, ycoord=ycoord)
+                    Plotter.corplot(degree, templatename, objectname, order, num, larger, smaller, compare[0], value,
+                                    doPlot, not userFit[0], xcoord=xcoord, ycoord=ycoord, x1bound=x1bound, x2bound=x2bound)
                 elif keydown == 'b' or keydown == 'b':
                     plt.close()
                     userFit[0] = False
-                    Plotter.corplot(degree, templatename, objectname, order - 1, num, larger, smaller, compare[0], value, doPlot, not userFit[0])
+                    Plotter.corplot(degree, templatename, objectname, order - 1, num, larger, smaller, compare[0],
+                                    value, doPlot, not userFit[0])
                 elif keydown == 'r' or keydown == 'R':
                     plt.close()
                     xloc, yloc = event.xdata, event.ydata
                     userFit[0] = True
-                    Plotter.corplot(degree, templatename, objectname, order, num, larger, smaller, compare[0], value, doPlot, not userFit[0], xcoord=xloc, ycoord=yloc)
+                    Plotter.corplot(degree, templatename, objectname, order, num, larger, smaller, compare[0], value,
+                                    doPlot, not userFit[0], xcoord=xloc, ycoord=yloc)
+                elif keydown == 'g' or keydown == 'G':
+                    if gdata[0] is None:
+                        gdata[0] = event.xdata
+                    elif gdata[1] is None:
+                        gdata[1] = event.xdata
+                    else:
+                        pass
+                    if gdata[0] is not None and gdata[1] is not None:
+                        plt.close()
+                        xdiff = abs(gdata[1] - gdata[0])
+                        bound = xdiff/2
+                        bound = int(bound)
+                        xloc, yloc = event.xdata, event.ydata
+                        Plotter.corplot(degree, templatename, objectname, order, num, larger, smaller, compare[0], value,
+                                    doPlot, not userFit[0], xcoord=xcoord, ycoord=ycoord, x1bound=bound, x2bound=bound)
+                    else:
+                        pass
             # connects to the key press event function
             fig.canvas.mpl_connect('key_press_event', plotcontrol)
             plt.show()
