@@ -13,7 +13,8 @@ try:
     from MultiplotViewerTesttwo import Ui_MultiplotViewer
     print >>prerun, 'GUI files OK'
 except ImportError:
-    print >>prerun, 'Some or all GUI files missing, please check to make sure that you donwloaded the entire package and re-run'
+    print >>prerun, 'Some or all GUI files missing, please check to make sure that you donwloaded the entire package and' \
+                    ' re-run'
     exit()
 
 # importer for pip module
@@ -22,14 +23,16 @@ try:
     import pip
     print >>prerun, 'pip OK'
 except ImportError:
-    print >>prerun, 'pip not found, will try to continue running program, if all other dependanceied are installed program should run OK'
+    print >>prerun, 'pip not found, will try to continue running program, if all other dependanceied are installed ' \
+                    'program should run OK'
 
 packages = ['import random', 'import matplotlib.pyplot as plt', 'import os', 'from PyQt4 import QtGui, QtCore',
             'import webbrowser', 'from astropy.io import fits', 'import sys', 'import time',
             'from matplotlib.backend_bases import key_press_handler', 'from pylab import *',
             'from matplotlib.widgets import CheckButtons', 'from PyQt4.uic import loadUiType', 'import jplephem',
             'import de423', 'import jdcal', 'from matplotlib.figure import Figure',
-            'from matplotlib.backends.backend_qt4agg import (FigureCanvasQTAgg as FigureCanvas,NavigationToolbar2QT as NavigationToolbar)',
+            'from matplotlib.backends.backend_qt4agg import (FigureCanvasQTAgg as FigureCanvas,NavigationToolbar2QT as '
+            'NavigationToolbar)',
             'import astropy.time as astrotime', 'import astropy.coordinates as coords', 'import astropy.units as unit',
             'import astropy.constants as const', 'from astropy.modeling import models,fitting',
             'from scipy import asarray as ar,exp', 'from scipy.optimize import curve_fit', 'import math',
@@ -60,14 +63,19 @@ for importer in range(len(packages)):
                     code.append(1)
                     code.append(1)
                 except ImportError:
-                    print >>prerun, 'An Unkown Error has occured while importing or installing', package, 'Please consider using annaconda'
+                    print >>prerun, 'An Unkown Error has occured while importing or installing', package, 'Please ' \
+                                                                                                          'consider ' \
+                                                                                                          'using ' \
+                                                                                                          'annaconda'
                     code.append(0)
                     code.append(1)
                     code.append(0)
             cont = True
             if installpac == 'n':
-                print >>prerun, package, 'will not be installed, the program cannot run without this packages and will now shutdown, please consider using anaconda'
-                print package, 'will not be installed, the program cannot run without this packages and will now shutdown, please consider using anaconda'
+                print >>prerun, package, 'will not be installed, the program cannot run without this packages and will ' \
+                                         'now shutdown, please consider using anaconda'
+                print package, 'will not be installed, the program cannot run without this packages and will now ' \
+                               'shutdown, please consider using anaconda'
                 cont = True
                 code.append(0)
                 code.append(0)
@@ -80,7 +88,8 @@ try:
     from GuiFunction import *
     from consolcontrol import *
 except ImportError:
-    print >>prerun, 'Some or all internal dependancies were not met, please make sure that you downloaded the entire package and re-run'
+    print >>prerun, 'Some or all internal dependancies were not met, please make sure that you downloaded the entire ' \
+                    'package and re-run'
     exit()
 # Checks os for compatability
 mac = PreChecks.oscheck()
@@ -96,6 +105,7 @@ print 'Pre-run Checks finished with code:', code
 # These are here to allow for global variables passe betweel all classes, at some point these
 # Should be replaced by local namespace variables, however I have yet to get around to that
 c = 299792.458
+HJD = [0]
 inputArray = []
 usearray = [False, False]
 fit = [False]
@@ -124,6 +134,7 @@ allplots = [False]
 checkPlots = [True]*62
 velocity = []
 numorders = [62]
+centroids = []
 for name in flist:
     if 'PathTo' in name:
         foundit = True
@@ -190,7 +201,8 @@ class MyForm(QtGui.QWidget):
                     if p is not 0:
                         self.ui.listWidget.addItem(masterfilearray[k][p])
         # These control most of the button assignments in the main GUI
-        self.ui.consol.append('<font color = "green"> SAUL Version 0.5<br>Written by Paddy Clancy and Thomas Boudreaux  - 2016</font><br>')
+        self.ui.consol.append('<font color = "green"> SAUL Version 0.5<br>Written by Paddy Clancy and Thomas Boudreaux '
+                              ' - 2016</font><br>')
         self.ui.consol.append('<font color = "blue"> Module and OS Checks OK</font><br>')
         self.ui.consol.append('<font color = "blue"> type "lcom" for a list of avalibel commands</font><br>')
         if pathbool is True:
@@ -232,16 +244,20 @@ class MyForm(QtGui.QWidget):
     def secret(self):
         r = random.randrange(1, 5)
         if r == 1:
-            self.ui.consol.append('<font color = "green"> Displaying a possible Answer to life - Credit: http://d.justpo.st/images/2013/04/b83fb1b7222c18934e59c5b1bd2f43bd.jpg</font><br>')
+            self.ui.consol.append('<font color = "green"> Displaying a possible Answer to life - Credit: http://d.justpo'
+                                  '.st/images/2013/04/b83fb1b7222c18934e59c5b1bd2f43bd.jpg</font><br>')
             webbrowser.open('http://d.justpo.st/images/2013/04/b83fb1b7222c18934e59c5b1bd2f43bd.jpg')
         elif r == 2:
-            self.ui.consol.append('<font color = "green"> Displaying a possible Answer to life - Credit: http://sf.co.ua/id90453</font><br>')
+            self.ui.consol.append('<font color = "green"> Displaying a possible Answer to life - Credit: http://sf.co.'
+                                  'ua/id90453</font><br>')
             webbrowser.open('http://sf.co.ua/id90453')
         elif r == 3:
-            self.ui.consol.append('<font color = "green"> Displaying a possible Answer to life - Credit: https://s-media-cache-ak0.pinimg.com/236x/2f/88/26/2f8826f5a6a97006ecd350211eb584ee.jpg</font><br>')
+            self.ui.consol.append('<font color = "green"> Displaying a possible Answer to life - Credit: https://s-media'
+                                  '-cache-ak0.pinimg.com/236x/2f/88/26/2f8826f5a6a97006ecd350211eb584ee.jpg</font><br>')
             webbrowser.open('https://s-media-cache-ak0.pinimg.com/236x/2f/88/26/2f8826f5a6a97006ecd350211eb584ee.jpg')
         elif r == 4:
-            self.ui.consol.append('<font color = "green"> Displaying a possible Answer to life - Credit: http://nicolascage.us/wp-content/uploads/2013/09/Universe-Cupcake.jpg</font><br>')
+            self.ui.consol.append('<font color = "green"> Displaying a possible Answer to life - Credit: '
+                                  'http://nicolascage.us/wp-content/uploads/2013/09/Universe-Cupcake.jpg</font><br>')
             webbrowser.open('http://nicolascage.us/wp-content/uploads/2013/09/Universe-Cupcake.jpg')
 
     # This function controls all keyPresses, it runs at all times in the main window and grabs keypress from that
@@ -466,7 +482,8 @@ class MyForm(QtGui.QWidget):
             self.ui.consol.append('<font color = "green"> Path Files Successfully generated</font><br>')
             self.ui.generatePathFiles.setStyleSheet("background-color: green; color: white")
         else:
-            self.ui.consol.append('<font color = "red"> No Path Files Generated, is your data folder in the program direcotry?</font><br>')
+            self.ui.consol.append('<font color = "red"> No Path Files Generated, is your data folder in the program '
+                                  'direcotry?</font><br>')
             self.ui.generatePathFiles.setStyleSheet("background-color: red; color: white")
 
     # This grabs the infomration for the plot function and then passed it to the Plotter class to plot the function
@@ -576,8 +593,6 @@ class OrderJump(QtGui.QDialog):
                 Plotter.nstackplot(plotparm[3], order, plotparm[0], fit[0])
         else:
             pass
-            # plt.close()
-            # Plotter.corplot(plotparm[4], plotparm[5], plotparm[6], order, plotparm[7], plotparm[8], plotparm[9], compare[0], plotparm[10], True)
 
 
     def closser(self):
@@ -608,13 +623,16 @@ class MultiView(QtGui.QMainWindow):
         windowwidth = int(windowsize[19:-6])
         windowheight = int(windowsize[24:-1])
         widgets = dict()
+        checkboxes = dict()
         windowheight -= (0.2)*windowheight
         boxheight = windowheight/3
         ax = []
+
         def gaus(x,a,x0,sigma, offset):
             return (-a*exp(-(x-x0)**2/(2*sigma**2)))
         for i in range(numorders[0]):
             widgets[i+1] = 'self.ui.widget_' + str(i+1)
+            checkboxes[i+1] = 'self.ui.checkBox_' + str(i+1)
         for q in range(numorders[0]):
             fig.append(Figure(figsize=(2.81,boxheight/100), dpi=85, facecolor='w'))
         for q in range(numorders[0]):
@@ -626,6 +644,15 @@ class MultiView(QtGui.QMainWindow):
         for q in range(numorders[0]):
             ax[q].plot(FullO[q], FullCC[q])
             ax[q].plot(FullO[q], gaus(FullO[q], *FullGaus[q]))#, label='Gaussian Fit | x at max: ' + str(FullGaus[q][1]))
+            centroidMeadian = np.median(centroids)
+            CentroidStDev = np.std(centroids)
+            # print centroids
+            # print 'Median', centroidMeadian
+            # print 'Standard Deviation', CentroidStDev
+            if centroids[q] > centroidMeadian + 3*CentroidStDev or centroids[q] < centroidMeadian - 3*CentroidStDev:
+                print 'unchecking box number', q
+                eval(checkboxes[q]).setChecked(False)
+
         del FullCC[:]
         del FullO[:]
         del FullGaus[:]
@@ -658,7 +685,8 @@ class MultiView(QtGui.QMainWindow):
                 pass
         meanVel = sum(usevelocity)/len(usevelocity)
         Velstd = np.std(usevelocity)
-        usetext = 'Mean of Selected velocity: ' + str(meanVel) + '\nStandard Deviation in Selected Velocities: ' + str(Velstd)
+        usetext = 'Mean of Selected velocity: ' + str(meanVel) + '\nStandard Deviation in Selected Velocities: ' + \
+                  str(Velstd)+ '\nObservation on HJD: ' + str(HJD[0])
         self.window2 = Editor()
         self.window2.ui.textEdit.append(usetext)
         self.window2.ui.FileName.setText('CCorOutput.txt')
@@ -800,7 +828,8 @@ class CCWindow(QtGui.QMainWindow):
     #   It has some functionality now but it is by no means where it needs to be
     def ccorplot(self):
         if corlist[0] is True:
-            self.ui.infobox.append('<font color="red">Multiple Correlation Not an opetion currently, please deselect and use single correlation</font><br>')
+            self.ui.infobox.append('<font color="red">Multiple Correlation Not an opetion currently, please deselect and '
+                                   'use single correlation</font><br>')
         else:
             degree = self.ui.fitdegree.value()
             templatename = self.ui.tempfilename.text()
@@ -809,19 +838,21 @@ class CCWindow(QtGui.QMainWindow):
             run = False
             try:
                 if allplots[0] is False:
-                    Plotter.corplot(degree, templatename, objectname, 1, self.length, self.smallerwaves, self.largerwaves, compare[0], value, True, True)
+                    Plotter.corplot(degree, templatename, objectname, 1, self.length, self.smallerwaves, self.largerwaves,
+                                    compare[0], value, True, True)
                     self.ui.infobox.append('<font color ="green">Cross Correlating Orders, use "a" to advance</font><br>')
                 elif allplots[0] is True:
-                    self.ui.infobox.append('<font color = "green">Calculating Cross Correlation Coefficients for all orders</font>')
+                    self.ui.infobox.append('<font color = "green">Calculating Cross Correlation Coefficients for all '
+                                           'orders</font>')
                     self.ui.infobox.append('<font color = "green">This can take some time, please be paitient</font>')
-                    Plotter.corplot(degree, templatename, objectname, 1, self.length, self.smallerwaves, self.largerwaves, compare[0], value, False, True)
+                    HJD[0] = AdvancedPlotting.coordconvert(objectname)
+                    Plotter.corplot(degree, templatename, objectname, 1, self.length, self.smallerwaves, self.largerwaves,
+                                    compare[0], value, False, True)
                 run = True
             except ValueError:
                 self.ui.infobox.append('<font color ="red">Please Make sure that file names are entered in the boxs</font>')
             except IOError:
                 self.ui.infobox.append('<font color ="red">Please Make sure that file names are spelled correctly</font>')
-            HJD = AdvancedPlotting.coordconvert(objectname)
-            print HJD
             plotparm[4] = degree; plotparm[5] = templatename; plotparm[6] = objectname; plotparm[7] = self.length
             plotparm[8] = self.smallerwaves; plotparm[9] = self.largerwaves; plotparm[10] = value
             jumpcore[0] = True
@@ -833,11 +864,14 @@ class CCWindow(QtGui.QMainWindow):
                         self.window3 = MultiView()
                         self.window3.show()
                     except ValueError:
-                        self.ui.infobox.append('<font color ="red">Please Make sure that file names are entered in the boxs</font>')
+                        self.ui.infobox.append('<font color ="red">Please Make sure that file names are entered in the '
+                                               'boxs</font>')
                     except IOError:
-                        self.ui.infobox.append('<font color ="red">Please Make sure that file names are spelled correctly</font>')
+                        self.ui.infobox.append('<font color ="red">Please Make sure that file names are spelled '
+                                               'correctly</font>')
                 else:
-                    self.ui.infobox.append('<font color = "red">An unknown error has occured, please make sure all inputs are correct</font>')
+                    self.ui.infobox.append('<font color = "red">An unknown error has occured, please make sure all '
+                                           'inputs are correct</font>')
 
 
 # This is plotter code, at some point it may be nice to move this class (During the great reorginazation of code to come)
@@ -894,12 +928,12 @@ class Plotter(CCWindow):
                             center = data['offset'][count]
                             index = count
             clean = np.linspace(-(value/2), value/2, 10*len(data['offset']))
-            print data['correlation']
+            # print data['correlation']
             FitX = data['offset'][index-3:index+3]
             FitY = data['correlation'][index-3:index+3]
             try:
                 gaussy,gaussx = curve_fit(data['fit'],FitX,FitY,p0=[maximum,center,5, .05])
-                print 'Fit SUCSSES'
+                # print 'Fit SUCSSES'
             except (RuntimeError, TypeError):
                 maximumfalback = 0
                 centerfallback = 0
@@ -982,15 +1016,17 @@ class Plotter(CCWindow):
                         maximum = data['correlation'][count]
                         center = data['offset'][count]
                         index = count
-                #index = value/2 - index
-                velocity.append(index * data['dispersion'])
-                print 'velocity at order number', i, 'is', index*data['dispersion']
-                FullCC.append(data['correlation'])
-                FullO.append(data['offset'])
                 FitX = data['offset'][index-5:index+5]
                 FitY = data['correlation'][index-5:index+5]
                 gaussy,gaussx = curve_fit(data['fit'],FitX,FitY,p0=[maximum,center,5, .05])
+                tempvelocity = gaussy[1] * data['dispersion']
+                VelocityReal = (tempvelocity/data['meantemp'])*c
+                velocity.append(VelocityReal)
+                # print 'velocity at order number', i, 'is', VelocityReal
+                FullCC.append(data['correlation'])
+                FullO.append(data['offset'])
                 FullGaus.append(gaussy)
+                centroids.append(gaussy[1])
             if allplots[0] is False:
                 CCWindow.window3 = MultiView()
                 CCWindow.window3.show()

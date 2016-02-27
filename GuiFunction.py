@@ -248,7 +248,7 @@ class AdvancedPlotting(PlotFunctionality):
 
 
             correlationnpvalue = np.correlate(templateflux, shiftflux)
-            print correlationnpvalue
+            # print correlationnpvalue
             correlationnp.append(correlationnpvalue[0])
             z = templateflux - shiftflux
             savez = z
