@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 from astropy.modeling import models,fitting
 import jplephem
 import de423
+import ephem
 import astropy.time as astrotime
 import astropy.coordinates as coords
 import astropy.units as unit
@@ -31,6 +32,11 @@ class PlotFunctionality(object):
         # These are due to be replaced by wfextract()
         wavelength = np.float64(sp[0].data[start-1, :, 0])
         flux = np.float64(sp[0].data[start-1, :, 1])
+        # wavelength = np.float64(sp[0].data[1, start-1, :])
+        # flux = np.float64(sp[0].data[2, start-1, :])
+        # fitsdata = sp[1].data
+        data = sp[0].data
+        print sp[0].data.shape
 
         # determins wherether to show the two things
         if showfit is True:
@@ -148,7 +154,7 @@ class AdvancedPlotting(PlotFunctionality):
         targetflux = []
         templateflux = []
         correlation = []
-        correlationbad = []
+        correlationnp = []
         offset = []
 
         # These call the wfextract function to get the flux and wavelength for the target and template as a dictionary
@@ -227,6 +233,7 @@ class AdvancedPlotting(PlotFunctionality):
         templateflux = templateflux[0]
         templateflux = templateflux[(value/2):-(value/2)]
         templateflux[:] = [x - 1 for x in templateflux]
+        meantemp = sum(newtemplatewave)/len(newtemplatewave)
 
         # This does the actual shifting
         for i in range(value):
@@ -240,13 +247,15 @@ class AdvancedPlotting(PlotFunctionality):
 
             # correlates the two arrays of fluxes and appends that to an array
 
-            correlationbad.append(np.correlate(templateflux, shiftflux))
-            print len(correlationbad)
+
+            correlationnpvalue = np.correlate(templateflux, shiftflux)
+            # print correlationnpvalue
+            correlationnp.append(correlationnpvalue[0])
             z = templateflux - shiftflux
             savez = z
             z = [x**2 for x in z]
             z = sum(z)
-            z /= (len(shiftflux)-1)
+            z /= (len(shiftflux))
             z = math.sqrt(z)
             bottom = math.sqrt((np.std(templateflux)**2)+(np.std(shiftflux)**2))
             z /= bottom
@@ -262,14 +271,16 @@ class AdvancedPlotting(PlotFunctionality):
             offset.append((value/2)-i)
         savecor = correlation
         correlation = [abs(x - max(savecor)) for x in savecor]
-        g_init = models.Gaussian1D(amplitude=max(correlation), mean=0, stddev=2.)
-        fit_g = fitting.LevMarLSQFitter()
-        g = fit_g(g_init, offset, correlation)
+        # g_init = models.Gaussian1D(amplitude=max(correlation), mean=0, stddev=2.)
+        # fit_g = fitting.LevMarLSQFitter()
+        # g = fit_g(g_init, offset, correlation)
+        def gaus(x,a,x0,sigma, offset):
+            return (-a*exp(-(x-x0)**2/(2*sigma**2))) # + offset # where offset is the offset of the spectre
         waverange = (max(newtargetwave)) - (min(newtargetwave))
         pixrange = len(newtargetwave)
         dispersion = waverange/pixrange
-        #return{'correlation': correlation, 'offset': offset, 'fit': g, 'dispersion': dispersion}
-        return{'correlation': correlationbad, 'offset': offset, 'fit': g, 'dispersion': dispersion}
+        # return{'correlation': correlation, 'offset': offset, 'fit': gaus, 'dispersion': dispersion, 'meantemp': meantemp}
+        return{'correlation': correlationnp, 'offset': offset, 'fit': gaus, 'dispersion': dispersion, 'meantemp': meantemp}
 
     # This method deals with showing the wavelengths in the cross correlation chart, basically it allows one to see
     # what is being cross correlated, which is helpful for you know...SCIENCE
@@ -340,22 +351,31 @@ class AdvancedPlotting(PlotFunctionality):
         for i in range(len(RA)):
             RA[i] = float(RA[i])
             Dec[i] = float(Dec[i])
-        ObsDate = hdulist[0].header['DATE']
-
+        DateOBS = hdulist[0].header['UTSHUT']
+        TimeEPX = hdulist[0].header['EXPTIME']
+        print DateOBS
+        YearShut = int(DateOBS[:4])
+        MonthShut = int(DateOBS[5:7])
+        DayShut = int(DateOBS[8:10])
+        Hour = int(DateOBS[11:13])
+        Minute = int(DateOBS[14:16])
+        second = float(DateOBS[17:])
+        second += (float(TimeEPX)/2)
+        Mtotal = (second/60)+ Minute
+        Htotal = (Mtotal/60) + Hour
+        DayAdd = Htotal/24
         # Parses the time from the header into years months and dates, for latter use in JD converter
-        Year = int(ObsDate[:-15])
-        Month = int(ObsDate[5:-12])
-        Day = int(ObsDate[8:-9])
         # Calculate the Julian Date
-        JD = sum(jdcal.gcal2jd(Year, Month, Day))
-
+        JD = sum(jdcal.gcal2jd(YearShut, MonthShut, DayShut))
+        JD = JD + DayAdd
         # Convert to JD2000
-        J2 = JD - 2451545.0
+        MJD = JD - 2451545.0
+        # MJD = JD - 2400000.5
 
         # This calculates the distance to the sun on a given Julian Date, these at some point need to be modified, however
         # this should work for the time being
-        MeanLon = 280.460 + 0.9856474 * J2
-        MeanAnon = 357.528 + 0.9856003 * J2
+        MeanLon = 280.460 + 0.9856474 * MJD
+        MeanAnon = 357.528 + 0.9856003 * MJD
         cont = False
         # corrects for, and places the mean annomoly in the range of 360
         while cont is False:
@@ -374,67 +394,74 @@ class AdvancedPlotting(PlotFunctionality):
                 MeanLon += 360
             else:
                 cont = True
+        RAfromHDU = hdulist[0].header['RA']
+        DecfromHDU = hdulist[0].header['DEC']
+        RAHour = int(RAfromHDU[:2])
+        RAMinute = int(RAfromHDU[3:5])
+        RASecond = float(RAfromHDU[6:])
+        DecDegrees = int(DecfromHDU[:2])
+        DecMinute = int(DecfromHDU[3:5])
+        DecSecond = float(DecfromHDU[6:])
+        RATotalMin = RAMinute + (RASecond/60)
+        RADegrees = (RAHour*15)+(RATotalMin/60)
+        RARadians = (RADegrees/360)*2*math.pi
+        DecTotalMin = DecMinute + (DecSecond/60)
+        DecTotalDegrees = DecDegrees + (DecTotalMin/60)
+        DecRadians = (DecTotalDegrees/360)*2*math.pi
+        eph = jplephem.Ephemeris(de423)
+        pos_sunjpl = eph.position('sun', JD)#*unit.km
+        sunDist = math.sqrt((pos_sunjpl[0]**2)+(pos_sunjpl[1]**2) + (pos_sunjpl[2]**2))
+        print 'jpl solar distance:', sunDist
+        sun = ephem.Sun()
+        useDate = str(YearShut) + '/' + str(MonthShut) + '/' + str(DayShut+DayAdd)
+        sun.compute(useDate)
+        sunRA = str(sun.ra)
+        sunDEC = str(sun.dec)
+        # sunRA = '17:13:54.10'
+        # sunDEC = '-23 00 50.9'
+        print sunRA, sunDEC
+        RASunHour = int(sunRA[:2])
+        RASunMinute = int(sunRA[3:5])
+        RASunSecond = float(sunRA[6:])
+        DecSunDegrees = int(sunDEC[:2])
+        DecSunMinute = int(sunDEC[4:6])
+        DecSunSecond = float(sunDEC[7:])
+        RASunTotalMin = RASunMinute + (RASunSecond/60)
+        RASunDegrees = (RASunHour*15)+(RASunTotalMin/60)
+        RASunRadians = (RASunDegrees/360)*2*math.pi
+        DecSunTotalMin = DecSunMinute + (DecSunSecond/60)
+        DecSunTotalDegrees = DecSunDegrees + (DecSunTotalMin/60)
+        DecSunRadians = (DecSunTotalDegrees/360)*2*math.pi
+        print sunRA, sunDEC
         # calculates values for use in the HJD Calculation
         EcclipticLon = MeanLon + 1.915*math.sin(MeanAnon) + 0.020*math.sin(2*MeanAnon)
+        # Solar Distance in AU
         SolarDist = 1.00014 - 0.01671*math.cos(MeanAnon) - 0.00014*math.cos(2*MeanAnon)
-        HJD = AdvancedPlotting.jd_corr(J2, name, jd_type='hjd')
-        print 'in function:', HJD
-        BJD = AdvancedPlotting.jd_corr(J2, name, jd_type='bjd')
-        print 'in function:', BJD
+        SolarDist *= 14959787066
+        sunx = SolarDist*math.sin(DecSunRadians)*math.cos(RASunRadians)
+        suny = SolarDist*math.sin(DecSunRadians)*math.sin(RASunRadians)
+        sunz = SolarDist*math.cos(DecSunRadians)
+        objectx = math.sin(DecRadians)*math.cos(RARadians)
+        objecty = math.sin(DecRadians)*math.sin(RARadians)
+        objectz = math.cos(DecRadians)
+        magobject = math.sqrt(((math.sin(DecRadians)*math.cos(RARadians))**2)+
+                              ((math.sin(DecRadians)*math.sin(RARadians))**2)+((math.cos(DecRadians))**2))
+        objectxhat = objectx/magobject
+        objectyhat = objecty/magobject
+        objectzhat = objectz/magobject
+        print 'Other Distanca:', SolarDist
+        # time = distance / speed
+        c = 299792458
 
-        # The Next section here calculates the Unit vector pointed at the target
+        HJD = JD + ((sunx*objectxhat)+(suny*objectyhat)+(sunz*objectzhat))/c
 
-        return {'HJD': HJD, 'BJD': BJD}
-
-    # https://mail.scipy.org/pipermail/astropy/2014-April/003148.html
-    @staticmethod
-    def jd_corr(mjd, filename, jd_type='hjd'):
-        hdulist = fits.open(filename)
-        RA = hdulist[0].header['RA']
-        Dec = hdulist[0].header['Dec']
-        CTIO_LON = 30.1697
-        CTIO_LAT = 70.8065
-        # Initialise ephemeris from jplephem
-        eph = jplephem.Ephemeris(de423)
-
-        # Source unit-vector
-        ## Assume coordinates in ICRS
-        ## Set distance to unit (kilometers)
-        src_vec = coords.ICRS(ra=RA, dec=Dec, unit=(unit.degree, unit.degree), distance=coords.Distance(1, unit.km))
-
-        # Convert epochs to astropy.time.Time
-        ## Assume MJD(UTC)
-        t = astrotime.Time(mjd, scale='utc', format='mjd')#lat=CTIO_LAT, lon=CTIO_LON)
-
-        # Get Earth-Moon barycenter position
-        ## NB: jplephem uses Barycentric Dynamical Time, e.g. JD(TDB)
-        ## and gives positions relative to solar system barycenter
-        barycenter_earthmoon = eph.position('earthmoon', t.tdb.jd)
-
-        # Get Moon position vectors
-        moonvector = eph.position('moon', t.tdb.jd)
-
-        # Compute Earth position vectors
-        pos_earth = (barycenter_earthmoon - moonvector * eph.earth_share)*unit.km
-
-        if jd_type == 'bjd':
-            # Compute BJD correction
-            ## Assume source vectors parallel at Earth and Solar System Barycenter
-            ## i.e. source is at infinity
-            corr = np.dot(pos_earth.T, src_vec.cartesian.value)/const.c
-        elif jd_type == 'hjd':
-            # Compute HJD correction via Sun ephemeris
-            pos_sun = eph.position('sun', t.tdb.jd)*unit.km
-            sun_earth_vec = pos_earth - pos_sun
-            corr = np.dot(sun_earth_vec.T, src_vec.cartesian.value)/const.c
-        else:
-            return '<font color="red">ERROR, CORRECTION TYPE NOT SPECIFIED OR SPELLED WRONG</font>'
-
-        # TDB is the appropriate time scale for these ephemerides
-        dt = astrotime.TimeDelta(corr, scale='tdb', format='jd')
-        # Compute and return HJD/BJD as astropy.time.Time
-        new_jd = t + dt
-        return new_jd
+        timedebt = SolarDist/c
+        #HJD = MJD + (timedebt/86400)
+        #HJD += 2451545.0
+        #HJD = MJD - (SolarDist/c)*(math.sin(DecRadians)*math.sin(DecSunRadians)+math.cos(DecRadians)*
+        #                         math.cos(DecSunRadians)*math.cos(RARadians-RASunRadians))
+        #HJD += 2451545.0
+        return HJD
 
     @staticmethod
     def gaussianfit(filename, hydrogenalpha, hydrogenbeta, heliumalpha):
@@ -453,7 +480,6 @@ class AdvancedPlotting(PlotFunctionality):
         # newflux = data['flux']
         wavenew = []
         fluxnew = []
-        print len(selection)
         for i in range(len(selection)):
             lower = min(range(len(allwave)), key = lambda k: abs(allwave[k]-selection[i][0]))
             upper = min(range(len(allwave)), key = lambda k: abs(allwave[k]-selection[i][1]))
