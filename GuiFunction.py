@@ -18,7 +18,7 @@ import astropy.constants as const
 run = [False]
 
 
-# opens a log file, I don't always print to it but its nice to have handy when I want to print a lot of output
+#  opens a log file, I don't always print to it but its nice to have handy when I want to print a lot of output
 log = open('log.log', 'w')
 
 # basic plot functionality
