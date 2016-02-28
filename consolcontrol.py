@@ -5,7 +5,7 @@ from subprocess import Popen, PIPE
 import random
 
 
-# This is the Routing class, it take input from the text input in the form of parssed string and returens a string
+#  This is the Routing class, it take input from the text input in the form of parssed string and returens a string
 # That will be added to the consol by the MyForm Class
 class BSPS(object):
 

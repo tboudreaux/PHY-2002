@@ -2,7 +2,7 @@
 # Paddy Clancy and Thomas Boudreaux
 from General import *
 prerun = open('prerun.log','w')
-# GUI file import statements
+#  GUI file import statements
 print >>prerun, 'Cheking for GUI files'
 try:
     from Correlation2 import Ui_CrossCore
