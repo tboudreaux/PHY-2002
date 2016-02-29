@@ -437,7 +437,7 @@ class AdvancedPlotting(PlotFunctionality):
         return new_jd
 
     @staticmethod
-    def gaussianfit(filename, upper, lower):
+    def gaussianfit(filename, upper, lower, plotnumber):
         allwave = []
         allflux = []
         xvalue = []
@@ -455,9 +455,8 @@ class AdvancedPlotting(PlotFunctionality):
         fluxnew = []
         print len(selection)
         for i in range(len(selection)):
-            lower = min(range(len(allwave)), key = lambda k: abs(allwave[k]-selection[i][0]))
-            upper = min(range(len(allwave)), key = lambda k: abs(allwave[k]-selection[i][1]))
-            print "upper:", upper, "lower:",lower
+            lower = min(range(len(allwave)), key=lambda k: abs(allwave[k]-selection[0]))
+            upper = min(range(len(allwave)), key=lambda k: abs(allwave[k]-selection[1]))
 
             for j in range(len(allwave)):
                 if lower<j<upper:
@@ -468,28 +467,34 @@ class AdvancedPlotting(PlotFunctionality):
             x = ar(wavenew)
             y = ar(fluxnew)
             n = len(x)
-            print n # amount of data
             def gaus(x,a,x0,sigma,offset):
                 return (-a*exp(-(x-x0)**2/(2*sigma**2))) + offset   # where offset is the offset of the spectra
             center = allwave[(upper-((upper-lower)/2))]
-            print(center)
-            gaussy,gaussx = curve_fit(gaus,x,y,p0=[.5,center,5,1])
-            print(gaussy)
+            gaussy,gaussx = curve_fit(gaus,x,y,p0=[.5,center,5,.7])
+            print('gaussy: ',gaussy)
+            print('gaussx: ',gaussx)
 
-            plt.plot(x,gaus(x,*gaussy))
-            plt.show()
-            plt.pause(5)
-
-            #maximum = max(g)
+            maximum = max(gaussy)
             wavenew = None
             fluxnew = None
             wavenew = []
             fluxnew = []
             xvalue.append(gaussx)
             yvalue.append(gaussy)
-            #maxvalue.append(maximum)
+            maxvalue.append(maximum)
 
-        return {'gaussx': xvalue,'gaussy': yvalue,'maximum': maxvalue}
+            plt.plot(x,gaus(x,*gaussy))
+            if plotnumber == 1:
+                plt.title('Hydrogen Alpha')
+            elif plotnumber == 2:
+                plt.title('Hydrogen Beta')
+            elif plotnumber == 3:
+                plt.title('Helium I')
+            plt.show()
+            plt.pause(5)
+
+
+        return 0
 
 
     ## TOUCH THE COW
@@ -504,28 +509,27 @@ class AdvancedPlotting(PlotFunctionality):
        wave1 = open('lines.sec','rb') # opens file to read line wavelengths
        wave1 = wave1.readlines()
        length = len(wave1)
+       def gaus(x,a,x0,sigma,offset):
+                return (-a*exp(-(x-x0)**2/(2*sigma**2))) + offset   # where offset is the offset of the spectra
 
        for i in range(length):
            wave1[i] = wave1[i].split('-') # splits the strings
            wave1[i][1] = wave1[i][1][:-1] # gets rid of the newline character
-           print wave1[i]
            wave1[i] = [float(x) for x in wave1[i]]
-           print wave1
        wave2=[0,0]
-       print wave2
        if hydrogena is False:
            pass
        elif hydrogena is True:
            wave2=wave1[0]
-           AdvancedPlotting.gaussianfit(filename,wave2[1],wave2[0])
+           AdvancedPlotting.gaussianfit(filename,wave2[1],wave2[0],1)
        if hydrogenb is False:
            pass
        elif hydrogenb is True:
            wave2=wave1[1]
-           AdvancedPlotting.gaussianfit(filename,wave2[1],wave2[0])
+           AdvancedPlotting.gaussianfit(filename,wave2[1],wave2[0],2)
        if heliuma is False:
            pass
        elif heliuma is True:
            wave2=wave1[2]
-           AdvancedPlotting.gaussianfit(filename,wave2[1],wave2[0])
+           AdvancedPlotting.gaussianfit(filename,wave2[1],wave2[0],3)
        return 0
