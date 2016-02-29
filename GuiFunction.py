@@ -17,7 +17,6 @@ import astropy.constants as const
 
 run = [False]
 
-
 #  opens a log file, I don't always print to it but its nice to have handy when I want to print a lot of output
 log = open('log.log', 'w')
 
@@ -171,12 +170,11 @@ class AdvancedPlotting(PlotFunctionality):
         # this next large block of code is what deals with ignoring certain wavelengths, this is a mildly optimized
         # version (way more that before at least) and it makes sure to only take wavelengths into account that are not
         # in the range specified by the user
+        croped = False
         for n in range(numberignore):
-
             # This checks when the smaller wavelength is and if it falls in the range of the array it will then preform
             # more checks, if not it will move on
             if smallest < smallerwave[n] < largest:
-
                 # This checks if the largest wavelength is in the range of the array,
                 if smallest < largerwave[n] < largest:
                     for j in range(len(targetdata['wavelength'])):
@@ -194,26 +192,34 @@ class AdvancedPlotting(PlotFunctionality):
                 else:
                     # Same more or less logic than above
                     for j in range(len(targetdata['wavelength'])):
-                        if smallerwave[n] <= targetdata['wavelength'][j] <= largest:
+                        if smallerwave[n] <= targetdata['wavelength'][j] <= largerwave[n]:
                             pass
                         else:
                             newtargetwave.append(targetdata['wavelength'][j])
                             newtargetflux.append(targetdata['flux'][j])
                             newtemplatewave.append(templatedata['wavelength'][j])
                             newtemplateflux.append(templatedata['flux'][j])
+                croped = True
             elif smallest < largerwave[n] < largest:
                 for j in range(len(targetdata['wavelength'])):
-                    if smallest <= targetdata['wavelength'][j] <= largerwave[n]:
+                    if smallerwave[n] <= targetdata['wavelength'][j] <= largerwave[n]:
+                        pass
+                    else:
                         newtargetwave.append(targetdata['wavelength'][j])
                         newtargetflux.append(targetdata['flux'][j])
                         newtemplatewave.append(templatedata['wavelength'][j])
                         newtemplateflux.append(templatedata['flux'][j])
-            else:
-                # if there are no wavelengths to ignore then it sets the new use arrays to the target data relevent
-                newtargetwave = targetdata['wavelength'].tolist()
-                newtargetflux = targetdata['flux'].tolist()
-                newtemplatewave = templatedata['wavelength'].tolist()
-                newtemplateflux = templatedata['flux'].tolist()
+                croped = True
+            #else:
+            #print 'in the final else'
+            # if there are no wavelengths to ignore then it sets the new use arrays to the target data relevent
+        if croped is False:
+            newtargetwave = targetdata['wavelength'].tolist()
+            newtargetflux = targetdata['flux'].tolist()
+            newtemplatewave = templatedata['wavelength'].tolist()
+            newtemplateflux = templatedata['flux'].tolist()
+        else:
+            pass
 
         # Gets the target flux and normalizes it by calling the functional fitting function
         targetflux.append(PlotFunctionality.fitfunction(degree, newtargetwave, newtargetflux, 0)['y_new'])
@@ -396,22 +402,28 @@ class AdvancedPlotting(PlotFunctionality):
                 cont = True
         RAfromHDU = hdulist[0].header['RA']
         DecfromHDU = hdulist[0].header['DEC']
+        print 'Object RA and DEC:', RAfromHDU, DecfromHDU
         RAHour = int(RAfromHDU[:2])
         RAMinute = int(RAfromHDU[3:5])
         RASecond = float(RAfromHDU[6:])
         DecDegrees = int(DecfromHDU[:2])
         DecMinute = int(DecfromHDU[3:5])
         DecSecond = float(DecfromHDU[6:])
-        RATotalMin = RAMinute + (RASecond/60)
-        RADegrees = (RAHour*15)+(RATotalMin/60)
+        #RATotalMin = RAMinute + (RASecond/240)
+        RADegrees = (RAHour*15)+(RAMinute/4) + (RASecond/240)
+        print 'RA Object Degrees:', RADegrees
         RARadians = (RADegrees/360)*2*math.pi
+        print 'RA Object Radians:', RARadians
         DecTotalMin = DecMinute + (DecSecond/60)
         DecTotalDegrees = DecDegrees + (DecTotalMin/60)
+        print 'Dec Object Degrees:', DecTotalDegrees
         DecRadians = (DecTotalDegrees/360)*2*math.pi
+        print 'Dec Object Radians:', DecRadians
         eph = jplephem.Ephemeris(de423)
-        pos_sunjpl = eph.position('sun', JD)#*unit.km
-        sunDist = math.sqrt((pos_sunjpl[0]**2)+(pos_sunjpl[1]**2) + (pos_sunjpl[2]**2))
-        print 'jpl solar distance:', sunDist
+        pos_sunjpl = eph.position('Sun', JD)
+        pos_earthjpl = eph.position('earthmoon', JD)
+        EarthToSun = pos_sunjpl-pos_earthjpl
+        sunDist = math.sqrt((EarthToSun[0]**2)+(EarthToSun[1]**2) + (EarthToSun[2]**2))#*unit.km
         sun = ephem.Sun()
         useDate = str(YearShut) + '/' + str(MonthShut) + '/' + str(DayShut+DayAdd)
         sun.compute(useDate)
@@ -426,12 +438,16 @@ class AdvancedPlotting(PlotFunctionality):
         DecSunDegrees = int(sunDEC[:2])
         DecSunMinute = int(sunDEC[4:6])
         DecSunSecond = float(sunDEC[7:])
-        RASunTotalMin = RASunMinute + (RASunSecond/60)
-        RASunDegrees = (RASunHour*15)+(RASunTotalMin/60)
+        #RASunTotalMin = RASunMinute + (RASunSecond/60)
+        RASunDegrees = (RASunHour*15)+(RASunMinute/4) + (RASunSecond/240)
+        print 'RA sun Degrees:', RASunDegrees
         RASunRadians = (RASunDegrees/360)*2*math.pi
+        print 'RA sun Radians:', RASunRadians
         DecSunTotalMin = DecSunMinute + (DecSunSecond/60)
         DecSunTotalDegrees = DecSunDegrees + (DecSunTotalMin/60)
+        print 'Dec Sun Degrees:', DecSunTotalDegrees
         DecSunRadians = (DecSunTotalDegrees/360)*2*math.pi
+        print 'Dec Sun Radians:', DecSunRadians
         print sunRA, sunDEC
         # calculates values for use in the HJD Calculation
         EcclipticLon = MeanLon + 1.915*math.sin(MeanAnon) + 0.020*math.sin(2*MeanAnon)
@@ -449,18 +465,11 @@ class AdvancedPlotting(PlotFunctionality):
         objectxhat = objectx/magobject
         objectyhat = objecty/magobject
         objectzhat = objectz/magobject
-        print 'Other Distanca:', SolarDist
         # time = distance / speed
-        c = 299792458
-
-        HJD = JD + ((sunx*objectxhat)+(suny*objectyhat)+(sunz*objectzhat))/c
-
-        timedebt = SolarDist/c
-        #HJD = MJD + (timedebt/86400)
-        #HJD += 2451545.0
-        #HJD = MJD - (SolarDist/c)*(math.sin(DecRadians)*math.sin(DecSunRadians)+math.cos(DecRadians)*
-        #                         math.cos(DecSunRadians)*math.cos(RARadians-RASunRadians))
-        #HJD += 2451545.0
+        c = 299792458 # m/s
+        HJD = MJD - (sunDist/(c/1000))*(math.sin(DecRadians)*math.sin(DecSunRadians)+math.cos(DecRadians)*
+                                 math.cos(DecSunRadians)*math.cos(RARadians-RASunRadians))
+        HJD = HJD + 2451545.0
         return HJD
 
     @staticmethod

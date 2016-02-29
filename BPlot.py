@@ -205,7 +205,7 @@ class MyForm(QtGui.QWidget):
                     if p is not 0:
                         self.ui.listWidget.addItem(masterfilearray[k][p])
         # These control most of the button assignments in the main GUI
-        self.ui.consol.append('<font color = "green"> SAUL Version 0.5<br>Written by Paddy Clancy and Thomas Boudreaux '
+        self.ui.consol.append('<font color = "green"> SAUL Version 0.6<br>Written by Paddy Clancy and Thomas Boudreaux '
                               ' - 2016</font><br>')
         self.ui.consol.append('<font color = "blue"> Module and OS Checks OK</font><br>')
         self.ui.consol.append('<font color = "blue"> type "lcom" for a list of avalibel commands</font><br>')
@@ -729,7 +729,10 @@ class CCWindow(QtGui.QMainWindow):
 
             for i in range(self.length):
                 profile1[i] = profile1[i].split('-')  # reads through a string and splits at the '-' and creates a multi dimensional array
-                profile1[i][1] = profile1[i][1][:-1]  # gets rid of the newline character
+                if profile1[i][1] == '\n':
+                    profile1[i][1] = profile1[i][1][:-1]  # gets rid of the newline character
+                else:
+                    pass
                 self.smallerwaves.append(profile1[i][0])
                 self.largerwaves.append(profile1[i][1])
                 self.smallerwaves[i] = float(self.smallerwaves[i])
@@ -840,17 +843,18 @@ class CCWindow(QtGui.QMainWindow):
             objectname = self.ui.targetfilename.text()
             value = self.ui.ShiftSize.value()
             run = False
+            showall = self.ui.multiplotshow.isChecked()
             # try:
-            if allplots[0] is False:
-                Plotter.corplot(degree, templatename, objectname, 1, self.length, self.smallerwaves, self.largerwaves,
+            if showall is False:
+                Plotter.corplot(degree, templatename, objectname, 1, self.length, self.largerwaves, self.smallerwaves,
                                 compare[0], value, True, True)
                 self.ui.infobox.append('<font color ="green">Cross Correlating Orders, use "a" to advance</font><br>')
-            elif allplots[0] is True:
+            elif showall is True:
                 self.ui.infobox.append('<font color = "green">Calculating Cross Correlation Coefficients for all '
                                        'orders</font>')
                 self.ui.infobox.append('<font color = "green">This can take some time, please be paitient</font>')
                 HJD[0] = AdvancedPlotting.coordconvert(objectname)
-                Plotter.corplot(degree, templatename, objectname, 1, self.length, self.smallerwaves, self.largerwaves,
+                Plotter.corplot(degree, templatename, objectname, 1, self.length, self.largerwaves, self.smallerwaves,
                                 compare[0], value, False, True)
             run = True
             # except ValueError:
@@ -901,7 +905,7 @@ class Plotter(CCWindow):
             global gdata
             gdata = [None, None]
             finished = [False]
-            data = AdvancedPlotting.ccor(objectname, templatename, degree, order, num, larger, smaller, value)
+            data = AdvancedPlotting.ccor(objectname, templatename, degree, order-1, num, larger, smaller, value)
             fig = plt.figure(figsize=(10, 10))
             if show is False:
                 ccorfig = fig.add_subplot(1, 1, 1)
@@ -956,7 +960,7 @@ class Plotter(CCWindow):
             tempvelocity = gaussy[1] * data['dispersion']
             UseVel = (tempvelocity/data['meantemp'])*c
             ccorfig.plot(data['offset'], data['correlation'], label='Raw Data | Relative Velocity: ' + str(UseVel))
-            ccorfig.plot(data['offset'], data['correlation'], 's')
+            #ccorfig.plot(data['offset'], data['correlation'], 's')
             ccorfig.plot(clean, data['fit'](clean, *gaussy), label='Gaussian Fit | x at max: ' + str(gaussy[1]))
             ccorfig.set_xlabel('Offset')
             ccorfig.set_ylabel('Correlation Coefficient')
