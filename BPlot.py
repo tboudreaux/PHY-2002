@@ -1,5 +1,5 @@
 # Spectral Analysis Utility (SAUL)
-# Paddy Clancy and Thomas Boudreaux
+# Paddy Clancy and Thomas Bo udreaux
 from General import *
 prerun = open('prerun.log','w')
 # GUI file import statements
