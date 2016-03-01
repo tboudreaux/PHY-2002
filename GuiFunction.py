@@ -14,11 +14,11 @@ import astropy.time as astrotime
 import astropy.coordinates as coords
 import astropy.units as unit
 import astropy.constants as const
+import Astrolib
 
 run = [False]
 
-
-# opens a log file, I don't always print to it but its nice to have handy when I want to print a lot of output
+#  opens a log file, I don't always print to it but its nice to have handy when I want to print a lot of output
 log = open('log.log', 'w')
 
 # basic plot functionality
@@ -171,12 +171,11 @@ class AdvancedPlotting(PlotFunctionality):
         # this next large block of code is what deals with ignoring certain wavelengths, this is a mildly optimized
         # version (way more that before at least) and it makes sure to only take wavelengths into account that are not
         # in the range specified by the user
+        croped = False
         for n in range(numberignore):
-
             # This checks when the smaller wavelength is and if it falls in the range of the array it will then preform
             # more checks, if not it will move on
             if smallest < smallerwave[n] < largest:
-
                 # This checks if the largest wavelength is in the range of the array,
                 if smallest < largerwave[n] < largest:
                     for j in range(len(targetdata['wavelength'])):
@@ -194,26 +193,34 @@ class AdvancedPlotting(PlotFunctionality):
                 else:
                     # Same more or less logic than above
                     for j in range(len(targetdata['wavelength'])):
-                        if smallerwave[n] <= targetdata['wavelength'][j] <= largest:
+                        if smallerwave[n] <= targetdata['wavelength'][j] <= largerwave[n]:
                             pass
                         else:
                             newtargetwave.append(targetdata['wavelength'][j])
                             newtargetflux.append(targetdata['flux'][j])
                             newtemplatewave.append(templatedata['wavelength'][j])
                             newtemplateflux.append(templatedata['flux'][j])
+                croped = True
             elif smallest < largerwave[n] < largest:
                 for j in range(len(targetdata['wavelength'])):
-                    if smallest <= targetdata['wavelength'][j] <= largerwave[n]:
+                    if smallerwave[n] <= targetdata['wavelength'][j] <= largerwave[n]:
+                        pass
+                    else:
                         newtargetwave.append(targetdata['wavelength'][j])
                         newtargetflux.append(targetdata['flux'][j])
                         newtemplatewave.append(templatedata['wavelength'][j])
                         newtemplateflux.append(templatedata['flux'][j])
-            else:
-                # if there are no wavelengths to ignore then it sets the new use arrays to the target data relevent
-                newtargetwave = targetdata['wavelength'].tolist()
-                newtargetflux = targetdata['flux'].tolist()
-                newtemplatewave = templatedata['wavelength'].tolist()
-                newtemplateflux = templatedata['flux'].tolist()
+                croped = True
+            #else:
+            #print 'in the final else'
+            # if there are no wavelengths to ignore then it sets the new use arrays to the target data relevent
+        if croped is False:
+            newtargetwave = targetdata['wavelength'].tolist()
+            newtargetflux = targetdata['flux'].tolist()
+            newtemplatewave = templatedata['wavelength'].tolist()
+            newtemplateflux = templatedata['flux'].tolist()
+        else:
+            pass
 
         # Gets the target flux and normalizes it by calling the functional fitting function
         targetflux.append(PlotFunctionality.fitfunction(degree, newtargetwave, newtargetflux, 0)['y_new'])
@@ -339,7 +346,7 @@ class AdvancedPlotting(PlotFunctionality):
 # Here is the experimental HJD correction code, it is currently very rough and does not work
 
     @staticmethod
-    def coordconvert(name):
+    def coordconvert(name, VelRef):
         name = str(name)
         # This is basic read in stuff, its used the same at other points in the code, same idea here
         hdulist = fits.open(name)
@@ -353,7 +360,7 @@ class AdvancedPlotting(PlotFunctionality):
             Dec[i] = float(Dec[i])
         DateOBS = hdulist[0].header['UTSHUT']
         TimeEPX = hdulist[0].header['EXPTIME']
-        print DateOBS
+        # print DateOBS
         YearShut = int(DateOBS[:4])
         MonthShut = int(DateOBS[5:7])
         DayShut = int(DateOBS[8:10])
@@ -369,8 +376,8 @@ class AdvancedPlotting(PlotFunctionality):
         JD = sum(jdcal.gcal2jd(YearShut, MonthShut, DayShut))
         JD = JD + DayAdd
         # Convert to JD2000
-        MJD = JD - 2451545.0
-        # MJD = JD - 2400000.5
+        # MJD = JD - 2451545.0
+        MJD = JD - 2400000.5
 
         # This calculates the distance to the sun on a given Julian Date, these at some point need to be modified, however
         # this should work for the time being
@@ -402,41 +409,33 @@ class AdvancedPlotting(PlotFunctionality):
         DecDegrees = int(DecfromHDU[:2])
         DecMinute = int(DecfromHDU[3:5])
         DecSecond = float(DecfromHDU[6:])
-        RATotalMin = RAMinute + (RASecond/60)
-        RADegrees = (RAHour*15)+(RATotalMin/60)
+        RADegrees = (RAHour*15)+(RAMinute/4) + (RASecond/240)
         RARadians = (RADegrees/360)*2*math.pi
         DecTotalMin = DecMinute + (DecSecond/60)
         DecTotalDegrees = DecDegrees + (DecTotalMin/60)
         DecRadians = (DecTotalDegrees/360)*2*math.pi
         eph = jplephem.Ephemeris(de423)
-        pos_sunjpl = eph.position('sun', JD)#*unit.km
-        sunDist = math.sqrt((pos_sunjpl[0]**2)+(pos_sunjpl[1]**2) + (pos_sunjpl[2]**2))
-        print 'jpl solar distance:', sunDist
+        pos_sunjpl = eph.position('Sun', JD)
+        pos_earthjpl = eph.position('earthmoon', JD)
+        EarthToSun = pos_sunjpl-pos_earthjpl
         sun = ephem.Sun()
         useDate = str(YearShut) + '/' + str(MonthShut) + '/' + str(DayShut+DayAdd)
         sun.compute(useDate)
         sunRA = str(sun.ra)
         sunDEC = str(sun.dec)
-        # sunRA = '17:13:54.10'
-        # sunDEC = '-23 00 50.9'
-        print sunRA, sunDEC
         RASunHour = int(sunRA[:2])
         RASunMinute = int(sunRA[3:5])
         RASunSecond = float(sunRA[6:])
         DecSunDegrees = int(sunDEC[:2])
         DecSunMinute = int(sunDEC[4:6])
         DecSunSecond = float(sunDEC[7:])
-        RASunTotalMin = RASunMinute + (RASunSecond/60)
-        RASunDegrees = (RASunHour*15)+(RASunTotalMin/60)
+        RASunDegrees = (RASunHour*15)+(RASunMinute/4) + (RASunSecond/240)
         RASunRadians = (RASunDegrees/360)*2*math.pi
         DecSunTotalMin = DecSunMinute + (DecSunSecond/60)
         DecSunTotalDegrees = DecSunDegrees + (DecSunTotalMin/60)
         DecSunRadians = (DecSunTotalDegrees/360)*2*math.pi
-        print sunRA, sunDEC
-        # calculates values for use in the HJD Calculation
         EcclipticLon = MeanLon + 1.915*math.sin(MeanAnon) + 0.020*math.sin(2*MeanAnon)
-        # Solar Distance in AU
-        SolarDist = 1.00014 - 0.01671*math.cos(MeanAnon) - 0.00014*math.cos(2*MeanAnon)
+        SolarDist = 1.00014 - 0.01671*math.cos(MeanAnon) - 0.00014*math.cos(2*MeanAnon)  # AU
         SolarDist *= 14959787066
         sunx = SolarDist*math.sin(DecSunRadians)*math.cos(RASunRadians)
         suny = SolarDist*math.sin(DecSunRadians)*math.sin(RASunRadians)
@@ -449,19 +448,20 @@ class AdvancedPlotting(PlotFunctionality):
         objectxhat = objectx/magobject
         objectyhat = objecty/magobject
         objectzhat = objectz/magobject
-        print 'Other Distanca:', SolarDist
-        # time = distance / speed
-        c = 299792458
+        barveldata = Astrolib.baryvel(JD)
+        vel_helio = barveldata[0]
+        vel_bary = barveldata[1]
+        vel_helio = [vel_helio[0], vel_helio[1],vel_helio[2]]
+        vel_bary = [vel_bary[0], vel_bary[1], vel_bary[2]]
+        mag_vel_helio = Mathamatics.mag3D(vel_helio)
+        mag_vel_bary = Mathamatics.mag3D(vel_bary)
+        vhcorrectd = VelRef + mag_vel_helio*(math.sin(DecRadians)*math.sin(DecSunRadians)+math.cos(DecRadians)*
+                                 math.cos(DecSunRadians)*math.cos(RARadians-RASunRadians))
+        vbcorrectd = VelRef + mag_vel_bary*(math.sin(DecRadians)*math.sin(DecSunRadians)+math.cos(DecRadians)*
+                         math.cos(DecSunRadians)*math.cos(RARadians-RASunRadians))
+        heliojd = Astrolib.helio_jd(MJD, RADegrees, DecDegrees)
 
-        HJD = JD + ((sunx*objectxhat)+(suny*objectyhat)+(sunz*objectzhat))/c
-
-        timedebt = SolarDist/c
-        #HJD = MJD + (timedebt/86400)
-        #HJD += 2451545.0
-        #HJD = MJD - (SolarDist/c)*(math.sin(DecRadians)*math.sin(DecSunRadians)+math.cos(DecRadians)*
-        #                         math.cos(DecSunRadians)*math.cos(RARadians-RASunRadians))
-        #HJD += 2451545.0
-        return HJD
+        return {'HJD': heliojd, 'HCV': vhcorrectd, 'BCV': vbcorrectd}
 
     @staticmethod
     def gaussianfit(filename, hydrogenalpha, hydrogenbeta, heliumalpha):
