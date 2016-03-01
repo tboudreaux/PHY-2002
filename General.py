@@ -1,6 +1,7 @@
 import platform
 import matplotlib as mpl
 import imp
+import math
 
 
 class PreChecks(object):
@@ -52,3 +53,8 @@ class Mathamatics(object):
             if array[i] > largestnum:
                 largestnum = array[i]
         return largestnum
+
+    @staticmethod
+    def mag3D(vector):
+        mag = math.sqrt(vector[0]**2 + vector[1]**2 + vector[2]**2)
+        return mag

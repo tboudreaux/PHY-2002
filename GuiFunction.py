@@ -346,7 +346,7 @@ class AdvancedPlotting(PlotFunctionality):
 # Here is the experimental HJD correction code, it is currently very rough and does not work
 
     @staticmethod
-    def coordconvert(name):
+    def coordconvert(name, VelRef):
         name = str(name)
         # This is basic read in stuff, its used the same at other points in the code, same idea here
         hdulist = fits.open(name)
@@ -403,57 +403,39 @@ class AdvancedPlotting(PlotFunctionality):
                 cont = True
         RAfromHDU = hdulist[0].header['RA']
         DecfromHDU = hdulist[0].header['DEC']
-        # print 'Object RA and DEC:', RAfromHDU, DecfromHDU
         RAHour = int(RAfromHDU[:2])
         RAMinute = int(RAfromHDU[3:5])
         RASecond = float(RAfromHDU[6:])
         DecDegrees = int(DecfromHDU[:2])
         DecMinute = int(DecfromHDU[3:5])
         DecSecond = float(DecfromHDU[6:])
-        #RATotalMin = RAMinute + (RASecond/240)
         RADegrees = (RAHour*15)+(RAMinute/4) + (RASecond/240)
-        # print 'RA Object Degrees:', RADegrees
         RARadians = (RADegrees/360)*2*math.pi
-        # print 'RA Object Radians:', RARadians
         DecTotalMin = DecMinute + (DecSecond/60)
         DecTotalDegrees = DecDegrees + (DecTotalMin/60)
-        # print 'Dec Object Degrees:', DecTotalDegrees
         DecRadians = (DecTotalDegrees/360)*2*math.pi
-        # print 'Dec Object Radians:', DecRadians
         eph = jplephem.Ephemeris(de423)
         pos_sunjpl = eph.position('Sun', JD)
         pos_earthjpl = eph.position('earthmoon', JD)
         EarthToSun = pos_sunjpl-pos_earthjpl
-        sunDist = math.sqrt((EarthToSun[0]**2)+(EarthToSun[1]**2) + (EarthToSun[2]**2))#*unit.km
         sun = ephem.Sun()
         useDate = str(YearShut) + '/' + str(MonthShut) + '/' + str(DayShut+DayAdd)
         sun.compute(useDate)
         sunRA = str(sun.ra)
         sunDEC = str(sun.dec)
-        # sunRA = '17:13:54.10'
-        # sunDEC = '-23 00 50.9'
-        # print sunRA, sunDEC
         RASunHour = int(sunRA[:2])
         RASunMinute = int(sunRA[3:5])
         RASunSecond = float(sunRA[6:])
         DecSunDegrees = int(sunDEC[:2])
         DecSunMinute = int(sunDEC[4:6])
         DecSunSecond = float(sunDEC[7:])
-        #RASunTotalMin = RASunMinute + (RASunSecond/60)
         RASunDegrees = (RASunHour*15)+(RASunMinute/4) + (RASunSecond/240)
-        # print 'RA sun Degrees:', RASunDegrees
         RASunRadians = (RASunDegrees/360)*2*math.pi
-        # print 'RA sun Radians:', RASunRadians
         DecSunTotalMin = DecSunMinute + (DecSunSecond/60)
         DecSunTotalDegrees = DecSunDegrees + (DecSunTotalMin/60)
-        # print 'Dec Sun Degrees:', DecSunTotalDegrees
         DecSunRadians = (DecSunTotalDegrees/360)*2*math.pi
-        # print 'Dec Sun Radians:', DecSunRadians
-        # print sunRA, sunDEC
-        # calculates values for use in the HJD Calculation
         EcclipticLon = MeanLon + 1.915*math.sin(MeanAnon) + 0.020*math.sin(2*MeanAnon)
-        # Solar Distance in AU
-        SolarDist = 1.00014 - 0.01671*math.cos(MeanAnon) - 0.00014*math.cos(2*MeanAnon)
+        SolarDist = 1.00014 - 0.01671*math.cos(MeanAnon) - 0.00014*math.cos(2*MeanAnon)  # AU
         SolarDist *= 14959787066
         sunx = SolarDist*math.sin(DecSunRadians)*math.cos(RASunRadians)
         suny = SolarDist*math.sin(DecSunRadians)*math.sin(RASunRadians)
@@ -466,20 +448,20 @@ class AdvancedPlotting(PlotFunctionality):
         objectxhat = objectx/magobject
         objectyhat = objecty/magobject
         objectzhat = objectz/magobject
-        # time = distance / speed
         barveldata = Astrolib.baryvel(JD)
         vel_helio = barveldata[0]
         vel_bary = barveldata[1]
-        print 'Bary Velocity is:',vel_bary, 'Helio velocity is:', vel_helio
+        vel_helio = [vel_helio[0], vel_helio[1],vel_helio[2]]
+        vel_bary = [vel_bary[0], vel_bary[1], vel_bary[2]]
+        mag_vel_helio = Mathamatics.mag3D(vel_helio)
+        mag_vel_bary = Mathamatics.mag3D(vel_bary)
+        vhcorrectd = VelRef + mag_vel_helio*(math.sin(DecRadians)*math.sin(DecSunRadians)+math.cos(DecRadians)*
+                                 math.cos(DecSunRadians)*math.cos(RARadians-RASunRadians))
+        vbcorrectd = VelRef + mag_vel_bary*(math.sin(DecRadians)*math.sin(DecSunRadians)+math.cos(DecRadians)*
+                         math.cos(DecSunRadians)*math.cos(RARadians-RASunRadians))
         heliojd = Astrolib.helio_jd(MJD, RADegrees, DecDegrees)
 
-        c = 299792458 # m/s
-
-        HJD = MJD - (sunDist/(c/1000))*(math.sin(DecRadians)*math.sin(DecSunRadians)+math.cos(DecRadians)*
-                                 math.cos(DecSunRadians)*math.cos(RARadians-RASunRadians))
-        HJD = HJD + 2451545.0
-        heliojd += 2400000.5
-        return heliojd
+        return {'HJD': heliojd, 'HCV': vhcorrectd, 'BCV': vbcorrectd}
 
     @staticmethod
     def gaussianfit(filename, hydrogenalpha, hydrogenbeta, heliumalpha):
