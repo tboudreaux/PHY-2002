@@ -11,7 +11,10 @@ class BSPS(object):
 
     @staticmethod
     def route(command, paramter):
-        commandList = {'view':BSPSEss.view, 'ls':BSPSEss.ls, 'lcom':BSPSEss.lcom, 'pwd':BSPSEss.pwd, 'cd':BSPSEss.cd, 'clear':BSPSEss.clear, 'mkdir': BSPSEss.mkdir, 'edit': BSPSEss.edit, 'pyrun': BSPSEss.pyrun, 'tie': BSPSEss.tie, 'lfunc': BSPSEss.lfunc, 'reload': BSPSEss.reload, 'quit':BSPSEss.quit, 'answer':BSPSEss.answer}
+        commandList = {'view':BSPSEss.view, 'ls':BSPSEss.ls, 'lcom':BSPSEss.lcom, 'pwd':BSPSEss.pwd, 'cd':BSPSEss.cd,
+                       'clear':BSPSEss.clear, 'mkdir': BSPSEss.mkdir, 'edit': BSPSEss.edit, 'pyrun': BSPSEss.pyrun,
+                       'tie': BSPSEss.tie, 'lfunc': BSPSEss.lfunc, 'reload': BSPSEss.reload, 'quit':BSPSEss.quit,
+                       'answer':BSPSEss.answer, 'setHET':BSPSEss.setHET, 'setCHIRON': BSPSEss.setCHIRON}
         if command in commandList:
             string = BSPSEss.strsend(command, paramter)
             return string
@@ -35,7 +38,10 @@ class BSPSEss(BSPS):
         # Command list, this at some point would be nice to impliment into a seperate file so that there is only one
         # and that there is not a super long annoying to add to line of code, I think that that may be best to do
         # with the pandas module
-        commandlist = {'view':BSPSEss.view, 'ls':BSPSEss.ls, 'lcom':BSPSEss.lcom, 'pwd':BSPSEss.pwd, 'cd':BSPSEss.cd, 'clear':BSPSEss.clear, 'mkdir': BSPSEss.mkdir, 'edit': BSPSEss.edit, 'pyrun':BSPSEss.pyrun, 'tie': BSPSEss.tie, 'lfunc': BSPSEss.lfunc, 'reload': BSPSEss.reload, 'quit': BSPSEss.quit, 'answer':BSPSEss.answer}
+        commandlist = {'view':BSPSEss.view, 'ls':BSPSEss.ls, 'lcom':BSPSEss.lcom, 'pwd':BSPSEss.pwd, 'cd':BSPSEss.cd,
+                       'clear':BSPSEss.clear, 'mkdir': BSPSEss.mkdir, 'edit': BSPSEss.edit, 'pyrun':BSPSEss.pyrun,
+                       'tie': BSPSEss.tie, 'lfunc': BSPSEss.lfunc, 'reload': BSPSEss.reload, 'quit': BSPSEss.quit,
+                       'answer':BSPSEss.answer, 'setHET':BSPSEss.setHET, 'setCHIRON':BSPSEss.setCHIRON}
 
         # This basically checks if the function takes a parameter or not, because some like close do not need parameters
         try:
@@ -63,6 +69,13 @@ class BSPSEss(BSPS):
         return string
 
 # Below This are all the functions called by commands
+    @staticmethod
+    def setCHIRON():
+        return '//setCHIRON'
+
+    @staticmethod
+    def setHET():
+        return '//setHET'
 
     # relaunches the program from skratch, so code changed can be made while runnign and this command can be run
     # and then they will be implimented
