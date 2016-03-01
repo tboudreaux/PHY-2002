@@ -1507,30 +1507,30 @@ def xyz(date, equinox=None):
           the equinox, the y-axis, towards the point on the equator at right
           ascension 6h, and the z axis toward the north pole of the equator).
           Typical position accuracy is <1e-4 AU (15000 km).
-   
+
     CALLING SEQUENCE:
           XYZ, date, x, y, z, [ xvel, yvel, zvel, EQUINOX = ]
-   
+
     INPUT:
           date: reduced julian date (=JD - 2400000), scalar or vector
-   
+
     OUTPUT:
           x,y,z: scalars or vectors giving heliocentric rectangular coordinates
                     (in A.U) for each date supplied.    Note that sqrt(x^2 + y^2
                     + z^2) gives the Earth-Sun distance for the given date.
           xvel, yvel, zvel: velocity vectors corresponding to X, Y and Z.
-   
+
     OPTIONAL KEYWORD INPUT:
           EQUINOX: equinox of output. Default is 1950.
-   
+
     EXAMPLE:
           What were the rectangular coordinates and velocities of the Sun on
           Jan 22, 1999 0h UT (= JD 2451200.5) in J2000 coords? NOTE:
           Astronomical Almanac (AA) is in TDT, so add 64 seconds to
           UT to convert.
-   
+
           IDL> xyz,51200.5+64.d/86400.d,x,y,z,xv,yv,zv,equinox = 2000
-   
+
           Compare to Astronomical Almanac (1999 page C20)
                       X  (AU)        Y  (AU)     Z (AU)
           XYZ:      0.51456871   -0.76963263  -0.33376880
@@ -1538,7 +1538,7 @@ def xyz(date, equinox=None):
           abs(err): 0.00003739    0.00007839   0.00005360
           abs(err)
               (km):   5609          11759         8040
-   
+
           NOTE: Velocities in AA are for Earth/Moon barycenter
                 (a very minor offset) see AA 1999 page E3
                      X VEL (AU/DAY) YVEL (AU/DAY)   Z VEL (AU/DAY)
@@ -1547,7 +1547,7 @@ def xyz(date, equinox=None):
           abs(err):  0.000001583    0.0000029886     0.0000032077
           abs(err)
            (km/sec): 0.00265        0.00519          0.00557
-   
+
     PROCEDURE CALLS:
           PRECESS_XYZ
     REVISION HISTORY

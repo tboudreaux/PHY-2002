@@ -360,7 +360,7 @@ class AdvancedPlotting(PlotFunctionality):
             Dec[i] = float(Dec[i])
         DateOBS = hdulist[0].header['UTSHUT']
         TimeEPX = hdulist[0].header['EXPTIME']
-        print DateOBS
+        # print DateOBS
         YearShut = int(DateOBS[:4])
         MonthShut = int(DateOBS[5:7])
         DayShut = int(DateOBS[8:10])
@@ -403,7 +403,7 @@ class AdvancedPlotting(PlotFunctionality):
                 cont = True
         RAfromHDU = hdulist[0].header['RA']
         DecfromHDU = hdulist[0].header['DEC']
-        print 'Object RA and DEC:', RAfromHDU, DecfromHDU
+        # print 'Object RA and DEC:', RAfromHDU, DecfromHDU
         RAHour = int(RAfromHDU[:2])
         RAMinute = int(RAfromHDU[3:5])
         RASecond = float(RAfromHDU[6:])
@@ -412,14 +412,14 @@ class AdvancedPlotting(PlotFunctionality):
         DecSecond = float(DecfromHDU[6:])
         #RATotalMin = RAMinute + (RASecond/240)
         RADegrees = (RAHour*15)+(RAMinute/4) + (RASecond/240)
-        print 'RA Object Degrees:', RADegrees
+        # print 'RA Object Degrees:', RADegrees
         RARadians = (RADegrees/360)*2*math.pi
-        print 'RA Object Radians:', RARadians
+        # print 'RA Object Radians:', RARadians
         DecTotalMin = DecMinute + (DecSecond/60)
         DecTotalDegrees = DecDegrees + (DecTotalMin/60)
-        print 'Dec Object Degrees:', DecTotalDegrees
+        # print 'Dec Object Degrees:', DecTotalDegrees
         DecRadians = (DecTotalDegrees/360)*2*math.pi
-        print 'Dec Object Radians:', DecRadians
+        # print 'Dec Object Radians:', DecRadians
         eph = jplephem.Ephemeris(de423)
         pos_sunjpl = eph.position('Sun', JD)
         pos_earthjpl = eph.position('earthmoon', JD)
@@ -432,7 +432,7 @@ class AdvancedPlotting(PlotFunctionality):
         sunDEC = str(sun.dec)
         # sunRA = '17:13:54.10'
         # sunDEC = '-23 00 50.9'
-        print sunRA, sunDEC
+        # print sunRA, sunDEC
         RASunHour = int(sunRA[:2])
         RASunMinute = int(sunRA[3:5])
         RASunSecond = float(sunRA[6:])
@@ -441,15 +441,15 @@ class AdvancedPlotting(PlotFunctionality):
         DecSunSecond = float(sunDEC[7:])
         #RASunTotalMin = RASunMinute + (RASunSecond/60)
         RASunDegrees = (RASunHour*15)+(RASunMinute/4) + (RASunSecond/240)
-        print 'RA sun Degrees:', RASunDegrees
+        # print 'RA sun Degrees:', RASunDegrees
         RASunRadians = (RASunDegrees/360)*2*math.pi
-        print 'RA sun Radians:', RASunRadians
+        # print 'RA sun Radians:', RASunRadians
         DecSunTotalMin = DecSunMinute + (DecSunSecond/60)
         DecSunTotalDegrees = DecSunDegrees + (DecSunTotalMin/60)
-        print 'Dec Sun Degrees:', DecSunTotalDegrees
+        # print 'Dec Sun Degrees:', DecSunTotalDegrees
         DecSunRadians = (DecSunTotalDegrees/360)*2*math.pi
-        print 'Dec Sun Radians:', DecSunRadians
-        print sunRA, sunDEC
+        # print 'Dec Sun Radians:', DecSunRadians
+        # print sunRA, sunDEC
         # calculates values for use in the HJD Calculation
         EcclipticLon = MeanLon + 1.915*math.sin(MeanAnon) + 0.020*math.sin(2*MeanAnon)
         # Solar Distance in AU
@@ -467,7 +467,10 @@ class AdvancedPlotting(PlotFunctionality):
         objectyhat = objecty/magobject
         objectzhat = objectz/magobject
         # time = distance / speed
-        #barvel = Astrolib.baryvel(JD)
+        barveldata = Astrolib.baryvel(JD)
+        vel_helio = barveldata[0]
+        vel_bary = barveldata[1]
+        print 'Bary Velocity is:',vel_bary, 'Helio velocity is:', vel_helio
         heliojd = Astrolib.helio_jd(MJD, RADegrees, DecDegrees)
 
         c = 299792458 # m/s
