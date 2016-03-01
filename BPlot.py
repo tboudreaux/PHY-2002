@@ -97,8 +97,13 @@ for precode in range(len(code)):
     code[precode] = str(code[precode])
 code = ''.join(code)
 savecode = code
+stringcode = str(code)
 code = int(code, 2)
-if code == 302231454903657293676543:
+flip = False
+for didget in stringcode:
+    if didget != 1:
+        flip = True
+if flip is True:
     code = "ALL OKAY (1)"
 else:
     code = 'Pakages were installed or not found [This is a standard completion messgage, there is nothign to fret about] ' + str(code)
@@ -844,23 +849,23 @@ class CCWindow(QtGui.QMainWindow):
             value = self.ui.ShiftSize.value()
             run = False
             showall = self.ui.multiplotshow.isChecked()
-            # try:
-            if showall is False:
-                Plotter.corplot(degree, templatename, objectname, 1, self.length, self.largerwaves, self.smallerwaves,
-                                compare[0], value, True, True)
-                self.ui.infobox.append('<font color ="green">Cross Correlating Orders, use "a" to advance</font><br>')
-            elif showall is True:
-                self.ui.infobox.append('<font color = "green">Calculating Cross Correlation Coefficients for all '
-                                       'orders</font>')
-                self.ui.infobox.append('<font color = "green">This can take some time, please be paitient</font>')
-                HJD[0] = AdvancedPlotting.coordconvert(objectname)
-                Plotter.corplot(degree, templatename, objectname, 1, self.length, self.largerwaves, self.smallerwaves,
-                                compare[0], value, False, True)
-            run = True
-            # except ValueError:
-            #     self.ui.infobox.append('<font color ="red">Please Make sure that file names are entered in the boxs</font>')
-            # except IOError:
-            #     self.ui.infobox.append('<font color ="red">Please Make sure that file names are spelled correctly</font>')
+            try:
+                if showall is False:
+                    Plotter.corplot(degree, templatename, objectname, 1, self.length, self.largerwaves, self.smallerwaves,
+                                    compare[0], value, True, True)
+                    self.ui.infobox.append('<font color ="green">Cross Correlating Orders, use "a" to advance</font><br>')
+                elif showall is True:
+                    self.ui.infobox.append('<font color = "green">Calculating Cross Correlation Coefficients for all '
+                                           'orders</font>')
+                    self.ui.infobox.append('<font color = "green">This can take some time, please be paitient</font>')
+                    HJD[0] = AdvancedPlotting.coordconvert(objectname)
+                    Plotter.corplot(degree, templatename, objectname, 1, self.length, self.largerwaves, self.smallerwaves,
+                                    compare[0], value, False, True)
+                run = True
+            except ValueError:
+                self.ui.infobox.append('<font color ="red">Please Make sure that file names are entered in the boxs</font>')
+            except IOError:
+                self.ui.infobox.append('<font color ="red">Please Make sure that file names are spelled correctly</font>')
             plotparm[4] = degree; plotparm[5] = templatename; plotparm[6] = objectname; plotparm[7] = self.length
             plotparm[8] = self.smallerwaves; plotparm[9] = self.largerwaves; plotparm[10] = value
             jumpcore[0] = True

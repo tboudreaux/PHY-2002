@@ -14,6 +14,7 @@ import astropy.time as astrotime
 import astropy.coordinates as coords
 import astropy.units as unit
 import astropy.constants as const
+import Astrolib
 
 run = [False]
 
@@ -375,8 +376,8 @@ class AdvancedPlotting(PlotFunctionality):
         JD = sum(jdcal.gcal2jd(YearShut, MonthShut, DayShut))
         JD = JD + DayAdd
         # Convert to JD2000
-        MJD = JD - 2451545.0
-        # MJD = JD - 2400000.5
+        # MJD = JD - 2451545.0
+        MJD = JD - 2400000.5
 
         # This calculates the distance to the sun on a given Julian Date, these at some point need to be modified, however
         # this should work for the time being
@@ -466,11 +467,16 @@ class AdvancedPlotting(PlotFunctionality):
         objectyhat = objecty/magobject
         objectzhat = objectz/magobject
         # time = distance / speed
+        #barvel = Astrolib.baryvel(JD)
+        heliojd = Astrolib.helio_jd(MJD, RADegrees, DecDegrees)
+
         c = 299792458 # m/s
+
         HJD = MJD - (sunDist/(c/1000))*(math.sin(DecRadians)*math.sin(DecSunRadians)+math.cos(DecRadians)*
                                  math.cos(DecSunRadians)*math.cos(RARadians-RASunRadians))
         HJD = HJD + 2451545.0
-        return HJD
+        heliojd += 2400000.5
+        return heliojd
 
     @staticmethod
     def gaussianfit(filename, hydrogenalpha, hydrogenbeta, heliumalpha):
