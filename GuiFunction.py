@@ -457,13 +457,12 @@ class AdvancedPlotting(PlotFunctionality):
             lower = min(range(len(allwave)), key=lambda k: abs(allwave[k]-selection[0]))
             upper = min(range(len(allwave)), key=lambda k: abs(allwave[k]-selection[1]))
 
-            for j in range(len(allwave)):
+            for j in range(len(allwave)):   # gives the wavelength between the uper and lower bounds
                 if lower<j<upper:
-                    # print "count",j
                     wavenew.append(float(allwave[j]))
                     fluxnew.append(float(allflux[j]))
 
-            x = ar(wavenew)
+            x = ar(wavenew)   # ar() turns wavenew and fluxnew into arrays
             y = ar(fluxnew)
             n = len(x)
 
@@ -471,7 +470,7 @@ class AdvancedPlotting(PlotFunctionality):
             normy = []
             degree = 5
 
-            for j in range(len(x)):
+            for j in range(len(x)):   # fills in normx and normy
                 normx.append(x[j])
                 normy.append(y[j])
             z = np.polyfit(normx,normy,degree)
@@ -483,7 +482,7 @@ class AdvancedPlotting(PlotFunctionality):
             mean = np.mean(ynew)
             forrange = len(ynew)
 
-            #for i in range(forrange):
+            #for i in range(forrange):   # this replaces anything within 3sigma with the mean
             #    if ynew >= (3*fluxstdev) + mean:
             #        ynew[i] = mean
             #        yfit[i] = mean
@@ -500,8 +499,6 @@ class AdvancedPlotting(PlotFunctionality):
                 return (-a*exp(-(x-x0)**2/(2*sigma**2))) + offset   # where offset is the offset of the spectra
             center = allwave[(upper-((upper-lower)/2))]
             gaussy,gaussx = curve_fit(gaus,normx,ynew,p0=[.5,center,5,.7])
-            print('gaussy: ',gaussy)
-            print('gaussx: ',gaussx)
 
             maximum = max(gaussy)
             wavenew = None
@@ -529,17 +526,13 @@ class AdvancedPlotting(PlotFunctionality):
     ## TOUCH THE COW
     ## DO IT NOW
 
-##################################
-## Code to pull from text file. ##
-##################################
+    ## Code to pull from text file. ##
 
     @staticmethod
     def waveselection(filename,hydrogena,hydrogenb,heliuma):
        wave1 = open('lines.sec','rb') # opens file to read line wavelengths
        wave1 = wave1.readlines()
        length = len(wave1)
-       def gaus(x,a,x0,sigma,offset):
-                return (-a*exp(-(x-x0)**2/(2*sigma**2))) + offset   # where offset is the offset of the spectra
 
        for i in range(length):
            wave1[i] = wave1[i].split('-') # splits the strings
