@@ -543,7 +543,7 @@ class AdvancedPlotting(PlotFunctionality):
            pass
        elif hydrogena is True:
            wave2=wave1[0]
-           AdvancedPlotting.gaussianfit(filename,wave2[1],wave2[0],1)
+           AdvancedPlotting.gaussianfit(filename,wave2[1],wave2[0],1)   # runs the fitting function with wavelengths
        if hydrogenb is False:
            pass
        elif hydrogenb is True:
