@@ -436,6 +436,7 @@ class AdvancedPlotting(PlotFunctionality):
         new_jd = t + dt
         return new_jd
 
+    # fits and plots a gaussian function to certain spectral lines
     @staticmethod
     def gaussianfit(filename, upper, lower, plotnumber):
         allwave = []
@@ -443,14 +444,12 @@ class AdvancedPlotting(PlotFunctionality):
         xvalue = []
         yvalue = []
         maxvalue = []
-        for run in range(62):
+        for run in range(62):   # pulls out wavelength and flux values from the fits file
             data = PlotFunctionality.wfextract(filename,run)
             for ted in range(len(data['wavelength'])):
                 allwave.append(data['wavelength'][ted])
                 allflux.append(data['flux'][ted])
         selection = [lower,upper]
-        # newwave = data['wavelength']
-        # newflux = data['flux']
         wavenew = []
         fluxnew = []
         print len(selection)
@@ -467,10 +466,40 @@ class AdvancedPlotting(PlotFunctionality):
             x = ar(wavenew)
             y = ar(fluxnew)
             n = len(x)
+
+            normx = []
+            normy = []
+            degree = 5
+
+            for j in range(len(x)):
+                normx.append(x[j])
+                normy.append(y[j])
+            z = np.polyfit(normx,normy,degree)
+            f = np.poly1d(z)
+            ypoly = f(normx)
+            ynew = normy/ypoly
+            yfit = ynew
+            fluxstdev = np.std(ynew)
+            mean = np.mean(ynew)
+            forrange = len(ynew)
+
+            #for i in range(forrange):
+            #    if ynew >= (3*fluxstdev) + mean:
+            #        ynew[i] = mean
+            #        yfit[i] = mean
+            #    if ynew[i] <= mean - (3*fluxstdev):
+            #        yfit[i] = mean
+
+            flux2 = yfit * ypoly
+            z = np.polyfit(normx,flux2,degree)
+            f = np.poly1d(z)
+            ypoly = f(x)
+            ynew = y/ypoly
+
             def gaus(x,a,x0,sigma,offset):
                 return (-a*exp(-(x-x0)**2/(2*sigma**2))) + offset   # where offset is the offset of the spectra
             center = allwave[(upper-((upper-lower)/2))]
-            gaussy,gaussx = curve_fit(gaus,x,y,p0=[.5,center,5,.7])
+            gaussy,gaussx = curve_fit(gaus,normx,ynew,p0=[.5,center,5,.7])
             print('gaussy: ',gaussy)
             print('gaussx: ',gaussx)
 
