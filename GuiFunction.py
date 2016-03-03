@@ -482,12 +482,12 @@ class AdvancedPlotting(PlotFunctionality):
             mean = np.mean(ynew)
             forrange = len(ynew)
 
-            #for i in range(forrange):   # this replaces anything within 3sigma with the mean
-            #    if ynew >= (3*fluxstdev) + mean:
-            #        ynew[i] = mean
-            #        yfit[i] = mean
-            #    if ynew[i] <= mean - (3*fluxstdev):
-            #        yfit[i] = mean
+            for i in range(forrange):   # this replaces anything within 3sigma with the mean
+                if ynew[i] >= (3*fluxstdev) + mean:
+                    ynew[i] = mean
+                    yfit[i] = mean
+                if ynew[i] <= mean - (3*fluxstdev):
+                    yfit[i] = mean
 
             flux2 = yfit * ypoly
             z = np.polyfit(normx,flux2,degree)
@@ -509,13 +509,18 @@ class AdvancedPlotting(PlotFunctionality):
             yvalue.append(gaussy)
             maxvalue.append(maximum)
 
-            plt.plot(x,gaus(x,*gaussy))
+            fignewton = plt.figure()
+            figothernewton = fignewton.add_subplot(1,1,1)
+
+            figothernewton.plot(normx, normy,linewidth=2)
+            figothernewton.plot(x,gaus(x,*gaussy))
             if plotnumber == 1:
                 plt.title('Hydrogen Alpha')
             elif plotnumber == 2:
                 plt.title('Hydrogen Beta')
             elif plotnumber == 3:
                 plt.title('Helium I')
+
             plt.show()
             plt.pause(5)
 
