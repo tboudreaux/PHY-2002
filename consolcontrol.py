@@ -11,18 +11,20 @@ class BSPS(object):
 
     @staticmethod
     def route(command, paramter):
-        commandList = {'view':BSPSEss.view, 'ls':BSPSEss.ls, 'lcom':BSPSEss.lcom, 'pwd':BSPSEss.pwd, 'cd':BSPSEss.cd,
-                       'clear':BSPSEss.clear, 'mkdir': BSPSEss.mkdir, 'edit': BSPSEss.edit, 'pyrun': BSPSEss.pyrun,
-                       'tie': BSPSEss.tie, 'lfunc': BSPSEss.lfunc, 'reload': BSPSEss.reload, 'quit':BSPSEss.quit,
-                       'answer':BSPSEss.answer, 'setHET':BSPSEss.setHET, 'setCHIRON': BSPSEss.setCHIRON}
+        commandList = {'view': BSPSEss.view, 'ls': BSPSEss.ls, 'lcom': BSPSEss.lcom, 'pwd': BSPSEss.pwd, 'cd': BSPSEss.cd,
+                       'clear': BSPSEss.clear, 'mkdir': BSPSEss.mkdir, 'edit': BSPSEss.edit, 'pyrun': BSPSEss.pyrun,
+                       'tie': BSPSEss.tie, 'lfunc': BSPSEss.lfunc, 'reload': BSPSEss.reload, 'quit': BSPSEss.quit,
+                       'answer': BSPSEss.answer, 'setHET': BSPSEss.setHET, 'setCHIRON': BSPSEss.setCHIRON}
         if command in commandList:
             string = BSPSEss.strsend(command, paramter)
             return string
 
-# This does nothing, its litterally never used I just hevent gotten around to deleting it yet, well we can dream can't
-# we
+
+# This does nothing, its litterally never used I just hevent gotten around to deleting it yet, well
+# we can dream can't we
 class Communicate(QtCore.QObject):
         returnsig = QtCore.pyqtSignal()
+
 
 # This is more or less the main consol control class, this take in the commands that have been confirmed to be real
 # commands by cross referencing to a dictionary and then routes them to the appropriate functions
@@ -38,10 +40,10 @@ class BSPSEss(BSPS):
         # Command list, this at some point would be nice to impliment into a seperate file so that there is only one
         # and that there is not a super long annoying to add to line of code, I think that that may be best to do
         # with the pandas module
-        commandlist = {'view':BSPSEss.view, 'ls':BSPSEss.ls, 'lcom':BSPSEss.lcom, 'pwd':BSPSEss.pwd, 'cd':BSPSEss.cd,
-                       'clear':BSPSEss.clear, 'mkdir': BSPSEss.mkdir, 'edit': BSPSEss.edit, 'pyrun':BSPSEss.pyrun,
+        commandlist = {'view': BSPSEss.view, 'ls': BSPSEss.ls, 'lcom': BSPSEss.lcom, 'pwd': BSPSEss.pwd, 'cd': BSPSEss.cd,
+                       'clear': BSPSEss.clear, 'mkdir': BSPSEss.mkdir, 'edit': BSPSEss.edit, 'pyrun': BSPSEss.pyrun,
                        'tie': BSPSEss.tie, 'lfunc': BSPSEss.lfunc, 'reload': BSPSEss.reload, 'quit': BSPSEss.quit,
-                       'answer':BSPSEss.answer, 'setHET':BSPSEss.setHET, 'setCHIRON':BSPSEss.setCHIRON}
+                       'answer': BSPSEss.answer, 'setHET': BSPSEss.setHET, 'setCHIRON': BSPSEss.setCHIRON}
 
         # This basically checks if the function takes a parameter or not, because some like close do not need parameters
         try:

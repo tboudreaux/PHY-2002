@@ -239,7 +239,7 @@
    <item row="10" column="6">
     <widget class="QPushButton" name="LS">
      <property name="text">
-      <string>LS</string>
+      <string>OrbFit</string>
      </property>
     </widget>
    </item>

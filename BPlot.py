@@ -233,11 +233,11 @@ class MyForm(QtGui.QWidget):
         self.ui.FunctionFit.stateChanged.connect(self.fitter)
         self.ui.function1.clicked.connect(self.showfit)
         self.ui.function2.clicked.connect(self.correlate)
-        self.ui.LS.clicked.connect(self.LS)
+        self.ui.LS.clicked.connect(self.orb)
+        self.ui.LS.setText('Orb-Fit')
         self.ui.function4.clicked.connect(self.gaussian)
         self.ui.info.clicked.connect(self.info)
         self.ui.Reset.clicked.connect(BSPSEss.reload)
-
 
         # These initialize the other windows as empty objects in the Main GUI controller
         self.window2 = None
@@ -246,8 +246,14 @@ class MyForm(QtGui.QWidget):
         self.window4 = None
 
     ###########################
-    ##  GUI tie in functions ##
+    #   GUI tie in functions  #
     ###########################
+
+    def orb(self):
+        filename = self.ui.singleFileInput.text()
+        tbp = open(filename, 'rb')
+        tbp = tbp.readlines()
+        print tbp
 
     def gaussian(self):
         self.window4 = GaussianWindow(self)
@@ -585,7 +591,6 @@ class GaussianWindow(QtGui.QMainWindow):
         Gauss = AdvancedPlotting.gaussianfit(filename,halphause[0],hbetause[0],heliumause[0])
 
 
-
 # This is the order jump GUI, as before it currently is non functional, will fix at sometime
 class OrderJump(QtGui.QDialog):
     def __init__ (self, parent = None):
@@ -607,9 +612,9 @@ class OrderJump(QtGui.QDialog):
         else:
             pass
 
-
     def closser(self):
         self.close()
+
 
 class Editor(QtGui.QMainWindow):
     def __init__(self, parent = None):
@@ -677,16 +682,19 @@ class MultiView(QtGui.QMainWindow):
         for q in range(numorders[0]):
             ax.append(fig[q].add_subplot(111, xlabel='Offset(A)', ylabel='CC', title='order: '+ str(q+1)))
         for q in range(numorders[0]):
-            ax[q].plot(FullO[q], FullCC[q])
-            ax[q].plot(FullO[q], gaus(FullO[q], *FullGaus[q]))#, label='Gaussian Fit | x at max: ' + str(FullGaus[q][1]))
-            centroidMeadian = np.median(centroids)
-            CentroidStDev = np.std(centroids)
-            # print centroids
-            # print 'Median', centroidMeadian
-            # print 'Standard Deviation', CentroidStDev
-            if centroids[q] > centroidMeadian + 3*CentroidStDev or centroids[q] < centroidMeadian - 3*CentroidStDev:
-                print 'unchecking box number', q
-                eval(checkboxes[q]).setChecked(False)
+            try:
+                ax[q].plot(FullO[q], FullCC[q])
+                ax[q].plot(FullO[q], gaus(FullO[q], *FullGaus[q]))#, label='Gaussian Fit | x at max: ' + str(FullGaus[q][1]))
+                centroidMeadian = np.median(centroids)
+                CentroidStDev = np.std(centroids)
+                # print centroids
+                # print 'Median', centroidMeadian
+                # print 'Standard Deviation', CentroidStDev
+                if centroids[q] > centroidMeadian + 3*CentroidStDev or centroids[q] < centroidMeadian - 3*CentroidStDev:
+                    print 'unchecking box number', q
+                    eval(checkboxes[q]).setChecked(False)
+            except RuntimeError:
+                print 'ERRORS HAVE OCCURED'
 
         # for i in range(len(FullCC)):
         #     FullCC[i] = None
@@ -916,7 +924,8 @@ class CCWindow(QtGui.QMainWindow):
                                            'inputs are correct</font>')
 
 
-# This is plotter code, at some point it may be nice to move this class (During the great reorginazation of code to come)
+# This is plotter code, at some point it may be nice to move this class (During the great reorginazation
+# of code to come)
 class Plotter(CCWindow):
     # Corplot function that calls the ccofig function from GUI function to extract the required data
     # incidentaly this will be completely reorganized in the great reorganization of code to come
@@ -1141,7 +1150,7 @@ class Plotter(CCWindow):
         # is not commented out MAC OSX systems go cray cray, they shouldn't go cray cray but they do go cray cray
         # that was odd, moving on, keep this commmented out until that bug is sorted out or OS X systems will go
         # cray cray
-        #plt.tight_layout()
+        # plt.tight_layout()
         plt.ion()
         plt.show()
 
