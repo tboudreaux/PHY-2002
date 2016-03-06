@@ -14,8 +14,8 @@ try:
     from SinglePlotWindow import Ui_Ploter
     print >>prerun, 'GUI files OK'
 except ImportError:
-    print >>prerun, 'Some or all GUI files missing, please check to make sure that you donwloaded the entire package and' \
-                    ' re-run'
+    print >>prerun, 'Some or all GUI files missing, please check to make sure that you donwloaded the entire ' \
+                    'package and re-run'
     exit()
 
 # importer for pip module
@@ -73,8 +73,8 @@ for importer in range(len(packages)):
                     code.append(0)
             cont = True
             if installpac == 'n':
-                print >>prerun, package, 'will not be installed, the program cannot run without this packages and will ' \
-                                         'now shutdown, please consider using anaconda'
+                print >>prerun, package, 'will not be installed, the program cannot run without this packages and ' \
+                                         'will now shutdown, please consider using anaconda'
                 print package, 'will not be installed, the program cannot run without this packages and will now ' \
                                'shutdown, please consider using anaconda'
                 cont = True
@@ -107,7 +107,8 @@ for didget in stringcode:
 if flip is True:
     code = "ALL OKAY (1)"
 else:
-    code = 'Pakages were installed or not found [This is a standard completion messgage, there is nothign to fret about] ' + str(code)
+    code = 'Pakages were installed or not found [This is a standard completion messgage, there is nothign ' \
+           'to fret about] ' + str(code)
 
 print >>prerun, 'Pre-run Checks finished with code:', code, '(', savecode, ')'
 prerun.close()
@@ -128,7 +129,8 @@ commandnum = [0, 1]
 UserFunctions = ['open', 'open', 'open', 'open']
 readfile = open('UserFunc.conf', 'rb')
 plotparm = [None] * 11
-funcconf = [['1','Null', 'Function1'], ['2', 'Null', 'Function2'], ['3', 'Null', 'Function3'], ['4', 'Null', 'Function4']]
+funcconf = [['1','Null', 'Function1'], ['2', 'Null', 'Function2'], ['3', 'Null', 'Function3'], ['4', 'Null',
+                                                                                                'Function4']]
 jumpcore = [False]
 compare = [False]
 simplefilearray = []
@@ -141,7 +143,7 @@ numorders = [62]
 FullCC = [None] * numorders[0]
 FullO = [None] * numorders[0]
 FullGaus = [None] * numorders[0]
-FullHJD = [None] * numorders[0]
+global FullHJD
 FullHCV = [None] * numorders[0]
 allplots = [False]
 checkPlots = [True]*62
@@ -161,9 +163,10 @@ if len(simplefilearray) is not 0:
         tempopen.insert(0, name)
         masterfilearray.append(tempopen)
 
+
 # The main GUI Class that controlles the rest og the program
 class MyForm(QtGui.QWidget):
-    #I nitilazation of the GUI
+    # I nitilazation of the GUI
     def __init__(self, parent=None):
         # Ininitlazation of the Widget
         QtGui.QWidget.__init__(self, parent)
@@ -219,15 +222,16 @@ class MyForm(QtGui.QWidget):
         self.ui.consol.append('<font color = "blue"> Module and OS Checks OK</font><br>')
         self.ui.consol.append('<font color = "blue"> type "lcom" for a list of avalibel commands</font><br>')
         if pathbool is True:
-            self.ui.consol.append('<font color = "green"> Path Files Successfully located in working directory</font><br>')
+            self.ui.consol.append('<font color = "green"> Path Files Successfully located in working directory</font>'
+                                  '<br>')
             self.ui.generatePathFiles.setStyleSheet("background-color: green; color: white")
         self.ui.function1.setStyleSheet("background-color: red; color: black")
         # These are the GUI functional ties for the main window
         self.ui.generatePathFiles.clicked.connect(self.generatepath)
         # attempting to replace some of these long functions with lambda statments in otder to clean up code
-        self.ui.quitBut.clicked.connect(lambda : exit())
-        self.ui.stackIm.stateChanged.connect(lambda : usearray.__setitem__(0, not usearray[0]))
-        self.ui.allStack.stateChanged.connect(lambda : usearray.__setitem__(1, not usearray[1]))
+        self.ui.quitBut.clicked.connect(lambda: exit())
+        self.ui.stackIm.stateChanged.connect(lambda: usearray.__setitem__(0, not usearray[0]))
+        self.ui.allStack.stateChanged.connect(lambda: usearray.__setitem__(1, not usearray[1]))
         self.ui.plotBut.clicked.connect(self.plot)
         self.ui.Secret.clicked.connect(self.secret)
         self.ui.FunctionFit.stateChanged.connect(self.fitter)
@@ -238,7 +242,6 @@ class MyForm(QtGui.QWidget):
         self.ui.info.clicked.connect(self.info)
         self.ui.Reset.clicked.connect(BSPSEss.reload)
 
-
         # These initialize the other windows as empty objects in the Main GUI controller
         self.window2 = None
         self.window3 = None
@@ -246,7 +249,7 @@ class MyForm(QtGui.QWidget):
         self.window4 = None
 
     ###########################
-    ##  GUI tie in functions ##
+    #   GUI tie in functions  #
     ###########################
 
     def gaussian(self):
@@ -319,7 +322,7 @@ class MyForm(QtGui.QWidget):
             elif string == '//setCHIRON':
                 numorders[0] = 62
 
-            #lists the number of open user functions
+            # lists the number of open user functions
             elif string == '//lfunc':
                 count = 0
                 for i in range(4):
@@ -332,13 +335,13 @@ class MyForm(QtGui.QWidget):
             elif string == '//lfuncall':
                 count = 0
                 for q in range(4):
-                    self.ui.consol.append(UserFunctions[q] + '[' + str(q+1)  + ']')
+                    self.ui.consol.append(UserFunctions[q] + '[' + str(q+1) + ']')
                     if UserFunctions[q] == 'open':
                         count += 1
                 self.ui.consol.append('There are ' + str(count) + ' Open functions')
                 string = None
 
-            #controls the tieing of scripts to user buttons, most of this is repetative logic
+            # controls the tieing of scripts to user buttons, most of this is repetative logic
             elif string == '//tie':
                 script = commandcomp[0]
                 function = commandcomp[1]
@@ -382,7 +385,7 @@ class MyForm(QtGui.QWidget):
                 datafile = open('UserFunc.conf', 'w')
                 for n in range(len(funcconf)):
                     printwords = funcconf[n][0] + ' ' + funcconf[n][1] + ' ' + funcconf[n][2]
-                    #for k in range(3):
+                    # for k in range(3):
                     print >>datafile, printwords
                 string = None
 
@@ -406,9 +409,9 @@ class MyForm(QtGui.QWidget):
 
     # Prints the info screen from the info.txt file in the directory tree to the consol
     def info(self):
-       infofile = open('info.txt', 'rb')
-       infotxt = infofile.read()
-       self.ui.consol.append(infotxt)
+        infofile = open('info.txt', 'rb')
+        infotxt = infofile.read()
+        self.ui.consol.append(infotxt)
 
     # Lists the directories in the working directory in the consol
     # This is due to be replaced when the language is implimented with the ls command built into the language
@@ -490,7 +493,6 @@ class MyForm(QtGui.QWidget):
                             self.ui.PathFileProgress.setValue(progress)
                             masterfilearray.append(smallarray)
 
-
         if len(namearray) > 0:
             self.ui.consol.append('<font color = "green"> Path Files Successfully generated</font><br>')
             self.ui.generatePathFiles.setStyleSheet("background-color: green; color: white")
@@ -522,8 +524,8 @@ class MyForm(QtGui.QWidget):
             self.ui.consol.append('<font color = "red"> No Such File found, please check spelling and try again</font>')
 
         order = self.ui.startOrd.value()
-        # Determins whether to use stack plot or nstack plot, would like to figure out a better way to to this than arrays
-        #   but that is currently not a super high priority
+        # Determins whether to use stack plot or nstack plot, would like to figure out a better way to to this
+        # than arrays but that is currently not a super high priority
         if usearray[0] is True:
             Plotter.stackplot(pathfilename, usearray[1], numToStack, order, degree, fit[0])
         else:
@@ -531,8 +533,8 @@ class MyForm(QtGui.QWidget):
         jumpcore[0] = False
         self.jumpTo()
 
-    # This controls the "show fit" button, its color and the boolean behind it. Again I would like to come up with a better
-    #   way to store the booleans behind buttons, but that is for a latter date
+    # This controls the "show fit" button, its color and the boolean behind it. Again I would like to come up with
+    # a better way to store the booleans behind buttons, but that is for a latter date
     def showfit(self):
         if fit[0] is True:
             showfit[0] = not showfit[0]
@@ -541,7 +543,8 @@ class MyForm(QtGui.QWidget):
             else:
                 self.ui.function1.setStyleSheet("background-color: red; color: black")
         elif fit[0] is False:
-                self.ui.consol.append('<font color = "red"> Cannot Show function unless a function is being fit</font><br>')
+                self.ui.consol.append('<font color = "red"> Cannot Show function unless a function is being fit</font>'
+                                      '<br>')
 
     # Calls to open the cross correlation class (and from that then the window)
     def correlate(self):
@@ -558,15 +561,16 @@ class MyForm(QtGui.QWidget):
         self.window3 = OrderJump(self)
         self.window3.show()
 
+
 class GaussianWindow(QtGui.QMainWindow):
     def __init__ (self, parent=None):
         QtGui.QWidget.__init__(self, parent)
         self.ui = Ui_GaussianFitter()
         self.ui.setupUi(self)
         self.ui.quit.clicked.connect(self.closer) # for the quit button
-        self.ui.HydrogenA.stateChanged.connect(lambda : halphause.__setitem__(0, not halphause[0]))
-        self.ui.HydrogenB.stateChanged.connect(lambda : hbetause.__setitem__(0, not hbetause[0]))
-        self.ui.HeliumA.stateChanged.connect(lambda : heliumause.__setitem__(0, not heliumause[0]))
+        self.ui.HydrogenA.stateChanged.connect(lambda: halphause.__setitem__(0, not halphause[0]))
+        self.ui.HydrogenB.stateChanged.connect(lambda: hbetause.__setitem__(0, not hbetause[0]))
+        self.ui.HeliumA.stateChanged.connect(lambda: heliumause.__setitem__(0, not heliumause[0]))
         self.ui.pushButton.clicked.connect(self.plot)
         if len(masterfilearray) is not 0:
             for k in range(len(masterfilearray)):
@@ -578,17 +582,18 @@ class GaussianWindow(QtGui.QMainWindow):
             self.ui.infobox.append('<font color = "green">Files Succesfully loaded</font>')
         else:
             self.ui.infobox.append('<font color = "red">No Files Found or loaded, did you generate path files?</font>')
+
     def closer(self):
         self.close()
+
     def plot(self):
         filename = self.ui.lineEdit.text()
         Gauss = AdvancedPlotting.gaussianfit(filename,halphause[0],hbetause[0],heliumause[0])
 
 
-
 # This is the order jump GUI, as before it currently is non functional, will fix at sometime
 class OrderJump(QtGui.QDialog):
-    def __init__ (self, parent = None):
+    def __init__ (self, parent=None):
         QtGui.QWidget.__init__(self, parent)
         self.ui = Ui_JumpToOrder()
         self.ui.setupUi(self)
@@ -607,12 +612,12 @@ class OrderJump(QtGui.QDialog):
         else:
             pass
 
-
     def closser(self):
         self.close()
 
+
 class Editor(QtGui.QMainWindow):
-    def __init__(self, parent = None):
+    def __init__(self, parent=None):
         QtGui.QWidget.__init__(self, parent)
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
@@ -663,8 +668,8 @@ class MultiView(QtGui.QMainWindow):
         boxheight = windowheight/3
         ax = []
 
-        def gaus(x,a,x0,sigma, offset):
-            return (-a*exp(-(x-x0)**2/(2*sigma**2)))
+        def gaus(x, a, x0, sigma, offset):
+            return -a*exp(-(x-x0)**2/(2*sigma**2))
         for i in range(numorders[0]):
             widgets[i+1] = 'self.ui.widget_' + str(i+1)
             checkboxes[i+1] = 'self.ui.checkBox_' + str(i+1)
@@ -675,24 +680,21 @@ class MultiView(QtGui.QMainWindow):
         for q in range(numorders[0]):
             self.canvas[q].setParent(eval(widgets[q+1]))
         for q in range(numorders[0]):
-            ax.append(fig[q].add_subplot(111, xlabel='Offset(A)', ylabel='CC', title='order: '+ str(q+1)))
+            ax.append(fig[q].add_subplot(111, xlabel='Offset (' + u'\212B' + ')', ylabel='CC', title='order: '+ str(q+1)))
         for q in range(numorders[0]):
-            ax[q].plot(FullO[q], FullCC[q])
-            ax[q].plot(FullO[q], gaus(FullO[q], *FullGaus[q]))#, label='Gaussian Fit | x at max: ' + str(FullGaus[q][1]))
-            centroidMeadian = np.median(centroids)
-            CentroidStDev = np.std(centroids)
-            # print centroids
-            # print 'Median', centroidMeadian
-            # print 'Standard Deviation', CentroidStDev
-            if centroids[q] > centroidMeadian + 3*CentroidStDev or centroids[q] < centroidMeadian - 3*CentroidStDev:
-                print 'unchecking box number', q
-                eval(checkboxes[q]).setChecked(False)
-
-        # for i in range(len(FullCC)):
-        #     FullCC[i] = None
-        #     FullO[i] = None
-        #     FullGaus[i] = None
-        #     FullHCV[i] = None
+            if FullO is not 'UNABLE TO FIT GUASSIAN TO THIS ORDER':
+                ax[q].plot(FullO[q], FullCC[q])
+                ax[q].plot(FullO[q], gaus(FullO[q], *FullGaus[q]))
+                centroidMeadian = np.median(centroids)
+                CentroidStDev = np.std(centroids)
+                print centroids
+                print 'Median', centroidMeadian
+                print 'Standard Deviation', CentroidStDev
+                if centroids[q] > centroidMeadian + 3*CentroidStDev or centroids[q] < centroidMeadian - 3*CentroidStDev:
+                    print 'unchecking box number', q
+                    eval(checkboxes[q]).setChecked(False)
+            else:
+                ax[q].text('UNABLE TO PLOT TO THESE PARAMETERS')
 
         self.ui.Advance.clicked.connect(self.go)
         self.window2 = None
@@ -722,9 +724,9 @@ class MultiView(QtGui.QMainWindow):
                 pass
         print len(usevelocity)
         meanVel = sum(usevelocity)/len(usevelocity)
-        Velstd = np.std(usevelocity)
+        Velstd = np.std(usevelocity, ddof=1)
         usetext = 'Mean of Selected HelioCentric velocities: ' + str(meanVel) + '\nStandard Deviation in Selected Velocities: ' + \
-                  str(Velstd)+ '\nObservation on HJD: ' + str(HJD[0])
+                  str(Velstd)+ '\nObservation on HJD: ' + str(FullHJD)
         self.window2 = Editor()
         self.window2.ui.textEdit.append(usetext)
         self.window2.ui.FileName.setText('CCorOutput.txt')
@@ -734,7 +736,7 @@ class MultiView(QtGui.QMainWindow):
 
 
 class CCWindow(QtGui.QMainWindow):
-    def __init__ (self, parent = None):
+    def __init__(self, parent=None):
         QtGui.QWidget.__init__(self, parent)
         self.ui = Ui_CrossCore()
         self.ui.setupUi(self)
@@ -754,15 +756,15 @@ class CCWindow(QtGui.QMainWindow):
         self.test = 7
 
         try:            # looks at a text file to get numbers and stuff (food is not exempt from the stuff category)
-            self.profiles = {'CHIRON':'chiron.pconf'}
+            self.profiles = {'CHIRON': 'chiron.pconf'}
             profile1 =  open(self.profiles['CHIRON'], 'rb')  # opens the file for python
             self.ui.SystemProfiles.addItem('CHIRON')
             profile1 = profile1.readlines()  # converts each line into a single element in an array
             self.length = len(profile1)
 
-
             for i in range(self.length):
-                profile1[i] = profile1[i].split('-')  # reads through a string and splits at the '-' and creates a multi dimensional array
+                profile1[i] = profile1[i].split('-')  # reads through a string and splits at the '-' and creates a
+                # multi dimensional array
                 if profile1[i][1] == '\n':
                     profile1[i][1] = profile1[i][1][:-1]  # gets rid of the newline character
                 else:
@@ -801,7 +803,7 @@ class CCWindow(QtGui.QMainWindow):
             profile = str(self.ui.SystemProfiles.currentText())
         try:
             profile += '.pconf'
-            profileopen =  open(profile, 'rb')
+            profileopen = open(profile, 'rb')
             profileopen = profileopen.readlines()
             length = len(profileopen)
 
@@ -851,7 +853,7 @@ class CCWindow(QtGui.QMainWindow):
 
     # Closes the Cross correlation GUI
     def closeer(self):
-       self.close()
+        self.close()
 
     # The Boolean operator for Cross Corelation list (cross corelate multiple orders at one time or not)
     def uselist(self):
@@ -869,9 +871,25 @@ class CCWindow(QtGui.QMainWindow):
     # The is the function that controls plotting cross correlation, currently it calls the corplot function in Plotter
     #   It has some functionality now but it is by no means where it needs to be
     def ccorplot(self):
-        if corlist[0] is True:
-            self.ui.infobox.append('<font color="red">Multiple Correlation Not an opetion currently, please deselect and '
-                                   'use single correlation</font><br>')
+        listcor = self.ui.ynlist.isChecked()
+        if listcor is True:
+            self.ui.infobox.append('<font color="red">Multiple Correlations currently in an ALPHA state'
+                                   'Please expect bugs correlation</font><br>')
+            filename = self.ui.listpath.text()
+            degree = self.ui.fitdegree.value()
+            value = self.ui.ShiftSize.value()
+            fileopen = open(filename, 'rb')
+            fileopen = fileopen.readlines()
+            numcorrelations = len(fileopen)
+            for stringnum in range(len(fileopen)):
+                fileopen[stringnum] = fileopen[stringnum].strip()
+                fileopen[stringnum] = fileopen[stringnum].split(' ')
+            for i in range(numcorrelations):
+                self.ui.infobox.append('<font color = "green">Correlating target ' + fileopen[i][0] + ' with template:'
+                                       + fileopen[i][1] + ' This is number ' + str(i) + '</font>')
+                Plotter.corplot(degree, fileopen[i][1], fileopen[i][0], 1, self.length, self.largerwaves,
+                                self.smallerwaves, compare[0], value, False, True)
+
         else:
             degree = self.ui.fitdegree.value()
             templatename = self.ui.tempfilename.text()
@@ -926,6 +944,7 @@ class Plotter(CCWindow):
     @staticmethod
     def corplot(degree, templatename, objectname, order, num, larger, smaller, show, value, doPlot, autofit, xcoord=None,
                 ycoord=None, x1bound=5, x2bound=5):
+        global FullHJD
         # Creates a matplotlib figure of given size (will at some point be configuarble in the forcoming settings menu)
         # fig=plt.figure(figsize=(10, 7))
         # Adds the ccorfig subplot
@@ -988,13 +1007,16 @@ class Plotter(CCWindow):
                         # print 'Here are the parameters:', maximum falback, centerfallback, indexfallback
                 FitXFallback = data['offset'][indexfallback-5:indexfallback+5]
                 FitYFallback = data['correlation'][indexfallback-5:indexfallback+5]
-                gaussy, gaussx = curve_fit(data['fit'],FitXFallback,FitYFallback,p0=[maximumfalback,centerfallback,5, 0.05])
+                try:
+                    gaussy, gaussx = curve_fit(data['fit'], FitXFallback, FitYFallback, p0=[maximumfalback,
+                                                                                            centerfallback, 5, 0.05])
+                except RuntimeError:
+                    print 'Cross Correlation Failed'
 
             tempvelocity = gaussy[1] * data['dispersion']
             UseVel = (tempvelocity/data['meantemp'])*c
             HelioCorrectedData = AdvancedPlotting.coordconvert(objectname, UseVel)
-            if len(FullHJD) is 0:
-                FullHJD[order] = HelioCorrectedData['HJD']
+            FullHJD = HelioCorrectedData['HJD']
             print order-1
             print FullCC[order-1]
             FullHCV[order-1] = HelioCorrectedData['HCV']
@@ -1073,7 +1095,15 @@ class Plotter(CCWindow):
                         index = count
                 FitX = data['offset'][index-5:index+5]
                 FitY = data['correlation'][index-5:index+5]
-                gaussy,gaussx = curve_fit(data['fit'],FitX,FitY,p0=[maximum,center,5, .05])
+                try:
+                    gaussy,gaussx = curve_fit(data['fit'], FitX, FitY, p0=[maximum, center, 5, .05])
+                except(RuntimeError, TypeError):
+                    FullGaus[i] = 'UNABLE TO FIT GUASSIAN TO THIS ORDER'
+                    FullO[i] = 'UNABLE TO FIT GUASSIAN TO THIS ORDER'
+                    FullCC[i] = 'UNBALR TO FIT GUASSIAN TO THIS ORDER'
+                    FullHCV[i] = 'UNABLE TO FIT GUASSIAN TO THIS ORDER'
+                    FullHJD = 'UNABLE TO FIT GUASSIAN TO THIS ORDER'
+                    print 'ERROS HAVE OCCURED'
                 tempvelocity = gaussy[1] * data['dispersion']
                 VelocityReal = (tempvelocity/data['meantemp'])*c
                 velocity.append(VelocityReal)
@@ -1084,7 +1114,7 @@ class Plotter(CCWindow):
                 tempvelocity = gaussy[1] * data['dispersion']
                 UseVel = (tempvelocity/data['meantemp'])*c
                 HelioCorrectedData = AdvancedPlotting.coordconvert(objectname, UseVel)
-                FullHJD[i] = HelioCorrectedData['HJD']
+                FullHJD = HelioCorrectedData['HJD']
                 FullHCV[i] = HelioCorrectedData['HCV']
                 centroids[i] = gaussy[1]
             if allplots[0] is False:
@@ -1141,7 +1171,7 @@ class Plotter(CCWindow):
         # is not commented out MAC OSX systems go cray cray, they shouldn't go cray cray but they do go cray cray
         # that was odd, moving on, keep this commmented out until that bug is sorted out or OS X systems will go
         # cray cray
-        #plt.tight_layout()
+        # plt.tight_layout()
         plt.ion()
         plt.show()
 
@@ -1183,7 +1213,7 @@ class Plotter(CCWindow):
         # same deal here as with stackplot above
         fig = plt.figure(figsize=(10, 7))
         PlotFunctionality.plot(name, start, showfit[0], shouldfit, degree, fig, 0)
-        #plt.tight_layout()
+        # plt.tight_layout()
         plt.ion()
         plt.show()
 
@@ -1199,8 +1229,6 @@ class Plotter(CCWindow):
                 MyForm.window3 = OrderJump()
                 MyForm.window3.show()
         fig.canvas.mpl_connect('key_press_event', plotcontrol)
-
-
 
 
 # Bascically the most important section of code in the whole code because it makes everything start, its also the

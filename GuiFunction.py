@@ -21,9 +21,9 @@ run = [False]
 #  opens a log file, I don't always print to it but its nice to have handy when I want to print a lot of output
 log = open('log.log', 'w')
 
+
 # basic plot functionality
 class PlotFunctionality(object):
-
     # plot mathod used by basic viewer
     @staticmethod
     def plot(name, start, showfit, shouldfit, degree, fig, offsety):
@@ -104,8 +104,8 @@ class PlotFunctionality(object):
         forrange = len(y_new)
 
         # this loop removes all values more than 3 sigma away from the mean, that will become user definable, it ignores
-        # all values more than 3 sigma from the mean, removing those that are greater than the mean, (since they are most
-        # likely cosimic rays) and just ignoring those that are below the mean
+        # all values more than 3 sigma from the mean, removing those that are greater than the mean, (since they are
+        # mostlikely cosimic rays) and just ignoring those that are below the mean
         for i in range(forrange):
             if y_new[i] >= (3 * fluxstdev) + mean:
                 y_new[i] = mean
@@ -121,8 +121,8 @@ class PlotFunctionality(object):
         y_poly = f(wavelength)
         y_new = flux / y_poly
 
-        # I honesetly don't know what this does any more, I will figure that out at some point (this is why I need to get
-        # better at commenting b/c I wrote that like a week ago, but I don't know why I wrote that)
+        # I honesetly don't know what this does any more, I will figure that out at some point (this is why I need to
+        # get better at commenting b/c I wrote that like a week ago, but I don't know why I wrote that)
         for i in range(forrange):
             if y_new[i] >= (3 * fluxstdev) + mean:
                 y_new[i] = mean
@@ -133,7 +133,8 @@ class PlotFunctionality(object):
         # returnes a dictionary of values, dictionary returns are the best and should be more widely known
         return {'y_poly': y_poly, 'y_new': y_new, 'wave': wavelength}
 
-    # wavelength and flux extract method, this will soon replace all non method instances of this code for better modularization
+    # wavelength and flux extract method, this will soon replace all non method instances of this code for better
+    # modularization
     @staticmethod
     def wfextract(path, order):
         path = str(path)
@@ -144,8 +145,8 @@ class PlotFunctionality(object):
 
         return {'wavelength': wavelength, 'flux': flux}
 
-class AdvancedPlotting(PlotFunctionality):
 
+class AdvancedPlotting(PlotFunctionality):
     # correlation math / logic
     @staticmethod
     def ccor(targetpath, templatepath, degree, order, numberignore, largerwave, smallerwave, value):
@@ -234,7 +235,8 @@ class AdvancedPlotting(PlotFunctionality):
         # time.sleep(10)
         # plt.close()
         # Here we obtain the right honorable template flux of the land and do do unto it the normalization which has
-        # been decreade should be done unto it and it was done unto it, and I dont know why I type these things sometimes
+        # been decreade should be done unto it and it was done unto it, and I dont know why I type these things
+        # sometimes
         templateflux.append(PlotFunctionality.fitfunction(degree, newtemplatewave, newtemplateflux, 0)['y_new'])
         # same thing as above, wanting only the first element and whatnot
         templateflux = templateflux[0]
@@ -247,14 +249,10 @@ class AdvancedPlotting(PlotFunctionality):
             # creates a new array equal to the total template flux array
             shiftflux = targetflux
             shiftwave = newtargetwave
-            #crops the array so that only the part that lies under the part of the template being inveseigated matters
+            # crops the array so that only the part that lies under the part of the template being inveseigated matters
             shiftflux = shiftflux[i:-(value-i)]
             shiftwave = shiftwave[i:-(value-i)]
-
-
             # correlates the two arrays of fluxes and appends that to an array
-
-
             correlationnpvalue = np.correlate(templateflux, shiftflux)
             # print correlationnpvalue
             correlationnp.append(correlationnpvalue[0])
@@ -274,7 +272,8 @@ class AdvancedPlotting(PlotFunctionality):
             # plt.show()
             # plt.pause(0.1)
             # plt.close()
-            # appends whatever the offset relative to 0 is (reconnizing that the offset is half on oneseid and half on another)
+            # appends whatever the offset relative to 0 is (reconnizing that the offset is half on oneseid and half
+            # on another)
             offset.append((value/2)-i)
         savecor = correlation
         correlation = [abs(x - max(savecor)) for x in savecor]
@@ -307,10 +306,10 @@ class AdvancedPlotting(PlotFunctionality):
         flux2.append(PlotFunctionality.fitfunction(degree, data2['wavelength'], data2['flux'], 0)['y_new'])
         flux1[:] = [x - 1 for x in flux1]
         flux2[:] = [x -1 for x in flux2]
-        # creats the wubplot, and places it, using the system that I FINALY figured out, just so I wont forget, or so that
-        # when I forget I will be able to reference this and relearn quicickly, the position (x, y, z) basically is what
-        # fraction of the screen you will take up so (1, 1, 1) is all of the x all of the z and all of the y (2, 1, 1,)
-        # is half of the x all of the y and all of the z, so (2, 1, 2) is half of the all of the y and half of the z
+        # creats the wubplot, and places it, using the system that I FINALY figured out, just so I wont forget, or so
+        # that when I forget I will be able to reference this and relearn quicickly, the position (x, y, z) basically is
+        # what fraction of the screen you will take up so (1, 1, 1) is all of the x all of the z and all of the y (2, 1,
+        # 1) is half of the x all of the y and all of the z, so (2, 1, 2) is half of the all of the y and half of the z
         waves = fig.add_subplot(2,1,2)
         # Plots data, what more do you want
         waves.plot(data1['wavelength'], flux1[0])
@@ -455,11 +454,10 @@ class AdvancedPlotting(PlotFunctionality):
         vel_bary = [vel_bary[0], vel_bary[1], vel_bary[2]]
         mag_vel_helio = Mathamatics.mag3D(vel_helio)
         mag_vel_bary = Mathamatics.mag3D(vel_bary)
-        vhcorrectd = VelRef + mag_vel_helio*(math.sin(DecRadians)*math.sin(DecSunRadians)+math.cos(DecRadians)*
-                                 math.cos(DecSunRadians)*math.cos(RARadians-RASunRadians))
-        vbcorrectd = VelRef + mag_vel_bary*(math.sin(DecRadians)*math.sin(DecSunRadians)+math.cos(DecRadians)*
-                         math.cos(DecSunRadians)*math.cos(RARadians-RASunRadians))
+        vhcorrectd = VelRef + mag_vel_helio*(math.sin(DecRadians)*math.sin(DecSunRadians)+math.cos(DecRadians) * math.cos(DecSunRadians)*math.cos(RARadians-RASunRadians))
+        vbcorrectd = VelRef + mag_vel_bary*(math.sin(DecRadians)*math.sin(DecSunRadians)+math.cos(DecRadians) * math.cos(DecSunRadians)*math.cos(RARadians-RASunRadians))
         heliojd = Astrolib.helio_jd(MJD, RADegrees, DecDegrees)
+        heliojd += 2400000.5
 
         return {'HJD': heliojd, 'HCV': vhcorrectd, 'BCV': vbcorrectd}
 
