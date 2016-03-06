@@ -24,7 +24,6 @@ log = open('log.log', 'w')
 
 # basic plot functionality
 class PlotFunctionality(object):
-
     # plot mathod used by basic viewer
     @staticmethod
     def plot(name, start, showfit, shouldfit, degree, fig, offsety):
@@ -105,8 +104,8 @@ class PlotFunctionality(object):
         forrange = len(y_new)
 
         # this loop removes all values more than 3 sigma away from the mean, that will become user definable, it ignores
-        # all values more than 3 sigma from the mean, removing those that are greater than the mean, (since they
-        # are most likely cosimic rays) and just ignoring those that are below the mean
+        # all values more than 3 sigma from the mean, removing those that are greater than the mean, (since they are
+        # mostlikely cosimic rays) and just ignoring those that are below the mean
         for i in range(forrange):
             if y_new[i] >= (3 * fluxstdev) + mean:
                 y_new[i] = mean
@@ -134,8 +133,8 @@ class PlotFunctionality(object):
         # returnes a dictionary of values, dictionary returns are the best and should be more widely known
         return {'y_poly': y_poly, 'y_new': y_new, 'wave': wavelength}
 
-    # wavelength and flux extract method, this will soon replace all non method instances of this code for
-    # better modularization
+    # wavelength and flux extract method, this will soon replace all non method instances of this code for better
+    # modularization
     @staticmethod
     def wfextract(path, order):
         path = str(path)
@@ -148,7 +147,6 @@ class PlotFunctionality(object):
 
 
 class AdvancedPlotting(PlotFunctionality):
-
     # correlation math / logic
     @staticmethod
     def ccor(targetpath, templatepath, degree, order, numberignore, largerwave, smallerwave, value):
@@ -276,8 +274,8 @@ class AdvancedPlotting(PlotFunctionality):
             # plt.show()
             # plt.pause(0.1)
             # plt.close()
-            # appends whatever the offset relative to 0 is (reconnizing that the offset is half on oneseid and
-            # half on another)
+            # appends whatever the offset relative to 0 is (reconnizing that the offset is half on oneseid and half
+            # on another)
             offset.append((value/2)-i)
         savecor = correlation
         correlation = [abs(x - max(savecor)) for x in savecor]
@@ -460,9 +458,10 @@ class AdvancedPlotting(PlotFunctionality):
         vel_bary = [vel_bary[0], vel_bary[1], vel_bary[2]]
         mag_vel_helio = Mathamatics.mag3D(vel_helio)
         mag_vel_bary = Mathamatics.mag3D(vel_bary)
-        vhcorrectd = VelRef + mag_vel_helio*(math.sin(DecRadians)*math.sin(DecSunRadians)+math.cos(DecRadians)*math.cos(DecSunRadians)*math.cos(RARadians-RASunRadians))
-        vbcorrectd = VelRef + mag_vel_bary*(math.sin(DecRadians)*math.sin(DecSunRadians)+math.cos(DecRadians)*math.cos(DecSunRadians)*math.cos(RARadians-RASunRadians))
+        vhcorrectd = VelRef + mag_vel_helio*(math.sin(DecRadians)*math.sin(DecSunRadians)+math.cos(DecRadians) * math.cos(DecSunRadians)*math.cos(RARadians-RASunRadians))
+        vbcorrectd = VelRef + mag_vel_bary*(math.sin(DecRadians)*math.sin(DecSunRadians)+math.cos(DecRadians) * math.cos(DecSunRadians)*math.cos(RARadians-RASunRadians))
         heliojd = Astrolib.helio_jd(MJD, RADegrees, DecDegrees)
+        heliojd += 2400000.5
 
         return {'HJD': heliojd, 'HCV': vhcorrectd, 'BCV': vbcorrectd}
 
