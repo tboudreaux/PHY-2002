@@ -1,5 +1,7 @@
 # Spectral Analysis Utility (SAUL)
-# Paddy Clancy and Thomas Bo udreaux
+# Paddy Clancy, Thomas Boudreaux, and Dr. Brad N. Barlow
+# Developed at High Point University
+# Under GNU Liscense
 from General import *
 prerun = open('prerun.log','w')
 #  GUI file import statements
@@ -12,6 +14,8 @@ try:
     from SecondGui import Ui_Header
     from MultiplotViewerTesttwo import Ui_MultiplotViewer
     from SinglePlotWindow import Ui_Ploter
+    from orbitalfitter import Ui_OrbitalFitter
+    from closeyn import Ui_Dialog
     print >>prerun, 'GUI files OK'
 except ImportError:
     print >>prerun, 'Some or all GUI files missing, please check to make sure that you donwloaded the entire ' \
@@ -237,8 +241,7 @@ class MyForm(QtGui.QWidget):
         self.ui.FunctionFit.stateChanged.connect(self.fitter)
         self.ui.function1.clicked.connect(self.showfit)
         self.ui.function2.clicked.connect(self.correlate)
-        self.ui.LS.clicked.connect(self.orb)
-        self.ui.LS.setText('Orb-Fit')
+        self.ui.OrbitalFit.clicked.connect(self.orb)
         self.ui.function4.clicked.connect(self.gaussian)
         self.ui.info.clicked.connect(self.info)
         self.ui.Reset.clicked.connect(BSPSEss.reload)
@@ -248,16 +251,15 @@ class MyForm(QtGui.QWidget):
         self.window3 = None
         self.window3 = None
         self.window4 = None
+        self.window5 = None
 
     ###########################
     #   GUI tie in functions  #
     ###########################
 
     def orb(self):
-        filename = self.ui.singleFileInput.text()
-        tbp = open(filename, 'rb')
-        tbp = tbp.readlines()
-        print tbp
+        self.window5 = OrbitalFitter()
+        self.window5.show()
 
     def gaussian(self):
         self.window4 = GaussianWindow(self)
@@ -567,6 +569,55 @@ class MyForm(QtGui.QWidget):
         # order = self.ui.startOrd.value()
         self.window3 = OrderJump(self)
         self.window3.show()
+
+
+class OrbitalFitter(QtGui.QMainWindow):
+    def __init__(self, parent=None):
+        QtGui.QWidget.__init__(self, parent)
+        self.ui = Ui_OrbitalFitter()
+        self.ui.setupUi(self)
+
+        self.saved = False
+        self.ui.Close.clicked.connect(self.closelogic)
+        self.ui.Save.clicked.connect(self.save)
+        self.ui.Fit.clicked.connect(self.runFit)
+
+        self.window2 = None
+
+    def closelogic(self):
+        if self.saved is True:
+            self.close()
+        else:
+            self.window2 = Closeyn()
+            self.window2.show()
+
+    def save(self):
+        self.saved = True
+
+    def runFit(self):
+        self.saved = False
+        period = self.ui.Period.text()
+        period = float(period)
+        pathfilename = self.ui.ListPath.text()
+        pathfile = open(pathfilename, 'rb')
+        pathfile = pathfile.readlines()
+        for i in range(len(pathfile)):
+            pathfile[i] = pathfile[i].rsplit()
+        dates = []
+        RVs = []
+        Errs = []
+        for element in pathfile:
+            dates.append(float(element[0]))
+            RVs.append(float(element[1]))
+            Errs.append(float(element[2]))
+        Plotter.orbplot(dates, RVs, Errs, period)
+
+
+class Closeyn(QtGui.QWidget):
+    def __init__(self, parent=None):
+        QtGui.QWidget.__init__(self, parent)
+        self.ui = Ui_Dialog()
+        self.ui.setupUi(self)
 
 
 class GaussianWindow(QtGui.QMainWindow):
@@ -944,6 +995,11 @@ class CCWindow(QtGui.QMainWindow):
 # This is plotter code, at some point it may be nice to move this class (During the great reorginazation
 # of code to come)
 class Plotter(CCWindow):
+    @staticmethod
+    def orbplot(TimeArray, RVArray, ErrorArray, period):
+        data = AdvancedPlotting.OrbitalFit(TimeArray, RVArray, ErrorArray, period)
+        print data
+
     # Corplot function that calls the ccofig function from GUI function to extract the required data
     # incidentaly this will be completely reorganized in the great reorganization of code to come
     # I wrote the comment like a week ago now and I have yet to begin the great reorganization of code
@@ -958,7 +1014,7 @@ class Plotter(CCWindow):
         # Adds the ccorfig subplot
         # ccorfig = fig.add_subplot(1, 1, 1)
         # fetches the data from the ccor function in Advanced Plotting by calling the function, data is returnted as a
-        #   2 element dictionary, so then when its plotted below there its is called with the dictionaty nameing
+        # 2 element dictionary, so then when its plotted below there its is called with the dictionaty nameing
         userFit = [False]
         if doPlot is True and order <= numorders[0]:
             global gcount
@@ -1001,7 +1057,7 @@ class Plotter(CCWindow):
             FitX = data['offset'][index-3:index+3]
             FitY = data['correlation'][index-3:index+3]
             try:
-                gaussy,gaussx = curve_fit(data['fit'],FitX,FitY,p0=[maximum,center,5, .05])
+                gaussy, gaussx = curve_fit(data['fit'], FitX, FitY, p0=[maximum, center, 5, .05])
                 # print 'Fit SUCSSES'
             except (RuntimeError, TypeError):
                 maximumfalback = 0
@@ -1058,11 +1114,11 @@ class Plotter(CCWindow):
                     compare[0] = not compare[0]
                     Plotter.corplot(degree, templatename, objectname, order, num, larger, smaller, compare[0], value,
                                     doPlot, not userFit[0], xcoord=xcoord, ycoord=ycoord, x1bound=x1bound, x2bound=x2bound)
-                # elif keydown == 'b' or keydown == 'b':
-                #     plt.close()
-                #     userFit[0] = False
-                #     Plotter.corplot(degree, templatename, objectname, order - 1, num, larger, smaller, compare[0],
-                #                     value, doPlot, not userFit[0])
+                elif keydown == 'b' or keydown == 'b':
+                    plt.close()
+                    userFit[0] = False
+                    Plotter.corplot(degree, templatename, objectname, 51, num, larger, smaller, compare[0],
+                                    value, doPlot, not userFit[0])
                 elif keydown == 'r' or keydown == 'R':
                     plt.close()
                     xloc, yloc = event.xdata, event.ydata

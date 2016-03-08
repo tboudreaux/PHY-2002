@@ -237,9 +237,9 @@
     </widget>
    </item>
    <item row="10" column="6">
-    <widget class="QPushButton" name="LS">
+    <widget class="QPushButton" name="OrbitalFit">
      <property name="text">
-      <string>OrbFit</string>
+      <string>Orb-Fit</string>
      </property>
     </widget>
    </item>
