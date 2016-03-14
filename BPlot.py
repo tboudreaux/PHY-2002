@@ -998,14 +998,15 @@ class Plotter(CCWindow):
     @staticmethod
     def orbplot(TimeArray, RVArray, ErrorArray, period):
         def cosine(x, a, p, phase, offset):
-            return a*np.cos((p*np.pi*x)+phase) + offset
+            return a*np.cos((2.0*3.14159296*x)+phase) + offset
         diff = max(RVArray) - min(RVArray)
         plt.plot(TimeArray, RVArray, 'o')
-        siny, sinx = curve_fit(cosine, TimeArray, RVArray, p0=[diff/2, period, 0, 0])
-        clean = np.linspace(min(TimeArray), max(TimeArray), len(cosine(TimeArray, *siny)))
-        print clean
-        print cosine(TimeArray, *siny)
-        plt.plot(clean, cosine(clean, *siny))
+        print 'one'
+        siny, sinx = curve_fit(cosine, TimeArray, RVArray, p0=[float(diff/2), float(period), 0, 0])
+        print 'two'
+        siny = [float(q) for q in siny]
+        # clean = np.linspace(min(TimeArray), max(TimeArray), len(cosine(TimeArray, *siny)))
+        plt.plot(TimeArray, cosine(TimeArray, *siny))
         plt.show()
 
     # Corplot function that calls the ccofig function from GUI function to extract the required data
@@ -1084,6 +1085,8 @@ class Plotter(CCWindow):
                                                                                             centerfallback, 5, 0.05])
                 except RuntimeError:
                     print 'Cross Correlation Failed'
+                    Plotter.corplot(degree, templatename, objectname, order + 1, num, larger, smaller, compare[0],
+                                    value, doPlot, not userFit[0])
 
             tempvelocity = gaussy[1] * data['dispersion']
             UseVel = (tempvelocity/data['meantemp'])*c
