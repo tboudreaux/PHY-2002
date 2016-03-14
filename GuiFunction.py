@@ -270,12 +270,12 @@ class AdvancedPlotting(PlotFunctionality):
             z /= bottom
             correlation.append(z)
 
-            plt.plot(templateflux, label=str(np.correlate(templateflux, shiftflux)))
-            plt.plot(shiftflux)
-            plt.legend()
-            plt.show()
-            plt.pause(0.1)
-            plt.close()
+            # plt.plot(templateflux, label=str(np.correlate(templateflux, shiftflux)))
+            # plt.plot(shiftflux)
+            # plt.legend()
+            # plt.show()
+            # plt.pause(0.1)
+            # plt.close()
             # appends whatever the offset relative to 0 is (reconnizing that the offset is half on oneseid and half
             # on another)
             offset.append((value/2)-i)
@@ -468,16 +468,6 @@ class AdvancedPlotting(PlotFunctionality):
         return {'HJD': heliojd, 'HCV': vhcorrectd, 'BCV': vbcorrectd}
 
     @staticmethod
-    def OrbitalFit(TimeArray, RVArray, ErrorArray, period):
-        diff = max(RVArray) - min(RVArray)
-        print diff
-        def Cosine(x,a, p, phase):
-            return a*np.cos((p*np.pi*x)+phase)
-        siny, sinx = curve_fit(Cosine, TimeArray, RVArray, p0=[diff, period, 0])
-
-        return {'sinx': sinx, 'siny': siny}
-
-    @staticmethod
     def gaussianfit(filename, hydrogenalpha, hydrogenbeta, heliumalpha):
         allwave = []
         allflux = []
@@ -520,7 +510,7 @@ class AdvancedPlotting(PlotFunctionality):
             # fit_g = fitting.LevMarLSQFitter()
             # g = fit_g(g_init, wavenew, fluxnew)
 
-            plt.plot(x,gaus(x,*gaussy))
+            plt.plot(x, gaus(x, *gaussy))
             plt.show()
             plt.pause(5)
 

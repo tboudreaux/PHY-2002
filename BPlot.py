@@ -997,8 +997,16 @@ class CCWindow(QtGui.QMainWindow):
 class Plotter(CCWindow):
     @staticmethod
     def orbplot(TimeArray, RVArray, ErrorArray, period):
-        data = AdvancedPlotting.OrbitalFit(TimeArray, RVArray, ErrorArray, period)
-        print data
+        def cosine(x, a, p, phase, offset):
+            return a*np.cos((p*np.pi*x)+phase) + offset
+        diff = max(RVArray) - min(RVArray)
+        plt.plot(TimeArray, RVArray, 'o')
+        siny, sinx = curve_fit(cosine, TimeArray, RVArray, p0=[diff/2, period, 0, 0])
+        clean = np.linspace(min(TimeArray), max(TimeArray), len(cosine(TimeArray, *siny)))
+        print clean
+        print cosine(TimeArray, *siny)
+        plt.plot(clean, cosine(clean, *siny))
+        plt.show()
 
     # Corplot function that calls the ccofig function from GUI function to extract the required data
     # incidentaly this will be completely reorganized in the great reorganization of code to come
@@ -1117,7 +1125,7 @@ class Plotter(CCWindow):
                 elif keydown == 'b' or keydown == 'b':
                     plt.close()
                     userFit[0] = False
-                    Plotter.corplot(degree, templatename, objectname, 51, num, larger, smaller, compare[0],
+                    Plotter.corplot(degree, templatename, objectname, order - 1, num, larger, smaller, compare[0],
                                     value, doPlot, not userFit[0])
                 elif keydown == 'r' or keydown == 'R':
                     plt.close()
