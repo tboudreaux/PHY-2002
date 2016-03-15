@@ -466,102 +466,122 @@ class AdvancedPlotting(PlotFunctionality):
 
         return {'HJD': heliojd, 'HCV': vhcorrectd, 'BCV': vbcorrectd}
 
+    # fits and plots a gaussian function to certain spectral lines
     @staticmethod
-    def gaussianfit(filename, hydrogenalpha, hydrogenbeta, heliumalpha):
+    def gaussianfit(filename, upper, lower, center, plotnumber):
         allwave = []
         allflux = []
         xvalue = []
         yvalue = []
         maxvalue = []
-        for run in range(62):
+        for run in range(62):   # pulls out wavelength and flux values from the fits file
             data = PlotFunctionality.wfextract(filename,run)
             for ted in range(len(data['wavelength'])):
                 allwave.append(data['wavelength'][ted])
                 allflux.append(data['flux'][ted])
-        selection = AdvancedPlotting.waveselection(hydrogenalpha,hydrogenbeta,heliumalpha)
-        # newwave = data['wavelength']
-        # newflux = data['flux']
+        selection = [lower,upper]
         wavenew = []
         fluxnew = []
+
         for i in range(len(selection)):
-            lower = min(range(len(allwave)), key=lambda k: abs(allwave[k]-selection[i][0]))
-            upper = min(range(len(allwave)), key=lambda k: abs(allwave[k]-selection[i][1]))
-            print "upper:", upper, "lower:",lower
+            lower = min(range(len(allwave)), key=lambda k: abs(allwave[k]-selection[0]))
+            upper = min(range(len(allwave)), key=lambda k: abs(allwave[k]-selection[1]))
 
-            for j in range(len(allwave)):
-                if lower<j<upper:
-                    # print "count",j
-                    wavenew.append(float(allwave[j]))
-                    fluxnew.append(float(allflux[j]))
+        for j in range(len(allwave)):   # gives the wavelength between the uper and lower bounds
+            if lower<j<upper:
+                wavenew.append(float(allwave[j]))
+                fluxnew.append(float(allflux[j]))
 
-            x = ar(wavenew)
-            y = ar(fluxnew)
-            n = len(x)
-            print n # amount of data
+        x = ar(wavenew)   # ar() turns wavenew and fluxnew into arrays
+        y = ar(fluxnew)
+        n = len(x)
 
-            def gaus(x, a, x0, sigma, offset):
-                return (-a*exp(-(x-x0)**2/(2*sigma**2))) + offset   # where offset is the offset of the spectra
-            center = allwave[(upper-((upper-lower)/2))]
-            print(center)
-            gaussy,gaussx = curve_fit(gaus, x, y, p0=[.5, center, 5, 1])
-            print(gaussy)
-            # g_init = models.Gaussian1D(amplitude = max(fluxnew), mean = meancalc, stddev = sigma)
-            # fit_g = fitting.LevMarLSQFitter()
-            # g = fit_g(g_init, wavenew, fluxnew)
+        normx = []
+        normy = []
+        degree = 4
 
-            plt.plot(x, gaus(x, *gaussy))
-            plt.show()
-            plt.pause(5)
+        for j in range(len(x)):   # fills in normx and normy
+            normx.append(x[j])
+            normy.append(y[j])
+        z = np.polyfit(normx,normy,degree)
+        f = np.poly1d(z)
+        ypoly = f(normx)
+        ynew = normy/ypoly
+        yfit = ynew
+        fluxstdev = np.std(ynew)
+        mean = np.mean(ynew)
+        forrange = len(ynew)
 
-            #maximum = max(g)
-            wavenew = None
-            fluxnew = None
-            wavenew = []
-            fluxnew = []
-            xvalue.append(gaussx)
-            yvalue.append(gaussy)
-            #maxvalue.append(maximum)
+        for i in range(forrange):   # this replaces anything within 3sigma with the mean
+            if ynew[i] >= (3*fluxstdev) + mean:
+                ynew[i] = mean
+                yfit[i] = mean
+            if ynew[i] <= mean - (3*fluxstdev):
+                yfit[i] = mean
 
-        return {'gaussx': xvalue,'gaussy': yvalue,'maximum': maxvalue}
+        flux2 = yfit * ypoly
+        z = np.polyfit(normx,flux2,degree)
+        f = np.poly1d(z)
+        ypoly = f(x)
+        ynew = y/ypoly
+
+        def gaus(x,a,x0,sigma,offset):
+            return (-a*exp(-(x-x0)**2/(2*sigma**2))) + offset   # where offset is the offset of the spectra
+        gaussy,gaussx = curve_fit(gaus,normx,ynew,p0=[.5,center,5,.7])
+        print gaussx, gaussy
+        xvalue.append(gaussx)
+        yvalue.append(gaussy)
+
+        wavevalue = gaussy[1]   # centroid of the gaussian in angstroms
+        offset = center-wavevalue
+
+        fignewton = plt.figure()
+        figothernewton = fignewton.add_subplot(1, 1, 1)
+        figothernewton.plot(normx, ynew)
+        figothernewton.plot(x, gaus(x, *gaussy))
+
+        if plotnumber == 1:
+            plt.title('Hydrogen Alpha')
+        elif plotnumber == 2:
+            plt.title('Hydrogen Beta')
+        elif plotnumber == 3:
+            plt.title('Helium I')
+        plt.show()
+        # plt.pause(5)
+
+
 
 
     ## TOUCH THE COW
     ## DO IT NOW
 
-
-##################################
-#  Code to pull from text file.  #
-##################################
+    ## Code to pull from text file and run the gaussian fit thingy. ##
 
     @staticmethod
-    def waveselection(hydrogena,hydrogenb,heliuma):
+    def waveselection(filename,hydrogena,hydrogenb,heliuma):
        wave1 = open('lines.sec','rb') # opens file to read line wavelengths
        wave1 = wave1.readlines()
        length = len(wave1)
 
        for i in range(length):
            wave1[i] = wave1[i].split('-') # splits the strings
-           wave1[i][1] = wave1[i][1][:-1] # gets rid of the newline character
-           print wave1[i]
+           wave1[i][2] = wave1[i][2][:-1] # gets rid of the newline character
            wave1[i] = [float(x) for x in wave1[i]]
-       wave2=[]
+
+       print wave1
+       wave2=[0,0]
        if hydrogena is False:
            pass
        elif hydrogena is True:
-           wave2.append(wave1[0])
+           wave2=wave1[0]
+           AdvancedPlotting.gaussianfit(filename,wave2[1],wave2[0], wave2[2], 1)   # runs the fitting function with wavelengths
        if hydrogenb is False:
            pass
        elif hydrogenb is True:
-           wave2.append(wave1[1])
+           wave2=wave1[1]
+           AdvancedPlotting.gaussianfit(filename,wave2[1],wave2[0], wave2[2], 2)
        if heliuma is False:
            pass
        elif heliuma is True:
-           wave2.append(wave1[2])
-       return wave2
-
-    @staticmethod
-    def gaussianfitold(x,y,a,mean,stddev):
-        g_init = models.Gaussian1D(a,mean,stddev)
-        fit_g = fitting.LevMarLSQFitter()
-        g = fit_g(g_init,x,y)
-        return g
+           wave2=wave1[2]
+           AdvancedPlotting.gaussianfit(filename,wave2[1],wave2[0], wave2[2], 3)

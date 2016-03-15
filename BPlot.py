@@ -655,10 +655,12 @@ class GaussianWindow(QtGui.QMainWindow):
 
     def closer(self):
         self.close()
-
+        halphause[0] = False
+        hbetause[0] = False
+        heliumause[0] = False
     def plot(self):
         filename = self.ui.lineEdit.text()
-        Gauss = AdvancedPlotting.gaussianfit(filename,halphause[0],hbetause[0],heliumause[0])
+        Gauss = AdvancedPlotting.waveselection(filename,halphause[0],hbetause[0],heliumause[0])
 
 
 # This is the order jump GUI, as before it currently is non functional, will fix at sometime
