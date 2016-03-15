@@ -9,20 +9,21 @@ import matplotlib.pyplot as plt
 from astropy.modeling import models,fitting
 import jplephem
 import de423
+import ephem
 import astropy.time as astrotime
 import astropy.coordinates as coords
 import astropy.units as unit
 import astropy.constants as const
+import Astrolib
 
 run = [False]
 
-
-# opens a log file, I don't always print to it but its nice to have handy when I want to print a lot of output
+#  opens a log file, I don't always print to it but its nice to have handy when I want to print a lot of output
 log = open('log.log', 'w')
+
 
 # basic plot functionality
 class PlotFunctionality(object):
-
     # plot mathod used by basic viewer
     @staticmethod
     def plot(name, start, showfit, shouldfit, degree, fig, offsety):
@@ -31,6 +32,10 @@ class PlotFunctionality(object):
         # These are due to be replaced by wfextract()
         wavelength = np.float64(sp[0].data[start-1, :, 0])
         flux = np.float64(sp[0].data[start-1, :, 1])
+        # wavelength = np.float64(sp[0].data[1, start-1, :])
+        # flux = np.float64(sp[0].data[2, start-1, :])
+        # fitsdata = sp[1].data
+        data = sp[0].data
 
         # determins wherether to show the two things
         if showfit is True:
@@ -98,8 +103,8 @@ class PlotFunctionality(object):
         forrange = len(y_new)
 
         # this loop removes all values more than 3 sigma away from the mean, that will become user definable, it ignores
-        # all values more than 3 sigma from the mean, removing those that are greater than the mean, (since they are most
-        # likely cosimic rays) and just ignoring those that are below the mean
+        # all values more than 3 sigma from the mean, removing those that are greater than the mean, (since they are
+        # mostlikely cosimic rays) and just ignoring those that are below the mean
         for i in range(forrange):
             if y_new[i] >= (3 * fluxstdev) + mean:
                 y_new[i] = mean
@@ -115,8 +120,8 @@ class PlotFunctionality(object):
         y_poly = f(wavelength)
         y_new = flux / y_poly
 
-        # I honesetly don't know what this does any more, I will figure that out at some point (this is why I need to get
-        # better at commenting b/c I wrote that like a week ago, but I don't know why I wrote that)
+        # I honesetly don't know what this does any more, I will figure that out at some point (this is why
+        # I need to get better at commenting b/c I wrote that like a week ago, but I don't know why I wrote that)
         for i in range(forrange):
             if y_new[i] >= (3 * fluxstdev) + mean:
                 y_new[i] = mean
@@ -127,7 +132,8 @@ class PlotFunctionality(object):
         # returnes a dictionary of values, dictionary returns are the best and should be more widely known
         return {'y_poly': y_poly, 'y_new': y_new, 'wave': wavelength}
 
-    # wavelength and flux extract method, this will soon replace all non method instances of this code for better modularization
+    # wavelength and flux extract method, this will soon replace all non method instances of this code for better
+    # modularization
     @staticmethod
     def wfextract(path, order):
         path = str(path)
@@ -138,8 +144,8 @@ class PlotFunctionality(object):
 
         return {'wavelength': wavelength, 'flux': flux}
 
-class AdvancedPlotting(PlotFunctionality):
 
+class AdvancedPlotting(PlotFunctionality):
     # correlation math / logic
     @staticmethod
     def ccor(targetpath, templatepath, degree, order, numberignore, largerwave, smallerwave, value):
@@ -148,7 +154,7 @@ class AdvancedPlotting(PlotFunctionality):
         targetflux = []
         templateflux = []
         correlation = []
-        correlationbad = []
+        correlationnp = []
         offset = []
 
         # These call the wfextract function to get the flux and wavelength for the target and template as a dictionary
@@ -165,12 +171,11 @@ class AdvancedPlotting(PlotFunctionality):
         # this next large block of code is what deals with ignoring certain wavelengths, this is a mildly optimized
         # version (way more that before at least) and it makes sure to only take wavelengths into account that are not
         # in the range specified by the user
+        croped = False
         for n in range(numberignore):
-
             # This checks when the smaller wavelength is and if it falls in the range of the array it will then preform
             # more checks, if not it will move on
             if smallest < smallerwave[n] < largest:
-
                 # This checks if the largest wavelength is in the range of the array,
                 if smallest < largerwave[n] < largest:
                     for j in range(len(targetdata['wavelength'])):
@@ -188,28 +193,38 @@ class AdvancedPlotting(PlotFunctionality):
                 else:
                     # Same more or less logic than above
                     for j in range(len(targetdata['wavelength'])):
-                        if smallerwave[n] <= targetdata['wavelength'][j] <= largest:
+                        if smallerwave[n] <= targetdata['wavelength'][j] <= largerwave[n]:
                             pass
                         else:
                             newtargetwave.append(targetdata['wavelength'][j])
                             newtargetflux.append(targetdata['flux'][j])
                             newtemplatewave.append(templatedata['wavelength'][j])
                             newtemplateflux.append(templatedata['flux'][j])
+                croped = True
             elif smallest < largerwave[n] < largest:
                 for j in range(len(targetdata['wavelength'])):
-                    if smallest <= targetdata['wavelength'][j] <= largerwave[n]:
+                    if smallerwave[n] <= targetdata['wavelength'][j] <= largerwave[n]:
+                        pass
+                    else:
                         newtargetwave.append(targetdata['wavelength'][j])
                         newtargetflux.append(targetdata['flux'][j])
                         newtemplatewave.append(templatedata['wavelength'][j])
                         newtemplateflux.append(templatedata['flux'][j])
-            else:
-                # if there are no wavelengths to ignore then it sets the new use arrays to the target data relevent
-                newtargetwave = targetdata['wavelength'].tolist()
-                newtargetflux = targetdata['flux'].tolist()
-                newtemplatewave = templatedata['wavelength'].tolist()
-                newtemplateflux = templatedata['flux'].tolist()
+                croped = True
+            # else:
+            # print 'in the final else'
+            # if there are no wavelengths to ignore then it sets the new use arrays to the target data relevent
+        if croped is False:
+            newtargetwave = targetdata['wavelength'].tolist()
+            newtargetflux = targetdata['flux'].tolist()
+            newtemplatewave = templatedata['wavelength'].tolist()
+            newtemplateflux = templatedata['flux'].tolist()
+        else:
+            pass
 
         # Gets the target flux and normalizes it by calling the functional fitting function
+        # plt.plot(newtargetwave, newtargetflux)
+        # plt.draw()
         targetflux.append(PlotFunctionality.fitfunction(degree, newtargetwave, newtargetflux, 0)['y_new'])
         # the targetflux array (and acrually all arrays returned from fitfunction) are multidimensional, in this case
         # we only want the first element of that
@@ -221,32 +236,34 @@ class AdvancedPlotting(PlotFunctionality):
         # time.sleep(10)
         # plt.close()
         # Here we obtain the right honorable template flux of the land and do do unto it the normalization which has
-        # been decreade should be done unto it and it was done unto it, and I dont know why I type these things sometimes
+        # been decreade should be done unto it and it was done unto it, and I dont know why I type these things
+        # sometimes
         templateflux.append(PlotFunctionality.fitfunction(degree, newtemplatewave, newtemplateflux, 0)['y_new'])
         # same thing as above, wanting only the first element and whatnot
         templateflux = templateflux[0]
         templateflux = templateflux[(value/2):-(value/2)]
         templateflux[:] = [x - 1 for x in templateflux]
+        meantemp = sum(newtemplatewave)/len(newtemplatewave)
 
         # This does the actual shifting
         for i in range(value):
             # creates a new array equal to the total template flux array
             shiftflux = targetflux
             shiftwave = newtargetwave
-            #crops the array so that only the part that lies under the part of the template being inveseigated matters
+            # crops the array so that only the part that lies under the part of the template being inveseigated matters
             shiftflux = shiftflux[i:-(value-i)]
             shiftwave = shiftwave[i:-(value-i)]
 
-
             # correlates the two arrays of fluxes and appends that to an array
 
-            correlationbad.append(np.correlate(templateflux, shiftflux))
-            print len(correlationbad)
+            correlationnpvalue = np.correlate(templateflux, shiftflux)
+            # print correlationnpvalue
+            correlationnp.append(correlationnpvalue[0])
             z = templateflux - shiftflux
             savez = z
             z = [x**2 for x in z]
             z = sum(z)
-            z /= (len(shiftflux)-1)
+            z /= (len(shiftflux))
             z = math.sqrt(z)
             bottom = math.sqrt((np.std(templateflux)**2)+(np.std(shiftflux)**2))
             z /= bottom
@@ -258,46 +275,52 @@ class AdvancedPlotting(PlotFunctionality):
             # plt.show()
             # plt.pause(0.1)
             # plt.close()
-            # appends whatever the offset relative to 0 is (reconnizing that the offset is half on oneseid and half on another)
+            # appends whatever the offset relative to 0 is (reconnizing that the offset is half on oneseid and half
+            # on another)
             offset.append((value/2)-i)
         savecor = correlation
         correlation = [abs(x - max(savecor)) for x in savecor]
-        g_init = models.Gaussian1D(amplitude=max(correlation), mean=0, stddev=2.)
-        fit_g = fitting.LevMarLSQFitter()
-        g = fit_g(g_init, offset, correlation)
+        # g_init = models.Gaussian1D(amplitude=max(correlation), mean=0, stddev=2.)
+        # fit_g = fitting.LevMarLSQFitter()
+        # g = fit_g(g_init, offset, correlation)
+
+        def gaus(x ,a , x0, sigma, offset):
+            return -a*exp(-(x-x0)**2/(2*sigma**2)) # + offset # where offset is the offset of the spectre
+
         waverange = (max(newtargetwave)) - (min(newtargetwave))
         pixrange = len(newtargetwave)
         dispersion = waverange/pixrange
-        #return{'correlation': correlation, 'offset': offset, 'fit': g, 'dispersion': dispersion}
-        return{'correlation': correlationbad, 'offset': offset, 'fit': g, 'dispersion': dispersion}
+        # return{'correlation': correlation, 'offset': offset, 'fit': gaus, 'dispersion': dispersion, 'meantemp': meantemp}
+        return{'correlation': correlationnp, 'offset': offset, 'fit': gaus, 'dispersion': dispersion, 'meantemp': meantemp}
 
     # This method deals with showing the wavelengths in the cross correlation chart, basically it allows one to see
     # what is being cross correlated, which is helpful for you know...SCIENCE
     @staticmethod
     def waveshower(fig, path1, path2, order, degree):
-        # I have yet to figure out if my nearly obsessive use of local and global name space arrays for basically everything
-        # in some way goes against python best practices (I get hints that maybe it does). I think maybe I should be using
-        # something like pandas dataframes, or numpy arrays, but those are all big words that I dont want to think about
-        # all that being said, here are two lists
+        # I have yet to figure out if my nearly obsessive use of local and global name space arrays for basically
+        # everything in some way goes against python best practices (I get hints that maybe it does). I think
+        # maybe I should be using something like pandas dataframes, or numpy arrays, but those are all big
+        # words that I dont want to think about all that being said, here are two lists
         flux1 = []
         flux2 = []
         # gets the data from the two files
-        data1 = PlotFunctionality.wfextract(path1, order)
-        data2 = PlotFunctionality.wfextract(path2, order)
+        data1 = PlotFunctionality.wfextract(path1, order-1)
+        data2 = PlotFunctionality.wfextract(path2, order-1)
         # Normalizes the data from the two functions
         flux1.append(PlotFunctionality.fitfunction(degree, data1['wavelength'], data1['flux'], 0)['y_new'])
         flux2.append(PlotFunctionality.fitfunction(degree, data2['wavelength'], data2['flux'], 0)['y_new'])
         flux1[:] = [x - 1 for x in flux1]
         flux2[:] = [x -1 for x in flux2]
-        # creats the wubplot, and places it, using the system that I FINALY figured out, just so I wont forget, or so that
-        # when I forget I will be able to reference this and relearn quicickly, the position (x, y, z) basically is what
-        # fraction of the screen you will take up so (1, 1, 1) is all of the x all of the z and all of the y (2, 1, 1,)
-        # is half of the x all of the y and all of the z, so (2, 1, 2) is half of the all of the y and half of the z
+        # creats the wubplot, and places it, using the system that I FINALY figured out, just so I wont forget,
+        # or so that when I forget I will be able to reference this and relearn quicickly, the position (x, y, z)
+        # basically is what fraction of the screen you will take up so (1, 1, 1) is all of the x all of the z
+        # and all of the y (2, 1, 1,) is half of the x all of the y and all of the z, so (2, 1, 2) is half of
+        # the all of the y and half of the z
         waves = fig.add_subplot(2,1,2)
         # Plots data, what more do you want
         waves.plot(data1['wavelength'], flux1[0])
         waves.plot(data2['wavelength'], flux2[0])
-        # Labes some stuff
+        # Labes some stuff./data/160116_planid_360/achi160116.1126.fits
         waves.set_xlabel('wavelength (Angstroms)')
         waves.set_ylabel('Normalized Flux')
         waves.set_title('spectra viewer')
@@ -322,13 +345,13 @@ class AdvancedPlotting(PlotFunctionality):
     # End the unused section of code
 
 ###################
-##  Experimental ##
+#   Experimental  #
 ###################
 
 # Here is the experimental HJD correction code, it is currently very rough and does not work
 
     @staticmethod
-    def coordconvert(name):
+    def coordconvert(name, VelRef):
         name = str(name)
         # This is basic read in stuff, its used the same at other points in the code, same idea here
         hdulist = fits.open(name)
@@ -340,22 +363,31 @@ class AdvancedPlotting(PlotFunctionality):
         for i in range(len(RA)):
             RA[i] = float(RA[i])
             Dec[i] = float(Dec[i])
-        ObsDate = hdulist[0].header['DATE']
-
+        DateOBS = hdulist[0].header['UTSHUT']
+        TimeEPX = hdulist[0].header['EXPTIME']
+        # print DateOBS
+        YearShut = int(DateOBS[:4])
+        MonthShut = int(DateOBS[5:7])
+        DayShut = int(DateOBS[8:10])
+        Hour = int(DateOBS[11:13])
+        Minute = int(DateOBS[14:16])
+        second = float(DateOBS[17:])
+        second += (float(TimeEPX)/2)
+        Mtotal = (second/60)+ Minute
+        Htotal = (Mtotal/60) + Hour
+        DayAdd = Htotal/24
         # Parses the time from the header into years months and dates, for latter use in JD converter
-        Year = int(ObsDate[:-15])
-        Month = int(ObsDate[5:-12])
-        Day = int(ObsDate[8:-9])
         # Calculate the Julian Date
-        JD = sum(jdcal.gcal2jd(Year, Month, Day))
-
+        JD = sum(jdcal.gcal2jd(YearShut, MonthShut, DayShut))
+        JD = JD + DayAdd
         # Convert to JD2000
-        J2 = JD - 2451545.0
+        # MJD = JD - 2451545.0
+        MJD = JD - 2400000.5
 
-        # This calculates the distance to the sun on a given Julian Date, these at some point need to be modified, however
-        # this should work for the time being
-        MeanLon = 280.460 + 0.9856474 * J2
-        MeanAnon = 357.528 + 0.9856003 * J2
+        # This calculates the distance to the sun on a given Julian Date, these at some point need to be modified,
+        # however this should work for the time being
+        MeanLon = 280.460 + 0.9856474 * MJD
+        MeanAnon = 357.528 + 0.9856003 * MJD
         cont = False
         # corrects for, and places the mean annomoly in the range of 360
         while cont is False:
@@ -374,67 +406,65 @@ class AdvancedPlotting(PlotFunctionality):
                 MeanLon += 360
             else:
                 cont = True
-        # calculates values for use in the HJD Calculation
-        EcclipticLon = MeanLon + 1.915*math.sin(MeanAnon) + 0.020*math.sin(2*MeanAnon)
-        SolarDist = 1.00014 - 0.01671*math.cos(MeanAnon) - 0.00014*math.cos(2*MeanAnon)
-        HJD = AdvancedPlotting.jd_corr(J2, name, jd_type='hjd')
-        print 'in function:', HJD
-        BJD = AdvancedPlotting.jd_corr(J2, name, jd_type='bjd')
-        print 'in function:', BJD
-
-        # The Next section here calculates the Unit vector pointed at the target
-
-        return {'HJD': HJD, 'BJD': BJD}
-
-    # https://mail.scipy.org/pipermail/astropy/2014-April/003148.html
-    @staticmethod
-    def jd_corr(mjd, filename, jd_type='hjd'):
-        hdulist = fits.open(filename)
-        RA = hdulist[0].header['RA']
-        Dec = hdulist[0].header['Dec']
-        CTIO_LON = 30.1697
-        CTIO_LAT = 70.8065
-        # Initialise ephemeris from jplephem
+        RAfromHDU = hdulist[0].header['RA']
+        DecfromHDU = hdulist[0].header['DEC']
+        RAHour = int(RAfromHDU[:2])
+        RAMinute = int(RAfromHDU[3:5])
+        RASecond = float(RAfromHDU[6:])
+        DecDegrees = int(DecfromHDU[:2])
+        DecMinute = int(DecfromHDU[3:5])
+        DecSecond = float(DecfromHDU[6:])
+        RADegrees = (RAHour*15)+(RAMinute/4) + (RASecond/240)
+        RARadians = (RADegrees/360)*2*math.pi
+        DecTotalMin = DecMinute + (DecSecond/60)
+        DecTotalDegrees = DecDegrees + (DecTotalMin/60)
+        DecRadians = (DecTotalDegrees/360)*2*math.pi
         eph = jplephem.Ephemeris(de423)
+        pos_sunjpl = eph.position('Sun', JD)
+        pos_earthjpl = eph.position('earthmoon', JD)
+        EarthToSun = pos_sunjpl-pos_earthjpl
+        sun = ephem.Sun()
+        useDate = str(YearShut) + '/' + str(MonthShut) + '/' + str(DayShut+DayAdd)
+        sun.compute(useDate)
+        sunRA = str(sun.ra)
+        sunDEC = str(sun.dec)
+        RASunHour = int(sunRA[:2])
+        RASunMinute = int(sunRA[3:5])
+        RASunSecond = float(sunRA[6:])
+        DecSunDegrees = int(sunDEC[:2])
+        DecSunMinute = int(sunDEC[4:6])
+        DecSunSecond = float(sunDEC[7:])
+        RASunDegrees = (RASunHour*15)+(RASunMinute/4) + (RASunSecond/240)
+        RASunRadians = (RASunDegrees/360)*2*math.pi
+        DecSunTotalMin = DecSunMinute + (DecSunSecond/60)
+        DecSunTotalDegrees = DecSunDegrees + (DecSunTotalMin/60)
+        DecSunRadians = (DecSunTotalDegrees/360)*2*math.pi
+        EcclipticLon = MeanLon + 1.915*math.sin(MeanAnon) + 0.020*math.sin(2*MeanAnon)
+        SolarDist = 1.00014 - 0.01671*math.cos(MeanAnon) - 0.00014*math.cos(2*MeanAnon)  # AU
+        SolarDist *= 14959787066
+        sunx = SolarDist*math.sin(DecSunRadians)*math.cos(RASunRadians)
+        suny = SolarDist*math.sin(DecSunRadians)*math.sin(RASunRadians)
+        sunz = SolarDist*math.cos(DecSunRadians)
+        objectx = math.sin(DecRadians)*math.cos(RARadians)
+        objecty = math.sin(DecRadians)*math.sin(RARadians)
+        objectz = math.cos(DecRadians)
+        magobject = math.sqrt(((math.sin(DecRadians)*math.cos(RARadians))**2)+((math.sin(DecRadians)*math.sin(RARadians))**2)+((math.cos(DecRadians))**2))
+        objectxhat = objectx/magobject
+        objectyhat = objecty/magobject
+        objectzhat = objectz/magobject
+        barveldata = Astrolib.baryvel(JD)
+        vel_helio = barveldata[0]
+        vel_bary = barveldata[1]
+        vel_helio = [vel_helio[0], vel_helio[1],vel_helio[2]]
+        vel_bary = [vel_bary[0], vel_bary[1], vel_bary[2]]
+        mag_vel_helio = Mathamatics.mag3D(vel_helio)
+        mag_vel_bary = Mathamatics.mag3D(vel_bary)
+        vhcorrectd = VelRef + mag_vel_helio*(math.sin(DecRadians)*math.sin(DecSunRadians)+math.cos(DecRadians) * math.cos(DecSunRadians)*math.cos(RARadians-RASunRadians))
+        vbcorrectd = VelRef + mag_vel_bary*(math.sin(DecRadians)*math.sin(DecSunRadians)+math.cos(DecRadians) * math.cos(DecSunRadians)*math.cos(RARadians-RASunRadians))
+        heliojd = Astrolib.helio_jd(MJD, RADegrees, DecDegrees)
+        heliojd += 2400000.5
 
-        # Source unit-vector
-        ## Assume coordinates in ICRS
-        ## Set distance to unit (kilometers)
-        src_vec = coords.ICRS(ra=RA, dec=Dec, unit=(unit.degree, unit.degree), distance=coords.Distance(1, unit.km))
-
-        # Convert epochs to astropy.time.Time
-        ## Assume MJD(UTC)
-        t = astrotime.Time(mjd, scale='utc', format='mjd')#lat=CTIO_LAT, lon=CTIO_LON)
-
-        # Get Earth-Moon barycenter position
-        ## NB: jplephem uses Barycentric Dynamical Time, e.g. JD(TDB)
-        ## and gives positions relative to solar system barycenter
-        barycenter_earthmoon = eph.position('earthmoon', t.tdb.jd)
-
-        # Get Moon position vectors
-        moonvector = eph.position('moon', t.tdb.jd)
-
-        # Compute Earth position vectors
-        pos_earth = (barycenter_earthmoon - moonvector * eph.earth_share)*unit.km
-
-        if jd_type == 'bjd':
-            # Compute BJD correction
-            ## Assume source vectors parallel at Earth and Solar System Barycenter
-            ## i.e. source is at infinity
-            corr = np.dot(pos_earth.T, src_vec.cartesian.value)/const.c
-        elif jd_type == 'hjd':
-            # Compute HJD correction via Sun ephemeris
-            pos_sun = eph.position('sun', t.tdb.jd)*unit.km
-            sun_earth_vec = pos_earth - pos_sun
-            corr = np.dot(sun_earth_vec.T, src_vec.cartesian.value)/const.c
-        else:
-            return '<font color="red">ERROR, CORRECTION TYPE NOT SPECIFIED OR SPELLED WRONG</font>'
-
-        # TDB is the appropriate time scale for these ephemerides
-        dt = astrotime.TimeDelta(corr, scale='tdb', format='jd')
-        # Compute and return HJD/BJD as astropy.time.Time
-        new_jd = t + dt
-        return new_jd
+        return {'HJD': heliojd, 'HCV': vhcorrectd, 'BCV': vbcorrectd}
 
     # fits and plots a gaussian function to certain spectral lines
     @staticmethod
