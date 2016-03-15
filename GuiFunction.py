@@ -438,7 +438,7 @@ class AdvancedPlotting(PlotFunctionality):
 
     # fits and plots a gaussian function to certain spectral lines
     @staticmethod
-    def gaussianfit(filename, upper, lower, plotnumber):
+    def gaussianfit(filename, upper, lower, center, plotnumber):
         allwave = []
         allflux = []
         xvalue = []
@@ -452,77 +452,74 @@ class AdvancedPlotting(PlotFunctionality):
         selection = [lower,upper]
         wavenew = []
         fluxnew = []
+
         for i in range(len(selection)):
             lower = min(range(len(allwave)), key=lambda k: abs(allwave[k]-selection[0]))
             upper = min(range(len(allwave)), key=lambda k: abs(allwave[k]-selection[1]))
 
-            for j in range(len(allwave)):   # gives the wavelength between the uper and lower bounds
-                if lower<j<upper:
-                    wavenew.append(float(allwave[j]))
-                    fluxnew.append(float(allflux[j]))
+        for j in range(len(allwave)):   # gives the wavelength between the uper and lower bounds
+            if lower<j<upper:
+                wavenew.append(float(allwave[j]))
+                fluxnew.append(float(allflux[j]))
 
-            x = ar(wavenew)   # ar() turns wavenew and fluxnew into arrays
-            y = ar(fluxnew)
-            n = len(x)
+        x = ar(wavenew)   # ar() turns wavenew and fluxnew into arrays
+        y = ar(fluxnew)
+        n = len(x)
 
-            normx = []
-            normy = []
-            degree = 4
+        normx = []
+        normy = []
+        degree = 4
 
-            for j in range(len(x)):   # fills in normx and normy
-                normx.append(x[j])
-                normy.append(y[j])
-            z = np.polyfit(normx,normy,degree)
-            f = np.poly1d(z)
-            ypoly = f(normx)
-            ynew = normy/ypoly
-            yfit = ynew
-            fluxstdev = np.std(ynew)
-            mean = np.mean(ynew)
-            forrange = len(ynew)
+        for j in range(len(x)):   # fills in normx and normy
+            normx.append(x[j])
+            normy.append(y[j])
+        z = np.polyfit(normx,normy,degree)
+        f = np.poly1d(z)
+        ypoly = f(normx)
+        ynew = normy/ypoly
+        yfit = ynew
+        fluxstdev = np.std(ynew)
+        mean = np.mean(ynew)
+        forrange = len(ynew)
 
-            for i in range(forrange):   # this replaces anything within 3sigma with the mean
-                if ynew[i] >= (3*fluxstdev) + mean:
-                    ynew[i] = mean
-                    yfit[i] = mean
-                if ynew[i] <= mean - (3*fluxstdev):
-                    yfit[i] = mean
+        for i in range(forrange):   # this replaces anything within 3sigma with the mean
+            if ynew[i] >= (3*fluxstdev) + mean:
+                ynew[i] = mean
+                yfit[i] = mean
+            if ynew[i] <= mean - (3*fluxstdev):
+                yfit[i] = mean
 
-            flux2 = yfit * ypoly
-            z = np.polyfit(normx,flux2,degree)
-            f = np.poly1d(z)
-            ypoly = f(x)
-            ynew = y/ypoly
+        flux2 = yfit * ypoly
+        z = np.polyfit(normx,flux2,degree)
+        f = np.poly1d(z)
+        ypoly = f(x)
+        ynew = y/ypoly
 
-            def gaus(x,a,x0,sigma,offset):
-                return (-a*exp(-(x-x0)**2/(2*sigma**2))) + offset   # where offset is the offset of the spectra
-            center = allwave[(upper-((upper-lower)/2))]
-            gaussy,gaussx = curve_fit(gaus,normx,ynew,p0=[.5,center,5,.7])
-            maximum = max(gaussy)
-            wavenew = None
-            fluxnew = None
-            wavenew = []
-            fluxnew = []
-            xvalue.append(gaussx)
-            yvalue.append(gaussy)
-            maxvalue.append(maximum)
+        def gaus(x,a,x0,sigma,offset):
+            return (-a*exp(-(x-x0)**2/(2*sigma**2))) + offset   # where offset is the offset of the spectra
+        gaussy,gaussx = curve_fit(gaus,normx,ynew,p0=[.5,center,5,.7])
+        print gaussx, gaussy
+        xvalue.append(gaussx)
+        yvalue.append(gaussy)
 
-            fignewton = plt.figure()
-            figothernewton = fignewton.add_subplot(1,1,1)
-            figothernewton.plot(normx, ynew)
-            figothernewton.plot(x,gaus(x,*gaussy))
-            if plotnumber == 1:
-                plt.title('Hydrogen Alpha')
-            elif plotnumber == 2:
-                plt.title('Hydrogen Beta')
-            elif plotnumber == 3:
-                plt.title('Helium I')
+        wavevalue = gaussy[1]   # centroid of the gaussian in angstroms
+        offset = center-wavevalue
 
-            plt.show()
-            # plt.pause(5)
+        fignewton = plt.figure()
+        figothernewton = fignewton.add_subplot(1, 1, 1)
+        figothernewton.plot(normx, ynew)
+        figothernewton.plot(x, gaus(x, *gaussy))
+
+        if plotnumber == 1:
+            plt.title('Hydrogen Alpha')
+        elif plotnumber == 2:
+            plt.title('Hydrogen Beta')
+        elif plotnumber == 3:
+            plt.title('Helium I')
+        plt.show()
+        # plt.pause(5)
 
 
-        return 0
 
 
     ## TOUCH THE COW
@@ -538,22 +535,23 @@ class AdvancedPlotting(PlotFunctionality):
 
        for i in range(length):
            wave1[i] = wave1[i].split('-') # splits the strings
-           wave1[i][1] = wave1[i][1][:-1] # gets rid of the newline character
+           wave1[i][2] = wave1[i][2][:-1] # gets rid of the newline character
            wave1[i] = [float(x) for x in wave1[i]]
+
+       print wave1
        wave2=[0,0]
        if hydrogena is False:
            pass
        elif hydrogena is True:
            wave2=wave1[0]
-           AdvancedPlotting.gaussianfit(filename,wave2[1],wave2[0],1)   # runs the fitting function with wavelengths
+           AdvancedPlotting.gaussianfit(filename,wave2[1],wave2[0], wave2[2], 1)   # runs the fitting function with wavelengths
        if hydrogenb is False:
            pass
        elif hydrogenb is True:
            wave2=wave1[1]
-           AdvancedPlotting.gaussianfit(filename,wave2[1],wave2[0],2)
+           AdvancedPlotting.gaussianfit(filename,wave2[1],wave2[0], wave2[2], 2)
        if heliuma is False:
            pass
        elif heliuma is True:
            wave2=wave1[2]
-           AdvancedPlotting.gaussianfit(filename,wave2[1],wave2[0],3)
-       return 0
+           AdvancedPlotting.gaussianfit(filename,wave2[1],wave2[0], wave2[2], 3)
