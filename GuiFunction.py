@@ -452,7 +452,6 @@ class AdvancedPlotting(PlotFunctionality):
         selection = [lower,upper]
         wavenew = []
         fluxnew = []
-        print len(selection)
         for i in range(len(selection)):
             lower = min(range(len(allwave)), key=lambda k: abs(allwave[k]-selection[0]))
             upper = min(range(len(allwave)), key=lambda k: abs(allwave[k]-selection[1]))
@@ -468,7 +467,7 @@ class AdvancedPlotting(PlotFunctionality):
 
             normx = []
             normy = []
-            degree = 5
+            degree = 4
 
             for j in range(len(x)):   # fills in normx and normy
                 normx.append(x[j])
@@ -499,7 +498,6 @@ class AdvancedPlotting(PlotFunctionality):
                 return (-a*exp(-(x-x0)**2/(2*sigma**2))) + offset   # where offset is the offset of the spectra
             center = allwave[(upper-((upper-lower)/2))]
             gaussy,gaussx = curve_fit(gaus,normx,ynew,p0=[.5,center,5,.7])
-
             maximum = max(gaussy)
             wavenew = None
             fluxnew = None
@@ -511,8 +509,7 @@ class AdvancedPlotting(PlotFunctionality):
 
             fignewton = plt.figure()
             figothernewton = fignewton.add_subplot(1,1,1)
-
-            figothernewton.plot(normx, normy,linewidth=2)
+            figothernewton.plot(normx, ynew)
             figothernewton.plot(x,gaus(x,*gaussy))
             if plotnumber == 1:
                 plt.title('Hydrogen Alpha')
@@ -522,7 +519,7 @@ class AdvancedPlotting(PlotFunctionality):
                 plt.title('Helium I')
 
             plt.show()
-            plt.pause(5)
+            # plt.pause(5)
 
 
         return 0
@@ -531,7 +528,7 @@ class AdvancedPlotting(PlotFunctionality):
     ## TOUCH THE COW
     ## DO IT NOW
 
-    ## Code to pull from text file. ##
+    ## Code to pull from text file and run the gaussian fit thingy. ##
 
     @staticmethod
     def waveselection(filename,hydrogena,hydrogenb,heliuma):

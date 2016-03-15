@@ -542,6 +542,9 @@ class GaussianWindow(QtGui.QMainWindow):
             self.ui.infobox.append('<font color = "red">No Files Found or loaded, did you generate path files?</font>')
     def closer(self):
         self.close()
+        halphause[0] = False
+        hbetause[0] = False
+        heliumause[0] = False
     def plot(self):
         filename = self.ui.lineEdit.text()
         Gauss = AdvancedPlotting.waveselection(filename,halphause[0],hbetause[0],heliumause[0])
