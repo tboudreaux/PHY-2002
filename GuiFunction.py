@@ -36,7 +36,6 @@ class PlotFunctionality(object):
         # flux = np.float64(sp[0].data[2, start-1, :])
         # fitsdata = sp[1].data
         data = sp[0].data
-        print sp[0].data.shape
 
         # determins wherether to show the two things
         if showfit is True:

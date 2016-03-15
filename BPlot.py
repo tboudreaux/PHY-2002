@@ -152,6 +152,7 @@ FullHCV = [None] * numorders[0]
 allplots = [False]
 checkPlots = [True]*62
 velocity = []
+namePass = ['GenericStar']
 
 centroids = [None] * numorders[0]
 for name in flist:
@@ -610,6 +611,17 @@ class OrbitalFitter(QtGui.QMainWindow):
             dates.append(float(element[0]))
             RVs.append(float(element[1]))
             Errs.append(float(element[2]))
+        start = min(dates)
+        print dates
+        dates = [(x - start) for x in dates]
+        print dates
+        dates = [x/period for x in dates]
+        print dates
+        for i in range(len(dates)):
+            print dates[i]
+            if dates[i] > 1:
+                dates[i] -= math.floor(dates[i])
+        print dates
         Plotter.orbplot(dates, RVs, Errs, period)
 
 
@@ -749,8 +761,8 @@ class MultiView(QtGui.QMainWindow):
                 print 'Median', centroidMeadian
                 print 'Standard Deviation', CentroidStDev
                 if centroids[q] > centroidMeadian + 3*CentroidStDev or centroids[q] < centroidMeadian - 3*CentroidStDev:
-                    print 'unchecking box number', q
-                    eval(checkboxes[q]).setChecked(False)
+                    print 'unchecking box number', q+1
+                    eval(checkboxes[q+1]).setChecked(False)
             else:
                 ax[q].text('UNABLE TO PLOT TO THESE PARAMETERS')
 
@@ -783,11 +795,19 @@ class MultiView(QtGui.QMainWindow):
         print len(usevelocity)
         meanVel = sum(usevelocity)/len(usevelocity)
         Velstd = np.std(usevelocity, ddof=1)
-        usetext = 'Mean of Selected HelioCentric velocities: ' + str(meanVel) + '\nStandard Deviation in Selected Velocities: ' + \
-                  str(Velstd)+ '\nObservation on HJD: ' + str(FullHJD)
+        usetext = str(FullHJD) + '\t' + str(meanVel) + '\t' + str(Velstd)
         self.window2 = Editor()
-        self.window2.ui.textEdit.append(usetext)
-        self.window2.ui.FileName.setText('CCorOutput.txt')
+        filename = 'CCorOutput' + namePass[0] + '.csv'
+        try:
+            text = open(filename, 'rb')
+            text = text.read()
+            if text == '\n':
+                self.window2.ui.textEdit.append(usetext)
+            else:
+                self.window2.ui.textEdit.append(text + '\n' + usetext)
+        except IOError:
+            self.window2.ui.textEdit.append(usetext)
+        self.window2.ui.FileName.setText(filename)
         self.window2.show()
 
 # this is the cross correlation GUI
@@ -955,22 +975,22 @@ class CCWindow(QtGui.QMainWindow):
             value = self.ui.ShiftSize.value()
             run = False
             showall = self.ui.multiplotshow.isChecked()
-            try:
-                if showall is False:
-                    Plotter.corplot(degree, templatename, objectname, 1, self.length, self.largerwaves, self.smallerwaves,
-                                    compare[0], value, True, True)
-                    self.ui.infobox.append('<font color ="green">Cross Correlating Orders, use "a" to advance</font><br>')
-                elif showall is True:
-                    self.ui.infobox.append('<font color = "green">Calculating Cross Correlation Coefficients for all '
-                                           'orders</font>')
-                    self.ui.infobox.append('<font color = "green">This can take some time, please be paitient</font>')
-                    Plotter.corplot(degree, templatename, objectname, 1, self.length, self.largerwaves, self.smallerwaves,
-                                    compare[0], value, False, True)
-                run = True
-            except ValueError:
-                self.ui.infobox.append('<font color ="red">Please Make sure that file names are entered in the boxs</font>')
-            except IOError:
-                self.ui.infobox.append('<font color ="red">Please Make sure that file names are spelled correctly</font>')
+            # try:
+            if showall is False:
+                Plotter.corplot(degree, templatename, objectname, 1, self.length, self.largerwaves, self.smallerwaves,
+                                compare[0], value, True, True)
+                self.ui.infobox.append('<font color ="green">Cross Correlating Orders, use "a" to advance</font><br>')
+            elif showall is True:
+                self.ui.infobox.append('<font color = "green">Calculating Cross Correlation Coefficients for all '
+                                       'orders</font>')
+                self.ui.infobox.append('<font color = "green">This can take some time, please be paitient</font>')
+                Plotter.corplot(degree, templatename, objectname, 1, self.length, self.largerwaves, self.smallerwaves,
+                                compare[0], value, False, True)
+            run = True
+            # except ValueError:
+            #     self.ui.infobox.append('<font color ="red">Please Make sure that file names are entered in the boxs</font>')
+            # except IOError:
+            #     self.ui.infobox.append('<font color ="red">Please Make sure that file names are spelled correctly</font>')
             plotparm[4] = degree; plotparm[5] = templatename; plotparm[6] = objectname; plotparm[7] = self.length
             plotparm[8] = self.smallerwaves; plotparm[9] = self.largerwaves; plotparm[10] = value
             jumpcore[0] = True
@@ -997,16 +1017,17 @@ class CCWindow(QtGui.QMainWindow):
 class Plotter(CCWindow):
     @staticmethod
     def orbplot(TimeArray, RVArray, ErrorArray, period):
-        def cosine(x, a, p, phase, offset):
-            return a*np.cos((2.0*3.14159296*x)+phase) + offset
+        def cosine(x, amp, per, phase, offset):
+            return amp * np.sin((((2*3.1)*x)/per) + phase) + offset
         diff = max(RVArray) - min(RVArray)
         plt.plot(TimeArray, RVArray, 'o')
         print 'one'
-        siny, sinx = curve_fit(cosine, TimeArray, RVArray, p0=[float(diff/2), float(period), 0, 0])
+        print diff, period
+        siny, sinx = curve_fit(cosine, TimeArray, RVArray, p0=[float(diff/2), float(period), 0.0, 0.0], maxfev=10000)
         print 'two'
-        siny = [float(q) for q in siny]
-        # clean = np.linspace(min(TimeArray), max(TimeArray), len(cosine(TimeArray, *siny)))
-        plt.plot(TimeArray, cosine(TimeArray, *siny))
+        print siny
+        clean = np.linspace(min(TimeArray), max(TimeArray), 10*len(cosine(TimeArray, *siny)))
+        plt.plot(clean, cosine(clean, *siny))
         plt.show()
 
     # Corplot function that calls the ccofig function from GUI function to extract the required data
@@ -1018,6 +1039,10 @@ class Plotter(CCWindow):
     def corplot(degree, templatename, objectname, order, num, larger, smaller, show, value, doPlot, autofit, xcoord=None,
                 ycoord=None, x1bound=5, x2bound=5):
         global FullHJD
+        fitsobject = str(objectname)
+        sp = fits.open(fitsobject)
+        starname = sp[0].header['OBJECT']
+        namePass[0] = starname
         # Creates a matplotlib figure of given size (will at some point be configuarble in the forcoming settings menu)
         # fig=plt.figure(figsize=(10, 7))
         # Adds the ccorfig subplot
@@ -1041,7 +1066,6 @@ class Plotter(CCWindow):
             index = 0
             maximum = data['correlation'][0]
             center = 0
-            center2 = 0
             if autofit is True:
                 for count in range(len(data['correlation'])):
                     if data['correlation'][count] > maximum:
@@ -1055,7 +1079,7 @@ class Plotter(CCWindow):
                     center = data['offset'][index]
                     maximum = data['correlation'][index]
                 except TypeError:
-                    CCWindow.ui.infobox.append('Unable to refit')
+                    # CCWindow.ui.infobox.append('Unable to refit')
                     for count in range(len(data['correlation'])):
                         if data['correlation'][count] > maximum:
                             maximum = data['correlation'][count]
@@ -1106,7 +1130,7 @@ class Plotter(CCWindow):
                          str(HelioCorrectedData['HCV']))
             ccorfig.set_xlabel('Offset')
             ccorfig.set_ylabel('Correlation Coefficient')
-            ccorfig.set_title('Cross Correlation, order number: ' + str(order))
+            ccorfig.set_title('Cross Correlation, order number: ' + str(order) + ' for star ' + starname)
             plt.legend(loc='best')
             # This allows one to move between orders in C
 
@@ -1197,11 +1221,6 @@ class Plotter(CCWindow):
                 CCWindow.window3.show()
             order = 1
         else:
-            print FullCC
-            print FullHCV
-            print FullGaus
-            print FullHJD
-            print FullO
             order = 1
             CCWindow.window3 = MultiView()
             CCWindow.window3.show()
