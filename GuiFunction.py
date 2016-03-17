@@ -473,7 +473,6 @@ class AdvancedPlotting(PlotFunctionality):
         allflux = []
         xvalue = []
         yvalue = []
-        maxvalue = []
         for run in range(62):   # pulls out wavelength and flux values from the fits file
             data = PlotFunctionality.wfextract(filename,run)
             for ted in range(len(data['wavelength'])):
@@ -483,22 +482,14 @@ class AdvancedPlotting(PlotFunctionality):
         wavenew = []
         fluxnew = []
 
-        for i in range(len(selection)):
-            lower = min(range(len(allwave)), key=lambda k: abs(allwave[k]-selection[0]))
-            upper = min(range(len(allwave)), key=lambda k: abs(allwave[k]-selection[1]))
-
-        for j in range(len(allwave)):   # gives the wavelength between the uper and lower bounds
-            if lower<j<upper:
-                wavenew.append(float(allwave[j]))
-                fluxnew.append(float(allflux[j]))
-
-        x = ar(wavenew)   # ar() turns wavenew and fluxnew into arrays
-        y = ar(fluxnew)
-        n = len(x)
-
         normx = []
         normy = []
         degree = 4
+
+        tom = PlotFunctionality.wfextract(filename,40)
+
+        x = tom['wavelength']
+        y = tom['flux']
 
         for j in range(len(x)):   # fills in normx and normy
             normx.append(x[j])
@@ -525,15 +516,25 @@ class AdvancedPlotting(PlotFunctionality):
         ypoly = f(x)
         ynew = y/ypoly
 
+        for i in range(len(selection)):
+            lower = min(range(len(x)), key=lambda k: abs(x[k]-selection[0]))
+            upper = min(range(len(x)), key=lambda k: abs(x[k]-selection[1]))
+
+        for j in range(len(x)):   # gives the wavelength between the uper and lower bounds
+            if lower<j<upper:
+                wavenew.append(float(normx[j]))
+                fluxnew.append(float(ynew[j]))
+
         def gaus(x,a,x0,sigma,offset):
             return (-a*exp(-(x-x0)**2/(2*sigma**2))) + offset   # where offset is the offset of the spectra
-        gaussy,gaussx = curve_fit(gaus,normx,ynew,p0=[.5,center,5,.7])
-        print gaussx, gaussy
+        gaussy,gaussx = curve_fit(gaus,wavenew,fluxnew,p0=[.5,center,5,.7])
         xvalue.append(gaussx)
         yvalue.append(gaussy)
 
         wavevalue = gaussy[1]   # centroid of the gaussian in angstroms
+        print(wavevalue)
         offset = center-wavevalue
+        print(offset)
 
         fignewton = plt.figure()
         figothernewton = fignewton.add_subplot(1, 1, 1)
