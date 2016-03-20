@@ -21,7 +21,7 @@ except ImportError:
     print >>prerun, 'Some or all GUI files missing, please check to make sure that you donwloaded the entire ' \
                     'package and re-run'
     exit()
-
+import threading
 # importer for pip module
 print >>prerun, 'Checking pip'
 try:
@@ -147,12 +147,13 @@ numorders = [62]
 FullCC = [None] * numorders[0]
 FullO = [None] * numorders[0]
 FullGaus = [None] * numorders[0]
+FullAmp = [None] * numorders[0]
 global FullHJD
 FullHCV = [None] * numorders[0]
 allplots = [False]
 checkPlots = [True]*62
 velocity = []
-namePass = ['GenericStar']
+namePass = ['GenericStar', 'GenericStar']
 
 centroids = [None] * numorders[0]
 for name in flist:
@@ -739,6 +740,11 @@ class MultiView(QtGui.QMainWindow):
         windowheight -= (0.2)*windowheight
         boxheight = windowheight/3
         ax = []
+        print 'Time to use', time.localtime()[3], ':', time.localtime()[4], ':', time.localtime()[5]
+        medvelocity = Mathamatics.median(FullHCV[0:40])
+        print medvelocity
+        velstd = np.std(FullHCV)
+        print velstd
 
         def gaus(x, a, x0, sigma, offset):
             return -a*exp(-(x-x0)**2/(2*sigma**2))
@@ -752,18 +758,15 @@ class MultiView(QtGui.QMainWindow):
         for q in range(numorders[0]):
             self.canvas[q].setParent(eval(widgets[q+1]))
         for q in range(numorders[0]):
-            ax.append(fig[q].add_subplot(111, xlabel='Offset (' + u'\212B' + ')', ylabel='CC', title='order: '+ str(q+1)))
+            ax.append(fig[q].add_subplot(111, xlabel='Offset (' + u'\212B' + ')', ylabel='CC', title='order: ' + str(q+1)))
         for q in range(numorders[0]):
             if FullO is not 'UNABLE TO FIT GUASSIAN TO THIS ORDER':
                 ax[q].plot(FullO[q], FullCC[q])
                 ax[q].plot(FullO[q], gaus(FullO[q], *FullGaus[q]))
-                centroidMeadian = np.median(centroids)
-                CentroidStDev = np.std(centroids)
-                print centroids
-                print 'Median', centroidMeadian
-                print 'Standard Deviation', CentroidStDev
-                if centroids[q] > centroidMeadian + 3*CentroidStDev or centroids[q] < centroidMeadian - 3*CentroidStDev:
+                if FullHCV[q] > medvelocity + 10 or FullHCV[q] < medvelocity - 10:
                     print 'unchecking box number', q+1
+                    eval(checkboxes[q+1]).setChecked(False)
+                elif -3 <= centroids[q] <= 3:
                     eval(checkboxes[q+1]).setChecked(False)
             else:
                 ax[q].text('UNABLE TO PLOT TO THESE PARAMETERS')
@@ -780,6 +783,7 @@ class MultiView(QtGui.QMainWindow):
         checkArray = []
         useCheckArray = dict()
         usevelocity = []
+        useAmp = []
         for q in range(numorders[0]):
             checks[q] = 'self.ui.checkBox_' + str(q+1)
         for q in range(numorders[0]):
@@ -792,25 +796,43 @@ class MultiView(QtGui.QMainWindow):
         for i in range(len(velocity)):
             if checkArray[i] is True:
                 usevelocity.append(FullHCV[i])
+                useAmp.append(FullAmp[i])
             else:
                 pass
-        print len(usevelocity)
-        meanVel = sum(usevelocity)/len(usevelocity)
-        Velstd = np.std(usevelocity, ddof=1)
-        usetext = str(FullHJD) + '\t' + str(meanVel) + '\t' + str(Velstd)
-        self.window2 = Editor()
-        filename = 'CCorOutput' + namePass[0] + '.csv'
-        try:
-            text = open(filename, 'rb')
-            text = text.read()
-            if text == '\n':
-                self.window2.ui.textEdit.append(usetext)
+        if len(usevelocity) != 0:
+            meanVel = sum(usevelocity)/len(usevelocity)
+            if len(usevelocity) > 1:
+                Velstd = np.std(usevelocity, ddof=1)
+                usetext = str(FullHJD) + '\t' + str(meanVel) + '\t' + str(Velstd)
             else:
-                self.window2.ui.textEdit.append(text + '\n' + usetext)
-        except IOError:
-            self.window2.ui.textEdit.append(usetext)
-        self.window2.ui.FileName.setText(filename)
-        self.window2.show()
+                usetext = str(FullHJD) + '\t' + str(meanVel) + '\t' + 'NOTENOUGHDATAPOINTS'
+            self.window2 = Editor()
+            filename = 'CCorOutput' + namePass[0] + '.csv'
+            metricfilename = 'CCorFitMetric' + namePass[0] + '.csv'
+            metricvalue = sum(useAmp)/len(useAmp)
+            metrictext = namePass[0] + '\t' + namePass[1] + '\t' + str(metricvalue) + '\n'
+            try:
+                text = open(filename, 'rb')
+                metric = open(metricfilename, 'a')
+                metric.write(str(metrictext))
+                metric.close()
+                text = text.read()
+                if text == '\n':
+                    self.window2.ui.textEdit.append(usetext)
+                else:
+                    self.window2.ui.textEdit.append(text + '\n' + usetext)
+            except IOError:
+                self.window2.ui.textEdit.append(usetext)
+            self.window2.ui.FileName.setText(filename)
+            self.window2.show()
+        else:
+            print 'NO ORDERS SELECTED'
+            defaultstyle = self.ui.ForceAdvance.styleSheet()
+            start = time.time()
+            while time.time() < start + 0.5:
+                print 'in here'
+                self.ui.ForceAdvance.setStyleSheet('background-color: red; color: black')
+            self.ui.ForceAdvance.setStyleSheet(defaultstyle)
 
 # this is the cross correlation GUI
 
@@ -862,14 +884,13 @@ class CCWindow(QtGui.QMainWindow):
                 self.ui.UserProfile.addItem(dirs[i][:-6])
         self.useuser = False
         self.ui.listpath.setStyleSheet('background-color: grey')
-        self.ui.return_2.clicked.connect(self.closeer)
+        self.ui.Return.clicked.connect(self.closeer)
         self.ui.ynlist.stateChanged.connect(self.uselist)
         self.ui.correlate.clicked.connect(self.ccorplot)
         self.ui.AddProfile.clicked.connect(self.addProfile)
         self.ui.addout.clicked.connect(self.addout)
         self.ui.SaveProfile.clicked.connect(self.setprofile)
         self.ui.useUser.stateChanged.connect(self.user)
-        self.ui.multiplotshow.stateChanged.connect(lambda: allplots.__setitem__(0, not allplots[0]))
         self.window2 = None
         self.window3 = None
 
@@ -977,22 +998,26 @@ class CCWindow(QtGui.QMainWindow):
             value = self.ui.ShiftSize.value()
             run = False
             showall = self.ui.multiplotshow.isChecked()
-            # try:
-            if showall is False:
-                Plotter.corplot(degree, templatename, objectname, 1, self.length, self.largerwaves, self.smallerwaves,
-                                compare[0], value, True, True)
-                self.ui.infobox.append('<font color ="green">Cross Correlating Orders, use "a" to advance</font><br>')
-            elif showall is True:
-                self.ui.infobox.append('<font color = "green">Calculating Cross Correlation Coefficients for all '
-                                       'orders</font>')
-                self.ui.infobox.append('<font color = "green">This can take some time, please be paitient</font>')
-                Plotter.corplot(degree, templatename, objectname, 1, self.length, self.largerwaves, self.smallerwaves,
-                                compare[0], value, False, True)
-            run = True
-            # except ValueError:
-            #     self.ui.infobox.append('<font color ="red">Please Make sure that file names are entered in the boxs</font>')
-            # except IOError:
-            #     self.ui.infobox.append('<font color ="red">Please Make sure that file names are spelled correctly</font>')
+            try:
+                if showall is False:
+                    Plotter.corplot(degree, templatename, objectname, 1, self.length, self.largerwaves, self.smallerwaves,
+                                    compare[0], value, True, True)
+                    self.ui.infobox.append('<font color ="green">Cross Correlating Orders, use "a" to advance</font><br>')
+                elif showall is True:
+
+                    self.ui.infobox.append('<font color = "green">Calculating Cross Correlation Coefficients for all '
+                                           'orders</font>')
+                    self.ui.infobox.append('<font color = "green">This can take some time, please be paitient</font>')
+                    # Plotter.corplot(degree, templatename, objectname, 1, self.length, self.largerwaves, self.smallerwaves,compare[0], value, False, True)
+                    allplots[0] = self.ui.multiplotshow.isChecked()
+                    allplots[0] = not allplots[0]
+                    thread1 = MultiCall(1, degree, templatename, objectname, 1, self.length, self.largerwaves, self.smallerwaves,compare[0], value, False, True)
+                    thread1.start()
+                run = True
+            except ValueError:
+                self.ui.infobox.append('<font color ="red">Please Make sure that file names are entered in the boxs</font>')
+            except IOError:
+                self.ui.infobox.append('<font color ="red">Please Make sure that file names are spelled correctly</font>')
             plotparm[4] = degree; plotparm[5] = templatename; plotparm[6] = objectname; plotparm[7] = self.length
             plotparm[8] = self.smallerwaves; plotparm[9] = self.largerwaves; plotparm[10] = value
             jumpcore[0] = True
@@ -1020,7 +1045,7 @@ class Plotter(CCWindow):
     @staticmethod
     def orbplot(TimeArray, RVArray, ErrorArray, period):
         def cosine(x, amp, per, phase, offset):
-            return amp * np.sin((((2*3.1)*x)/per) + phase) + offset
+            return amp * np.sin((((2*3)*x)/per) + phase) + offset
         diff = max(RVArray) - min(RVArray)
         plt.plot(TimeArray, RVArray, 'o')
         print 'one'
@@ -1042,8 +1067,10 @@ class Plotter(CCWindow):
                 ycoord=None, x1bound=5, x2bound=5):
         global FullHJD
         fitsobject = str(objectname)
-        sp = fits.open(fitsobject)
-        starname = sp[0].header['OBJECT']
+        objectfits = fits.open(fitsobject)
+        starname = objectfits[0].header['OBJECT']
+        templatefits = fits.open(str(templatename))
+        namePass[1] = templatefits[0].header['OBJECT']
         namePass[0] = starname
         # Creates a matplotlib figure of given size (will at some point be configuarble in the forcoming settings menu)
         # fig=plt.figure(figsize=(10, 7))
@@ -1093,6 +1120,7 @@ class Plotter(CCWindow):
             FitY = data['correlation'][index-3:index+3]
             try:
                 gaussy, gaussx = curve_fit(data['fit'], FitX, FitY, p0=[maximum, center, 5, .05])
+                print gaussy
                 # print 'Fit SUCSSES'
             except (RuntimeError, TypeError):
                 maximumfalback = 0
@@ -1109,6 +1137,7 @@ class Plotter(CCWindow):
                 try:
                     gaussy, gaussx = curve_fit(data['fit'], FitXFallback, FitYFallback, p0=[maximumfalback,
                                                                                             centerfallback, 5, 0.05])
+                    print gaussy
                 except RuntimeError:
                     print 'Cross Correlation Failed'
                     Plotter.corplot(degree, templatename, objectname, order + 1, num, larger, smaller, compare[0],
@@ -1118,14 +1147,12 @@ class Plotter(CCWindow):
             UseVel = (tempvelocity/data['meantemp'])*c
             HelioCorrectedData = AdvancedPlotting.coordconvert(objectname, UseVel)
             FullHJD = HelioCorrectedData['HJD']
-            print order-1
-            print FullCC[order-1]
             FullHCV[order-1] = HelioCorrectedData['HCV']
             FullCC[order-1] = data['correlation']
             FullO[order-1] = data['offset']
             FullGaus[order-1] = gaussy
             centroids[order-1] = gaussy[1]
-            print HelioCorrectedData['HCV']
+            FullAmp[order-1] = gaussy[0]
             ccorfig.plot(data['offset'], data['correlation'], label='X-Cor Plot | Relative Velocity: ' + str(UseVel))
             ccorfig.plot(clean, data['fit'](clean, *gaussy),
                          label='Gaussian Fit | x at max: ' + str(gaussy[1]) + '\n Heliocentric Velocity: ' +
@@ -1183,6 +1210,7 @@ class Plotter(CCWindow):
             fig.canvas.mpl_connect('key_press_event', plotcontrol)
             plt.show()
         elif doPlot is False:
+            print 'Time to populate', time.localtime()[3], ':', time.localtime()[4], ':', time.localtime()[5]
             del velocity[:]
             for i in range(numorders[0]):
                 data = AdvancedPlotting.ccor(objectname, templatename, degree, i, num, larger, smaller, value)
@@ -1212,6 +1240,7 @@ class Plotter(CCWindow):
                 FullCC[i] = data['correlation']
                 FullO[i] = data['offset']
                 FullGaus[i] = gaussy
+                FullAmp[i] = gaussy[0]
                 tempvelocity = gaussy[1] * data['dispersion']
                 UseVel = (tempvelocity/data['meantemp'])*c
                 HelioCorrectedData = AdvancedPlotting.coordconvert(objectname, UseVel)
@@ -1219,6 +1248,7 @@ class Plotter(CCWindow):
                 FullHCV[i] = HelioCorrectedData['HCV']
                 centroids[i] = gaussy[1]
             if allplots[0] is False:
+                print 'Time to second call', time.localtime()[3], ':', time.localtime()[4], ':', time.localtime()[5]
                 CCWindow.window3 = MultiView()
                 CCWindow.window3.show()
             order = 1
@@ -1327,6 +1357,25 @@ class Plotter(CCWindow):
         fig.canvas.mpl_connect('key_press_event', plotcontrol)
 
 
+class MultiCall(threading.Thread):
+    def __init__(self, threadid, degree, templatename, objectname, order, num, larger, smaller, show, value, doPlot, autofit):
+        threading.Thread.__init__(self)
+        self.theadid = threadid
+        self.degree = degree
+        self.templatename = templatename
+        self.objectname = objectname
+        self.order = order
+        self.num = num
+        self.larger = larger
+        self.smaller = smaller
+        self.show =show
+        self.value = value
+        self.doPlot = doPlot
+        self.autofit = autofit
+
+    def run(self):
+        print 'Time to main call', time.localtime()[3], ':', time.localtime()[4], ':', time.localtime()[5]
+        Plotter.corplot(self.degree, self.templatename, self.objectname, self.order, self.num, self.larger, self.smaller, self.show, self.value, self.doPlot, self.autofit)
 # Bascically the most important section of code in the whole code because it makes everything start, its also the
 # only section of code in this entire program I don't really understand (I got this section from a tutorial)
 # scratch that I get it now (this line was written like 2 weeks after the pervious two)

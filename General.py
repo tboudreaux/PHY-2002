@@ -2,6 +2,7 @@ import platform
 import matplotlib as mpl
 import imp
 import math
+import numpy as np
 
 
 class PreChecks(object):
@@ -58,3 +59,18 @@ class Mathamatics(object):
     def mag3D(vector):
         mag = math.sqrt(vector[0]**2 + vector[1]**2 + vector[2]**2)
         return mag
+
+    @staticmethod
+    def median(listi):
+        return np.median(np.array(listi))
+
+    @staticmethod
+    def stdev(array):
+        total = 0
+        mean = sum(array)/len(array)
+        for i in range(len(array)):
+            diff = array[i] - mean
+            diff *= diff
+            total += diff
+        total /= (len(array)-1)
+        return math.sqrt(total)

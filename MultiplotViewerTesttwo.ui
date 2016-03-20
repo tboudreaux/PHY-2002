@@ -886,14 +886,30 @@
          </widget>
         </widget>
        </item>
+       <item row="1" column="0">
+        <widget class="QWidget" name="widget" native="true">
+         <layout class="QGridLayout" name="gridLayout_10">
+          <item row="0" column="0">
+           <widget class="QPushButton" name="Advance">
+            <property name="text">
+             <string>Advance</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QPushButton" name="ForceAdvance">
+            <property name="toolTip">
+             <string>Will Not fit any data but will rather enter the string 'UNABLE TO FIT' in the output file</string>
+            </property>
+            <property name="text">
+             <string>Force Advance</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
       </layout>
-     </widget>
-    </item>
-    <item row="1" column="1">
-     <widget class="QPushButton" name="Advance">
-      <property name="text">
-       <string>Advance</string>
-      </property>
      </widget>
     </item>
    </layout>
@@ -904,7 +920,7 @@
      <x>0</x>
      <y>0</y>
      <width>1155</width>
-     <height>23</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuVersuib_IObe">
@@ -912,8 +928,21 @@
      <string>File</string>
     </property>
     <addaction name="actionQuit"/>
+    <addaction name="actionSave_all_plots"/>
+   </widget>
+   <widget class="QMenu" name="menuEdit">
+    <property name="title">
+     <string>Edit</string>
+    </property>
+   </widget>
+   <widget class="QMenu" name="menuWindow">
+    <property name="title">
+     <string>Window</string>
+    </property>
    </widget>
    <addaction name="menuVersuib_IObe"/>
+   <addaction name="menuEdit"/>
+   <addaction name="menuWindow"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <attribute name="toolBarArea">
@@ -927,6 +956,11 @@
   <action name="actionQuit">
    <property name="text">
     <string>Quit</string>
+   </property>
+  </action>
+  <action name="actionSave_all_plots">
+   <property name="text">
+    <string>Save all plots</string>
    </property>
   </action>
  </widget>

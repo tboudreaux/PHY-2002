@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>625</height>
+    <width>904</width>
+    <height>707</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,13 +15,6 @@
   </property>
   <widget class="QWidget" name="CrossCore_2">
    <layout class="QGridLayout" name="gridLayout">
-    <item row="5" column="0">
-     <widget class="QPushButton" name="return_2">
-      <property name="text">
-       <string>Return</string>
-      </property>
-     </widget>
-    </item>
     <item row="0" column="0">
      <widget class="QTabWidget" name="tabWidget">
       <property name="tabShape">
@@ -42,73 +35,6 @@
           </property>
          </widget>
         </item>
-        <item row="9" column="5" colspan="2">
-         <widget class="QPushButton" name="correlate">
-          <property name="text">
-           <string>Correlate</string>
-          </property>
-         </widget>
-        </item>
-        <item row="10" column="0" colspan="7">
-         <widget class="QTextBrowser" name="infobox"/>
-        </item>
-        <item row="0" column="0" rowspan="2">
-         <widget class="QCheckBox" name="ynlist">
-          <property name="text">
-           <string>Use List?</string>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="0" colspan="2">
-         <widget class="QLabel" name="label_7">
-          <property name="text">
-           <string>Path To Template file</string>
-          </property>
-         </widget>
-        </item>
-        <item row="5" column="0" colspan="2">
-         <widget class="QLabel" name="label_8">
-          <property name="text">
-           <string>Path To Target file</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="4" rowspan="6" colspan="3">
-         <widget class="QListWidget" name="FileBox"/>
-        </item>
-        <item row="9" column="3">
-         <widget class="QSpinBox" name="fitdegree">
-          <property name="minimum">
-           <number>1</number>
-          </property>
-          <property name="value">
-           <number>4</number>
-          </property>
-         </widget>
-        </item>
-        <item row="6" column="0" rowspan="2" colspan="4">
-         <widget class="QLineEdit" name="targetfilename"/>
-        </item>
-        <item row="4" column="0" colspan="4">
-         <widget class="QLineEdit" name="tempfilename"/>
-        </item>
-        <item row="2" column="0" colspan="4">
-         <widget class="QLineEdit" name="listpath"/>
-        </item>
-        <item row="9" column="4">
-         <widget class="QCheckBox" name="multiplotshow">
-          <property name="text">
-           <string>Show All Plots</string>
-          </property>
-         </widget>
-        </item>
-        <item row="9" column="2">
-         <widget class="QLabel" name="label_6">
-          <property name="text">
-           <string>Degree-&gt;</string>
-          </property>
-         </widget>
-        </item>
         <item row="9" column="1">
          <widget class="QSpinBox" name="ShiftSize">
           <property name="minimum">
@@ -125,12 +51,79 @@
           </property>
          </widget>
         </item>
+        <item row="5" column="0" colspan="2">
+         <widget class="QLabel" name="label_8">
+          <property name="text">
+           <string>Path To Target file</string>
+          </property>
+         </widget>
+        </item>
         <item row="0" column="4">
          <widget class="QLabel" name="label_11">
           <property name="text">
            <string>Files</string>
           </property>
          </widget>
+        </item>
+        <item row="9" column="2">
+         <widget class="QLabel" name="label_6">
+          <property name="text">
+           <string>Degree-&gt;</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="0" colspan="2">
+         <widget class="QLabel" name="label_7">
+          <property name="text">
+           <string>Path To Template file</string>
+          </property>
+         </widget>
+        </item>
+        <item row="9" column="5" colspan="2">
+         <widget class="QPushButton" name="correlate">
+          <property name="text">
+           <string>Correlate</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="4" rowspan="6" colspan="3">
+         <widget class="QListWidget" name="FileBox"/>
+        </item>
+        <item row="2" column="0" colspan="4">
+         <widget class="QLineEdit" name="listpath"/>
+        </item>
+        <item row="9" column="4">
+         <widget class="QCheckBox" name="multiplotshow">
+          <property name="text">
+           <string>Show All Plots</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="0" rowspan="2">
+         <widget class="QCheckBox" name="ynlist">
+          <property name="text">
+           <string>Use List?</string>
+          </property>
+         </widget>
+        </item>
+        <item row="9" column="3">
+         <widget class="QSpinBox" name="fitdegree">
+          <property name="minimum">
+           <number>1</number>
+          </property>
+          <property name="value">
+           <number>4</number>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="0" colspan="4">
+         <widget class="QLineEdit" name="tempfilename"/>
+        </item>
+        <item row="6" column="0" rowspan="2" colspan="4">
+         <widget class="QLineEdit" name="targetfilename"/>
+        </item>
+        <item row="10" column="0" colspan="7">
+         <widget class="QTextBrowser" name="infobox"/>
         </item>
        </layout>
       </widget>
@@ -273,6 +266,26 @@ Lower</string>
       </widget>
      </widget>
     </item>
+    <item row="1" column="0">
+     <widget class="QWidget" name="widget" native="true">
+      <layout class="QGridLayout" name="gridLayout_4">
+       <item row="0" column="0">
+        <widget class="QPushButton" name="Return">
+         <property name="text">
+          <string>Return</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QPushButton" name="Quit">
+         <property name="text">
+          <string>Quit</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
    </layout>
   </widget>
   <widget class="QMenuBar" name="menubar">
@@ -280,10 +293,33 @@ Lower</string>
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>800</width>
-     <height>23</height>
+     <width>904</width>
+     <height>22</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionQuit"/>
+    <addaction name="actionQuit_Program"/>
+   </widget>
+   <widget class="QMenu" name="menuEdit">
+    <property name="title">
+     <string>Edit</string>
+    </property>
+    <addaction name="actionPrint"/>
+    <addaction name="actionSave"/>
+   </widget>
+   <widget class="QMenu" name="menuWindpw">
+    <property name="title">
+     <string>Windpw</string>
+    </property>
+    <addaction name="actionNope"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuEdit"/>
+   <addaction name="menuWindpw"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <widget class="QToolBar" name="toolBar">
@@ -297,6 +333,31 @@ Lower</string>
     <bool>false</bool>
    </attribute>
   </widget>
+  <action name="actionQuit">
+   <property name="text">
+    <string>Return</string>
+   </property>
+  </action>
+  <action name="actionQuit_Program">
+   <property name="text">
+    <string>Quit Program</string>
+   </property>
+  </action>
+  <action name="actionPrint">
+   <property name="text">
+    <string>Print</string>
+   </property>
+  </action>
+  <action name="actionSave">
+   <property name="text">
+    <string>Save</string>
+   </property>
+  </action>
+  <action name="actionNope">
+   <property name="text">
+    <string>Nope</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>
