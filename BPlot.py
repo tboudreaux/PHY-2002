@@ -742,9 +742,9 @@ class MultiView(QtGui.QMainWindow):
         ax = []
         print 'Time to use', time.localtime()[3], ':', time.localtime()[4], ':', time.localtime()[5]
         medvelocity = Mathamatics.median(FullHCV[0:40])
-        print medvelocity
+        print 'median velocity:', medvelocity
         velstd = np.std(FullHCV)
-        print velstd
+        print 'standard deviation in velocity:', velstd
 
         def gaus(x, a, x0, sigma, offset):
             return -a*exp(-(x-x0)**2/(2*sigma**2))
@@ -763,8 +763,9 @@ class MultiView(QtGui.QMainWindow):
             if FullO is not 'UNABLE TO FIT GUASSIAN TO THIS ORDER':
                 ax[q].plot(FullO[q], FullCC[q])
                 ax[q].plot(FullO[q], gaus(FullO[q], *FullGaus[q]))
-                if FullHCV[q] > medvelocity + 10 or FullHCV[q] < medvelocity - 10:
-                    print 'unchecking box number', q+1
+                print 'FullHCV[q]', FullHCV[q]
+                if FullHCV[q] > medvelocity + 30 or FullHCV[q] < medvelocity - 30:
+                    # print 'unchecking box number', q+1
                     eval(checkboxes[q+1]).setChecked(False)
                 elif -3 <= centroids[q] <= 3:
                     eval(checkboxes[q+1]).setChecked(False)
@@ -772,11 +773,34 @@ class MultiView(QtGui.QMainWindow):
                 ax[q].text('UNABLE TO PLOT TO THESE PARAMETERS')
 
         self.ui.Advance.clicked.connect(self.go)
+        self.ui.ForceAdvance.clicked.connect(self.forcego)
         self.window2 = None
 
     @staticmethod
     def flop(num):
         checkPlots[num] = not checkPlots[num]
+
+    def forcego(self):
+        self.window2 = Editor()
+        filename = 'CCorOutput' + namePass[0] + '.csv'
+        metricfilename = 'CCorFitMetric' + namePass[0] + '.csv'
+        metrictext = namePass[0] + '\t' + namePass[1] + '\t' + '0' + '\n'
+        usetext = str(FullHJD) + '\t' + 'NAN' + '\t' + 'NAN'
+        try:
+            text = open(filename, 'rb')
+            metric = open(metricfilename, 'a')
+            metric.write(str(metrictext))
+            metric.close()
+            text = text.read()
+            if text == '\n':
+                self.window2.ui.textEdit.append(usetext)
+            else:
+                self.window2.ui.textEdit.append(text + '\n' + usetext)
+        except IOError:
+            self.window2.ui.textEdit.append(usetext)
+        self.window2.ui.FileName.setText(filename)
+        self.window2.show()
+        self.close()
 
     def go(self):
         checks = dict()
@@ -784,6 +808,8 @@ class MultiView(QtGui.QMainWindow):
         useCheckArray = dict()
         usevelocity = []
         useAmp = []
+        AmpStd = np.std(FullAmp)
+        velStd = np.std(FullHCV)
         for q in range(numorders[0]):
             checks[q] = 'self.ui.checkBox_' + str(q+1)
         for q in range(numorders[0]):
@@ -804,12 +830,13 @@ class MultiView(QtGui.QMainWindow):
             if len(usevelocity) > 1:
                 Velstd = np.std(usevelocity, ddof=1)
                 usetext = str(FullHJD) + '\t' + str(meanVel) + '\t' + str(Velstd)
+                metricvalue = Velstd
             else:
-                usetext = str(FullHJD) + '\t' + str(meanVel) + '\t' + 'NOTENOUGHDATAPOINTS'
+                usetext = str(FullHJD) + '\t' + str(meanVel) + '\t' + 'NAN'
+                metricvalue = velStd
             self.window2 = Editor()
             filename = 'CCorOutput' + namePass[0] + '.csv'
             metricfilename = 'CCorFitMetric' + namePass[0] + '.csv'
-            metricvalue = sum(useAmp)/len(useAmp)
             metrictext = namePass[0] + '\t' + namePass[1] + '\t' + str(metricvalue) + '\n'
             try:
                 text = open(filename, 'rb')
@@ -825,14 +852,9 @@ class MultiView(QtGui.QMainWindow):
                 self.window2.ui.textEdit.append(usetext)
             self.window2.ui.FileName.setText(filename)
             self.window2.show()
+            self.close()
         else:
             print 'NO ORDERS SELECTED'
-            defaultstyle = self.ui.ForceAdvance.styleSheet()
-            start = time.time()
-            while time.time() < start + 0.5:
-                print 'in here'
-                self.ui.ForceAdvance.setStyleSheet('background-color: red; color: black')
-            self.ui.ForceAdvance.setStyleSheet(defaultstyle)
 
 # this is the cross correlation GUI
 
