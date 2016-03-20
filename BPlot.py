@@ -998,6 +998,8 @@ class CCWindow(QtGui.QMainWindow):
             value = self.ui.ShiftSize.value()
             run = False
             showall = self.ui.multiplotshow.isChecked()
+            allplots[0] = self.ui.multiplotshow.isChecked()
+            allplots[0] = not allplots[0]
             try:
                 if showall is False:
                     Plotter.corplot(degree, templatename, objectname, 1, self.length, self.largerwaves, self.smallerwaves,
@@ -1008,11 +1010,9 @@ class CCWindow(QtGui.QMainWindow):
                     self.ui.infobox.append('<font color = "green">Calculating Cross Correlation Coefficients for all '
                                            'orders</font>')
                     self.ui.infobox.append('<font color = "green">This can take some time, please be paitient</font>')
-                    # Plotter.corplot(degree, templatename, objectname, 1, self.length, self.largerwaves, self.smallerwaves,compare[0], value, False, True)
-                    allplots[0] = self.ui.multiplotshow.isChecked()
-                    allplots[0] = not allplots[0]
-                    thread1 = MultiCall(1, degree, templatename, objectname, 1, self.length, self.largerwaves, self.smallerwaves,compare[0], value, False, True)
-                    thread1.start()
+                    Plotter.corplot(degree, templatename, objectname, 1, self.length, self.largerwaves, self.smallerwaves,compare[0], value, False, True)
+                    # thread1 = MultiCall(1, degree, templatename, objectname, 1, self.length, self.largerwaves, self.smallerwaves,compare[0], value, False, True)
+                    # thread1.start()
                 run = True
             except ValueError:
                 self.ui.infobox.append('<font color ="red">Please Make sure that file names are entered in the boxs</font>')
