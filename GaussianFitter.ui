@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>GaussianFitter</class>
- <widget class="QMainWindow" name="GaussianFitter">
+ <class>mainWindow</class>
+ <widget class="QMainWindow" name="mainWindow">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -77,66 +77,24 @@
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
+  <property name="toolTip">
+   <string/>
+  </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QCheckBox" name="HydrogenA">
-    <property name="geometry">
-     <rect>
-      <x>40</x>
-      <y>80</y>
-      <width>141</width>
-      <height>22</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Hydrogen Alpha</string>
-    </property>
-    <property name="checked">
-     <bool>true</bool>
-    </property>
-   </widget>
-   <widget class="QCheckBox" name="HydrogenB">
-    <property name="geometry">
-     <rect>
-      <x>40</x>
-      <y>100</y>
-      <width>141</width>
-      <height>22</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Hydrogen Beta</string>
-    </property>
-    <property name="checked">
-     <bool>true</bool>
-    </property>
-   </widget>
-   <widget class="QCheckBox" name="HeliumA">
-    <property name="geometry">
-     <rect>
-      <x>40</x>
-      <y>120</y>
-      <width>141</width>
-      <height>22</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Helium I</string>
-    </property>
-    <property name="checked">
-     <bool>true</bool>
-    </property>
-   </widget>
    <widget class="QPushButton" name="pushButton">
     <property name="geometry">
      <rect>
-      <x>40</x>
+      <x>10</x>
       <y>180</y>
       <width>100</width>
-      <height>29</height>
+      <height>31</height>
      </rect>
     </property>
+    <property name="toolTip">
+     <string>Fits and plots a single line</string>
+    </property>
     <property name="text">
-     <string>Fit!</string>
+     <string>Fit and plot</string>
     </property>
    </widget>
    <widget class="QLabel" name="label">
@@ -210,6 +168,124 @@ would like to analyze</string>
      </rect>
     </property>
    </widget>
+   <widget class="QRadioButton" name="HydrogenA">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>70</y>
+      <width>131</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="toolTip">
+     <string>Fits the Hydrogen Alpha line</string>
+    </property>
+    <property name="text">
+     <string>Hydrogen Alpha</string>
+    </property>
+   </widget>
+   <widget class="QRadioButton" name="HydrogenB">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>90</y>
+      <width>121</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="toolTip">
+     <string>Fits the Hydrogen Beta line</string>
+    </property>
+    <property name="text">
+     <string>Hydrogen Beta</string>
+    </property>
+   </widget>
+   <widget class="QRadioButton" name="HeliumA">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>110</y>
+      <width>97</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="toolTip">
+     <string>Fits Helium line</string>
+    </property>
+    <property name="text">
+     <string>Helium I</string>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="comboBox">
+    <property name="geometry">
+     <rect>
+      <x>80</x>
+      <y>110</y>
+      <width>104</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="toolTip">
+     <string>Choose Helium line</string>
+    </property>
+    <item>
+     <property name="text">
+      <string>5875.621</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>4685.9179</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>4921.931</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>5015.6779</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Fit all (will not return plot)</string>
+     </property>
+    </item>
+   </widget>
+   <widget class="QRadioButton" name="aurora">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>130</y>
+      <width>97</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="toolTip">
+     <string>Checks the Aurora line</string>
+    </property>
+    <property name="text">
+     <string>Aurora</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="fitall_2">
+    <property name="geometry">
+     <rect>
+      <x>110</x>
+      <y>180</y>
+      <width>161</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="toolTip">
+     <string>Fits all lines and returns an averaged velocity</string>
+    </property>
+    <property name="text">
+     <string>Fit all</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
@@ -217,9 +293,27 @@ would like to analyze</string>
      <x>0</x>
      <y>0</y>
      <width>659</width>
-     <height>23</height>
+     <height>22</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+   </widget>
+   <widget class="QMenu" name="menuEdit">
+    <property name="title">
+     <string>Edit</string>
+    </property>
+   </widget>
+   <widget class="QMenu" name="menuWindow">
+    <property name="title">
+     <string>Window</string>
+    </property>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuEdit"/>
+   <addaction name="menuWindow"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
