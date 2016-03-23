@@ -17,7 +17,7 @@ import astropy.constants as const
 import Astrolib
 
 run = [False]
-velocities = [None] * 7
+
 
 #  opens a log file, I don't always print to it but its nice to have handy when I want to print a lot of output
 log = open('log.log', 'w')
@@ -472,7 +472,7 @@ class AdvancedPlotting(PlotFunctionality):
 
     # fits and plots a gaussian function to certain spectral lines
     @staticmethod
-    def gaussianfit(filename, upper, lower, center,orderindex, plotnumber):
+    def gaussianfit(filename, upper, lower, center, orderindex, plotnumber):
         wavenew = []
         fluxnew = []
         selection = [lower,upper]
@@ -503,34 +503,45 @@ class AdvancedPlotting(PlotFunctionality):
             return (-a*exp(-(x-x0)**2/(2*sigma**2))) + offset   # where offset is the offset of the spectra
         try:
             gaussy,gaussx = curve_fit(gaus,wavenew,fluxnew,p0=[.5,center,5,1],maxfev=6000)
+
+            wavevalue = gaussy[1]   # centroid of the gaussian in angstroms
+            offset = center-wavevalue
+            c = 299792458   # speed of light in a vacuum
+            vobs = (c*offset)/center   # finds the velocity of the observed object
+            error =np.sqrt(gaussx[0,0])
+
+            fignewton = plt.figure()
+            figothernewton = fignewton.add_subplot(1, 1, 1)
+            figothernewton.plot(wavenew, fluxnew)
+            figothernewton.plot(wavenew, gaus(wavenew, *gaussy))
+
+            if plotnumber == 1:
+                plt.title('Hydrogen Alpha')
+            elif plotnumber == 2:
+                plt.title('Hydrogen Beta')
+            elif plotnumber == 3:
+                plt.title('Helium I')
+            elif plotnumber == 4:
+                plt.title('Oxygen in Aurora')
+            plt.show()
+
+            def plotcontrol(event):
+                keydown = event.key
+                if keydown == 'f' or keydown == 'F':
+                    thewoz = event.xdata
+                    AdvancedPlotting.gaussianfit(filename, upper, lower, thewoz, orderindex, 1)
+            fignewton.canvas.mpl_connect('key_press_event', plotcontrol)
+
+            correctedv = AdvancedPlotting.coordconvert(filename,vobs)
+            date = correctedv['HJD']
+            themostcorrected = correctedv['HCV']
         except RuntimeError:
             print 'The fitting tool has run and couldn''t find a fit. Your star might not be bright enough for this method.'
+            date = None
+            themostcorrected = None
+            error = None
 
-        wavevalue = gaussy[1]   # centroid of the gaussian in angstroms
-        offset = center-wavevalue
-        c = 299792458   # speed of light in a vacuum
-        vobs = (c*offset)/center   # finds the velocity of the observed object
-        print vobs,'m/s'
-
-        fignewton = plt.figure()
-        figothernewton = fignewton.add_subplot(1, 1, 1)
-        figothernewton.plot(wavenew, fluxnew)
-        figothernewton.plot(wavenew, gaus(wavenew, *gaussy))
-
-        if plotnumber == 1:
-            plt.title('Hydrogen Alpha')
-        elif plotnumber == 2:
-            plt.title('Hydrogen Beta')
-        elif plotnumber == 3:
-            plt.title('Helium I')
-        plt.show()
-
-        def plotcontrol(event):
-            keydown = event.key
-            if keydown == 'f' or keydown == 'F':
-                thewoz = event.xdata
-                AdvancedPlotting.gaussianfit(filename, upper, lower, thewoz, orderindex, 1)
-        fignewton.canvas.mpl_connect('key_press_event', plotcontrol)
+        return {'HJD':date, 'actualv':themostcorrected, 'sigma':error}
 
 
 
@@ -541,10 +552,12 @@ class AdvancedPlotting(PlotFunctionality):
     ## Code to pull from text file and run the gaussian fit thingy. ##
 
     @staticmethod
-    def waveselection(filename,hydrogena,hydrogenb,heliuma):
+    def waveselection(filename,hydrogena,hydrogenb,helium75,helium85,helium21,helium15,AUR):
        wave1 = open('lines.sec','rb') # opens file to read line wavelengths
        wave1 = wave1.readlines()
        length = len(wave1)
+       velocities = [None] * 7
+       globalerror = [None] * 7
 
        for i in range(length):
            wave1[i] = wave1[i].split('-') # splits the strings
@@ -557,14 +570,81 @@ class AdvancedPlotting(PlotFunctionality):
            pass
        elif hydrogena is True:
            wave2=wave1[0]
-           AdvancedPlotting.gaussianfit(filename,wave2[1],wave2[0], wave2[2], wave2[3], 1)   # runs the fitting function with wavelengths
+           lamp = AdvancedPlotting.gaussianfit(filename,wave2[1],wave2[0], wave2[2], wave2[3], 1)   # runs the fitting function with wavelengths
+           velocities[0] = lamp['actualv']
+           globalerror[0] = lamp['sigma']
        if hydrogenb is False:
            pass
        elif hydrogenb is True:
            wave2=wave1[1]
-           AdvancedPlotting.gaussianfit(filename,wave2[1],wave2[0], wave2[2], wave2[3], 2)
-       if heliuma is False:
+           lamp = AdvancedPlotting.gaussianfit(filename,wave2[1],wave2[0], wave2[2], wave2[3], 2)
+           velocities[1] = lamp['actualv']
+           globalerror[1] = lamp['sigma']
+       if helium75 is False:
            pass
-       elif heliuma is True:
+       elif helium75 is True:
            wave2=wave1[2]
-           AdvancedPlotting.gaussianfit(filename,wave2[1],wave2[0], wave2[2], wave2[3], 3)
+           lamp = AdvancedPlotting.gaussianfit(filename,wave2[1],wave2[0], wave2[2], wave2[3], 3)
+           velocities[2] = lamp['actualv']
+           globalerror[2] = lamp['sigma']
+       if helium85 is False:
+           pass
+       elif helium85 is True:
+           wave2=wave1[3]
+           lamp = AdvancedPlotting.gaussianfit(filename,wave2[1],wave2[0], wave2[2], wave2[3], 3)
+           velocities[3] = lamp['actualv']
+           globalerror[3] = lamp['sigma']
+       if helium21 is False:
+           pass
+       elif helium21 is True:
+           wave2=wave1[4]
+           lamp = AdvancedPlotting.gaussianfit(filename,wave2[1],wave2[0], wave2[2], wave2[3], 3)
+           velocities[4] = lamp['actualv']
+           globalerror[4] = lamp['sigma']
+       if helium15 is False:
+           pass
+       elif helium15 is True:
+           wave2=wave1[5]
+           lamp = AdvancedPlotting.gaussianfit(filename,wave2[1],wave2[0], wave2[2], wave2[3], 3)
+           velocities[5] = lamp['actualv']
+           globalerror[5] = lamp['sigma']
+       if AUR is False:
+           pass
+       elif AUR is True:
+           wave2=wave1[6]
+           lamp = AdvancedPlotting.gaussianfit(filename,wave2[1],wave2[0], wave2[2], wave2[3], 4)
+           velocities[6] = lamp['actualv']
+           globalerror[6] = lamp['sigma']
+
+       averagev = 0
+       count = 0
+       for j in range(len(velocities)):
+           if velocities[j] is not None:
+               averagev = averagev+velocities[j]
+               count = count + 1
+           else:
+               pass
+
+       averagev = averagev/count
+       averagev /= 1000
+       print averagev
+
+       sigmaarray = []
+       for j in range(len(globalerror)):
+           if globalerror[j] is not None:
+               sigmaarray.append(globalerror[j]**2)
+           else:
+               pass
+
+       totalerror = (1/3)*np.sqrt(sum(sigmaarray))
+
+       name = str(filename)
+       fitzgerald = fits.open(name)
+       hdu = fitzgerald[0].header
+       objectname = (hdu['OBJECT'])
+
+       string = 'GaussianFitOutput' + objectname + '.csv'
+       hjdstr = str(lamp['HJD']) + '\t' + str(averagev) + '\t' + str(totalerror)
+       callitwhateveryouwant = open(string,'a')
+       callitwhateveryouwant.write(hjdstr)
+       callitwhateveryouwant.close()
