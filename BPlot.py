@@ -1,7 +1,7 @@
 # Spectral Analysis Utility (SAUL)
-# Paddy Clancy, Thomas Boudreaux, and Dr. Brad N. Barlow
+# Thomas Boudreaux, Paddy Clancy, and Dr. Brad N. Barlow
 # Developed at High Point University
-# Under GNU Liscense
+# Under Lesser General Public Liscense (LGPL)
 from General import *
 prerun = open('prerun.log','w')
 #  GUI file import statements
@@ -608,6 +608,7 @@ class OrbitalFitter(QtGui.QMainWindow):
         dates = []
         RVs = []
         Errs = []
+        print pathfile
         for element in pathfile:
             dates.append(float(element[0]))
             RVs.append(float(element[1]))
@@ -659,6 +660,7 @@ class GaussianWindow(QtGui.QMainWindow):
         halphause[0] = False
         hbetause[0] = False
         heliumause[0] = False
+
     def plot(self):
         filename = self.ui.lineEdit.text()
         Gauss = AdvancedPlotting.waveselection(filename,halphause[0],hbetause[0],heliumause[0])
@@ -1077,6 +1079,9 @@ class Plotter(CCWindow):
         print siny
         clean = np.linspace(min(TimeArray), max(TimeArray), 10*len(cosine(TimeArray, *siny)))
         plt.plot(clean, cosine(clean, *siny))
+        plt.xlabel('Period (Phase)')
+        plt.ylabel('RV (Km*s^-1)')
+        plt.errorbar(TimeArray, RVArray, yerr=ErrorArray, fmt='o')
         plt.show()
 
     # Corplot function that calls the ccofig function from GUI function to extract the required data
