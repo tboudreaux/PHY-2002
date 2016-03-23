@@ -82,9 +82,12 @@ class PlotFunctionality(object):
         for j in range(len(wavelength)):
             if (wavelength[j] >= 4855 and wavelength[j] <= 4867) or (wavelength[j] >= 6554 and wavelength[j] <= 6570):
                 pass
-            if(zuma == True):
+            if zuma is True:
                 if 6677 <= wavelength[j] <= 6679:
                     pass
+                else:
+                    newwave.append(wavelength[j])
+                    newflux.append(flux[j])
             else:
                 newwave.append(wavelength[j])
                 newflux.append(flux[j])
@@ -479,7 +482,6 @@ class AdvancedPlotting(PlotFunctionality):
 
         x = tom['wavelength']
         y = tom['flux']
-
         sandwich = PlotFunctionality.fitfunction(degree, x, y, 0, True)
 
         ynew = sandwich['y_new']
@@ -502,7 +504,7 @@ class AdvancedPlotting(PlotFunctionality):
         try:
             gaussy,gaussx = curve_fit(gaus,wavenew,fluxnew,p0=[.5,center,5,1],maxfev=6000)
         except RuntimeError:
-            print('The fitting tool has run and couldn''t find a fit. Your star might not be bright enough for this method.')
+            print 'The fitting tool has run and couldn''t find a fit. Your star might not be bright enough for this method.'
 
         wavevalue = gaussy[1]   # centroid of the gaussian in angstroms
         offset = center-wavevalue
