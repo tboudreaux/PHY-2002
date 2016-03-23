@@ -22,7 +22,7 @@ except AttributeError:
     def _translate(context, text, disambig):
         return QtGui.QApplication.translate(context, text, disambig)
 
-class Ui_GuassianFitter(object):
+class Ui_GaussianFitter(object):
     def setupUi(self, aurora):
         aurora.setObjectName(_fromUtf8("aurora"))
         aurora.resize(659, 449)
