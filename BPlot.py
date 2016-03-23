@@ -10,7 +10,7 @@ try:
     from Correlation2 import Ui_CrossCore
     from JumpToOrder import Ui_JumpToOrder
     from Editor import Ui_MainWindow
-    from GaussianFitter import Ui_GaussianFitter
+    from GaussianFitter import Ui_GuassianFitter
     from SecondGui import Ui_Header
     from MultiplotViewerTesttwo import Ui_MultiplotViewer
     from SinglePlotWindow import Ui_Ploter
