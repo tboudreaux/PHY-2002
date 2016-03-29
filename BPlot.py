@@ -142,7 +142,6 @@ foundit = False
 whilecounter = 0
 masterfilearray = []
 flist = os.listdir('.')
-halphause = [True]; hbetause = [True]; heliumause = [True]
 numorders = [62]
 FullCC = [None] * numorders[0]
 FullO = [None] * numorders[0]
@@ -640,10 +639,9 @@ class GaussianWindow(QtGui.QMainWindow):
         self.ui = Ui_GaussianFitter()
         self.ui.setupUi(self)
         self.ui.quit.clicked.connect(self.closer) # for the quit button
-        self.ui.HydrogenA.stateChanged.connect(lambda: halphause.__setitem__(0, not halphause[0]))
-        self.ui.HydrogenB.stateChanged.connect(lambda: hbetause.__setitem__(0, not hbetause[0]))
-        self.ui.HeliumA.stateChanged.connect(lambda: heliumause.__setitem__(0, not heliumause[0]))
+
         self.ui.pushButton.clicked.connect(self.plot)
+
         if len(masterfilearray) is not 0:
             for k in range(len(masterfilearray)):
                 starname = masterfilearray[k][0][6:]
@@ -657,13 +655,12 @@ class GaussianWindow(QtGui.QMainWindow):
 
     def closer(self):
         self.close()
-        halphause[0] = False
-        hbetause[0] = False
-        heliumause[0] = False
-
     def plot(self):
+        HA = self.ui.HydrogenA.isChecked()
+        HB = self.ui.HydrogenB.isChecked()
+        HeI = self.ui.HeliumA.isChecked()
         filename = self.ui.lineEdit.text()
-        Gauss = AdvancedPlotting.waveselection(filename,halphause[0],hbetause[0],heliumause[0])
+        Gauss = AdvancedPlotting.waveselection(filename,HA,HB,HeI)
 
 
 # This is the order jump GUI, as before it currently is non functional, will fix at sometime
