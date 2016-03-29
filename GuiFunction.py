@@ -510,7 +510,9 @@ class AdvancedPlotting(PlotFunctionality):
             vobs = (c*offset)/center   # finds the velocity of the observed object
             error =np.sqrt(gaussx[0,0])
 
-            fignewton = plt.figure()
+            overall = plt.figure()
+
+            fignewton = overall.add_subplot(1,1,1)
             figothernewton = fignewton.add_subplot(1, 1, 1)
             figothernewton.plot(wavenew, fluxnew)
             figothernewton.plot(wavenew, gaus(wavenew, *gaussy))
