@@ -641,6 +641,7 @@ class GaussianWindow(QtGui.QMainWindow):
         self.ui.quit.clicked.connect(self.closer) # for the quit button
 
         self.ui.pushButton.clicked.connect(self.plot)
+        #self.ui.fitall_2.click.connect(self.plot2)
 
         if len(masterfilearray) is not 0:
             for k in range(len(masterfilearray)):
@@ -658,9 +659,16 @@ class GaussianWindow(QtGui.QMainWindow):
     def plot(self):
         HA = self.ui.HydrogenA.isChecked()
         HB = self.ui.HydrogenB.isChecked()
-        HeI = self.ui.HeliumA.isChecked()
+        HeI5875 = self.ui.He5975.isChecked()
+        HeI4685 = self.ui.He4885.isChecked()
+        HeI4921 = self.ui.He4921.isChecked()
+        HeI5015 = self.ui.He5015.isChecked()
+        aur = self.ui.checkBox.isChecked()
         filename = self.ui.lineEdit.text()
-        Gauss = AdvancedPlotting.waveselection(filename,HA,HB,HeI)
+        Gauss = AdvancedPlotting.waveselection(filename, HA, HB, HeI5875, HeI4685, HeI4921, HeI5015, aur)
+    #def plot2(self):
+    #    filename = self.ui.lineEdit.text()
+    #    Gauss = AdvancedPlotting.waveselection(filename, True, True, True, True, True, True, False)
 
 
 # This is the order jump GUI, as before it currently is non functional, will fix at sometime
