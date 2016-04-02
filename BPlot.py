@@ -153,6 +153,7 @@ allplots = [False]
 checkPlots = [True]*62
 velocity = []
 namePass = ['GenericStar', 'GenericStar']
+global OrbitlPeriod
 
 centroids = [None] * numorders[0]
 for name in flist:
@@ -332,6 +333,8 @@ class MyForm(QtGui.QWidget):
             elif string == '//setCHIRON':
                 numorders[0] = 62
 
+            elif string == '//COMP':
+                string = '<font color = "olive">Displaying Spectral comparison for ' + commandcomp[0]
             # lists the number of open user functions
             elif string == '//lfunc':
                 count = 0
@@ -582,8 +585,21 @@ class OrbitalFitter(QtGui.QMainWindow):
         self.ui.Close.clicked.connect(self.closelogic)
         self.ui.Save.clicked.connect(self.save)
         self.ui.Fit.clicked.connect(self.runFit)
-
+        windowsize = self.ui.FitWindow.size()
+        windowsize = str(windowsize)
+        windowwidth = int(windowsize[19:-6])
+        windowwidth = self.ui.FitWindow.frameGeometry().width()
+        windowheight = int(windowsize[24:-1])
+        windowheight = self.ui.FitWindow.frameGeometry().height()
+        boxheight = windowheight
+        self.fig = Figure(figsize=(windowwidth/13, boxheight/8), dpi=95)
         self.window2 = None
+        self.canvas = FigureCanvas(self.fig)
+        self.canvas.setParent(self.ui.Graph)
+        self.ax = None
+        self.ax = self.fig.add_subplot(111, xlabel='Period (Phase)', ylabel='RV (Km * s^-1)', title='Orbital Phase Plot')
+        self.toolbar = NavigationToolbar(self.canvas, self)
+        self.toolbar.setParent(self.ui.ToolbarMPL)
 
     def closelogic(self):
         if self.saved is True:
@@ -596,9 +612,11 @@ class OrbitalFitter(QtGui.QMainWindow):
         self.saved = True
 
     def runFit(self):
+        global OrbitlPeriod
         self.saved = False
         period = self.ui.Period.text()
         period = float(period)
+        OrbitlPeriod = period
         pathfilename = self.ui.ListPath.text()
         pathfile = open(pathfilename, 'rb')
         pathfile = pathfile.readlines()
@@ -607,23 +625,21 @@ class OrbitalFitter(QtGui.QMainWindow):
         dates = []
         RVs = []
         Errs = []
-        print pathfile
         for element in pathfile:
             dates.append(float(element[0]))
             RVs.append(float(element[1]))
             Errs.append(float(element[2]))
-        start = min(dates)
-        print dates
-        dates = [(x - start) for x in dates]
-        print dates
-        dates = [x/period for x in dates]
-        print dates
-        for i in range(len(dates)):
-            print dates[i]
-            if dates[i] > 1:
-                dates[i] -= math.floor(dates[i])
-        print dates
-        Plotter.orbplot(dates, RVs, Errs, period)
+        # start = min(dates)
+        # dates = [(x - start) for x in dates]
+        # dates = [x/period for x in dates]
+        # for i in range(len(dates)):
+        #     if dates[i] > 1:
+        #         dates[i] -= math.floor(dates[i])
+        PlotData = Plotter.orbplot(dates, RVs, Errs, period)
+        # print 'HERE'
+        # self.ax.plot(PlotData['Xdata'], PlotData['Ydata'], 's')
+        # self.ax.plot(PlotData['smooth'], PlotData['function'](PlotData['smooth'], *PlotData['fit']))
+        # self.canvas.draw()
 
 
 class Closeyn(QtGui.QWidget):
@@ -634,7 +650,7 @@ class Closeyn(QtGui.QWidget):
 
 
 class GaussianWindow(QtGui.QMainWindow):
-    def __init__ (self, parent=None):
+    def __init__(self, parent=None):
         QtGui.QWidget.__init__(self, parent)
         self.ui = Ui_GaussianFitter()
         self.ui.setupUi(self)
@@ -747,11 +763,10 @@ class MultiView(QtGui.QMainWindow):
         windowheight -= (0.2)*windowheight
         boxheight = windowheight/3
         ax = []
-        print 'Time to use', time.localtime()[3], ':', time.localtime()[4], ':', time.localtime()[5]
         medvelocity = Mathamatics.median(FullHCV[0:40])
-        print 'median velocity:', medvelocity
         velstd = np.std(FullHCV)
-        print 'standard deviation in velocity:', velstd
+        self.comparison = {'B0': 30000, 'B5': 16400, 'A0': 10800, 'A5': 8620, 'F0': 7240, 'F5': 6540, 'G0': 5920,
+                           'G5': 5610, 'K0': 5240, 'K5': 4410, 'M0': 3920, 'M5': 3120}
 
         def gaus(x, a, x0, sigma, offset):
             return -a*exp(-(x-x0)**2/(2*sigma**2))
@@ -759,7 +774,7 @@ class MultiView(QtGui.QMainWindow):
             widgets[i+1] = 'self.ui.widget_' + str(i+1)
             checkboxes[i+1] = 'self.ui.checkBox_' + str(i+1)
         for q in range(numorders[0]):
-            fig.append(Figure(figsize=(2.81,boxheight/100), dpi=85, facecolor='w'))
+            fig.append(Figure(figsize=(2.81, boxheight/100), dpi=85, facecolor='w'))
         for q in range(numorders[0]):
             self.canvas.append(FigureCanvas(fig[q]))
         for q in range(numorders[0]):
@@ -774,8 +789,8 @@ class MultiView(QtGui.QMainWindow):
                 if FullHCV[q] > medvelocity + 30 or FullHCV[q] < medvelocity - 30:
                     # print 'unchecking box number', q+1
                     eval(checkboxes[q+1]).setChecked(False)
-                elif -3 <= centroids[q] <= 3:
-                    eval(checkboxes[q+1]).setChecked(False)
+                # elif -3 <= centroids[q] <= 3:
+                #     eval(checkboxes[q+1]).setChecked(False)
             else:
                 ax[q].text('UNABLE TO PLOT TO THESE PARAMETERS')
 
@@ -814,8 +829,12 @@ class MultiView(QtGui.QMainWindow):
         checkArray = []
         useCheckArray = dict()
         usevelocity = []
-        useAmp = []
-        AmpStd = np.std(FullAmp)
+        GoodFitFile = open('StarRef.conf', 'rb')
+        GoodFitFile = GoodFitFile.readlines()
+        GoodFitFile = [x.rsplit() for x in GoodFitFile]
+        useAmp = [None] * 2
+        for i in range(2):
+            useAmp[i] = FullAmp[i]
         velStd = np.std(FullHCV)
         for q in range(numorders[0]):
             checks[q] = 'self.ui.checkBox_' + str(q+1)
@@ -832,26 +851,34 @@ class MultiView(QtGui.QMainWindow):
                 useAmp.append(FullAmp[i])
             else:
                 pass
-        if len(usevelocity) != 0:
+        if len(usevelocity) is not 0:
             meanVel = sum(usevelocity)/len(usevelocity)
             if len(usevelocity) > 1:
                 Velstd = np.std(usevelocity, ddof=1)
                 usetext = str(FullHJD) + '\t' + str(meanVel) + '\t' + str(Velstd)
-                metricvalue = Velstd
+                metricvalue = abs(sum(useAmp)/len(useAmp))
             else:
                 usetext = str(FullHJD) + '\t' + str(meanVel) + '\t' + 'NAN'
-                metricvalue = velStd
+                metricvalue = abs(sum(useAmp)/len(useAmp))
             self.window2 = Editor()
             filename = 'CCorOutput' + namePass[0] + '.csv'
             metricfilename = 'CCorFitMetric' + namePass[0] + '.csv'
-            metrictext = namePass[0] + '\t' + namePass[1] + '\t' + str(metricvalue) + '\n'
+            for j in range(len(GoodFitFile)):
+                if namePass[1] in GoodFitFile[j][0]:
+                    spectralT = GoodFitFile[j][1]
+                    break
+                else:
+                    pass
+            temperature = self.comparison[spectralT]
+            metrictext = namePass[0] + '\t' + namePass[1] + '(' + spectralT + ')' + '\t' + str(metricvalue) + '\t' + \
+                         str(temperature) + '\n'
             try:
                 text = open(filename, 'rb')
                 metric = open(metricfilename, 'a')
                 metric.write(str(metrictext))
                 metric.close()
                 text = text.read()
-                if text == '\n':
+                if text is '\n':
                     self.window2.ui.textEdit.append(usetext)
                 else:
                     self.window2.ui.textEdit.append(text + '\n' + usetext)
@@ -1043,10 +1070,12 @@ class CCWindow(QtGui.QMainWindow):
                     # thread1 = MultiCall(1, degree, templatename, objectname, 1, self.length, self.largerwaves, self.smallerwaves,compare[0], value, False, True)
                     # thread1.start()
                 run = True
-            except ValueError:
+            except ValueError as e:
                 self.ui.infobox.append('<font color ="red">Please Make sure that file names are entered in the boxs</font>')
-            except IOError:
+                self.ui.infobox.append('<font color = "purple">' + str(e) + '</font>')
+            except IOError as e:
                 self.ui.infobox.append('<font color ="red">Please Make sure that file names are spelled correctly</font>')
+                self.ui.infobox.append('<font color = "purple">' + str(e) + '</font>')
             plotparm[4] = degree; plotparm[5] = templatename; plotparm[6] = objectname; plotparm[7] = self.length
             plotparm[8] = self.smallerwaves; plotparm[9] = self.largerwaves; plotparm[10] = value
             jumpcore[0] = True
@@ -1073,21 +1102,41 @@ class CCWindow(QtGui.QMainWindow):
 class Plotter(CCWindow):
     @staticmethod
     def orbplot(TimeArray, RVArray, ErrorArray, period):
-        def cosine(x, amp, per, phase, offset):
-            return amp * np.sin((((2*3)*x)/per) + phase) + offset
+        residualArray = [None] * len(TimeArray)
+        # def cosine(x, amp, per, phase, offset):
+        #     return amp * np.sin((((2*math.pi)*x)/per) + phase) + offset
+        def cosine(x, amp, phase, offset):
+            global OrbitlPeriod
+            print OrbitlPeriod
+            return amp * np.sin((((2*math.pi)*x)/OrbitlPeriod) + phase) + offset
         diff = max(RVArray) - min(RVArray)
-        plt.plot(TimeArray, RVArray, 'o')
-        print 'one'
-        print diff, period
-        siny, sinx = curve_fit(cosine, TimeArray, RVArray, p0=[float(diff/2), float(period), 0.0, 0.0], maxfev=10000)
-        print 'two'
-        print siny
-        clean = np.linspace(min(TimeArray), max(TimeArray), 10*len(cosine(TimeArray, *siny)))
-        plt.plot(clean, cosine(clean, *siny))
-        plt.xlabel('Period (Phase)')
-        plt.ylabel('RV (Km*s^-1)')
-        plt.errorbar(TimeArray, RVArray, yerr=ErrorArray, fmt='o')
+        meanTime = sum(TimeArray)/len(TimeArray)
+        for x in range(len(TimeArray)):
+            TimeArray[x] = TimeArray[x] - meanTime
+        OrbFig = plt.figure()
+        RVplot = OrbFig.add_subplot(2, 1, 1)
+        ResidualPlot = OrbFig.add_subplot(2, 1, 2)
+        npTimeArray = np.array(TimeArray)
+        RVplot.plot(TimeArray, RVArray, 'o')
+        npRVArray = np.array(RVArray)
+        # siny, covar = curve_fit(cosine, npTimeArray, npRVArray, p0=[float(diff/2), float(period), 0, -50])
+        siny, covar = curve_fit(cosine, npTimeArray, npRVArray, p0=[float(diff/2), 0, -50])
+        clean = np.linspace(min(npTimeArray), max(npTimeArray), 1000)
+        RVplot.plot(clean, cosine(clean, *siny))
+        RVplot.set_xlabel('Period (Phase)')
+        RVplot.set_ylabel('RV (Km*s^-1)')
+        for i in range(len(RVArray)):
+            fitValue = cosine(TimeArray[i], *siny)
+            residualArray[i] = fitValue - RVArray[i]
+        RVplot.errorbar(npTimeArray, npRVArray, yerr=ErrorArray, fmt='o')
+        ResidualPlot.plot(TimeArray, residualArray, 's')
+        ResidualPlot.errorbar(TimeArray, residualArray, yerr=ErrorArray, fmt='s')
+        ResidualPlot.set_title('Residuals')
+        ResidualPlot.set_xlabel('Time (Phase)')
+        ResidualPlot.set_ylabel('Function - Data Point')
+        RVplot.set_title('RV vs Phase')
         plt.show()
+        return {'Xdata': npTimeArray, 'Ydata': npRVArray, 'function': cosine, 'smooth': clean, 'fit': siny}
 
     # Corplot function that calls the ccofig function from GUI function to extract the required data
     # incidentaly this will be completely reorganized in the great reorganization of code to come

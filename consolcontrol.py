@@ -3,6 +3,7 @@ from PyQt4 import QtCore, QtGui
 import os, sys, stat
 from subprocess import Popen, PIPE
 import random
+import matplotlib.pyplot as plt
 
 
 #  This is the Routing class, it take input from the text input in the form of parssed string and returens a string
@@ -14,7 +15,8 @@ class BSPS(object):
         commandList = {'view': BSPSEss.view, 'ls': BSPSEss.ls, 'lcom': BSPSEss.lcom, 'pwd': BSPSEss.pwd, 'cd': BSPSEss.cd,
                        'clear': BSPSEss.clear, 'mkdir': BSPSEss.mkdir, 'edit': BSPSEss.edit, 'pyrun': BSPSEss.pyrun,
                        'tie': BSPSEss.tie, 'lfunc': BSPSEss.lfunc, 'reload': BSPSEss.reload, 'quit': BSPSEss.quit,
-                       'answer': BSPSEss.answer, 'setHET': BSPSEss.setHET, 'setCHIRON': BSPSEss.setCHIRON}
+                       'answer': BSPSEss.answer, 'setHET': BSPSEss.setHET, 'setCHIRON': BSPSEss.setCHIRON,
+                       'comp': BSPSEss.comp}
         if command in commandList:
             string = BSPSEss.strsend(command, paramter)
             return string
@@ -43,18 +45,39 @@ class BSPSEss(BSPS):
         commandlist = {'view': BSPSEss.view, 'ls': BSPSEss.ls, 'lcom': BSPSEss.lcom, 'pwd': BSPSEss.pwd, 'cd': BSPSEss.cd,
                        'clear': BSPSEss.clear, 'mkdir': BSPSEss.mkdir, 'edit': BSPSEss.edit, 'pyrun': BSPSEss.pyrun,
                        'tie': BSPSEss.tie, 'lfunc': BSPSEss.lfunc, 'reload': BSPSEss.reload, 'quit': BSPSEss.quit,
-                       'answer': BSPSEss.answer, 'setHET': BSPSEss.setHET, 'setCHIRON': BSPSEss.setCHIRON}
+                       'answer': BSPSEss.answer, 'setHET': BSPSEss.setHET, 'setCHIRON': BSPSEss.setCHIRON,
+                       'comp': BSPSEss.comp}
 
         # This basically checks if the function takes a parameter or not, because some like close do not need parameters
         try:
             string = commandlist[command](parameter)
         except TypeError:
-            string = commandlist[command]()
+            string = commandlist[command](parameter)
 
         # Nothing, does not do anything, yup
         BSPSEss.stremit(BSPSEss())
 
         # Returns the sting
+        return string
+
+    @staticmethod
+    def comp(target):
+        comfilename = 'CCorFitMetric' + target[0] + '.csv'
+        try:
+            compfile = open(comfilename, 'rb')
+            compfile = compfile.readlines()
+            compfile = [x.rsplit() for x in compfile]
+            print compfile
+            values = [x[2] for x in compfile]
+            temps = [x[3] for x in compfile]
+            plt.xlabel('Temperature (K)')
+            plt.ylabel('Goodness of Fit (No Dimension)')
+            plt.title('Spectral Type Analysis for ' + target[0])
+            plt.plot(temps, values, 'o')
+            string = '//COMP'
+        except IOError as e:
+            string = '<font color = "red">NO FILE FOUND, PLEASE MAKE SURE YOU HAVE CREATED THE FIT METRIC FILE ' \
+                     'BY RUNNING XCOR FOR ALL TELLURIC STANDAD STARS</font><font color = "purple">' + str(e) + '</font>'
         return string
 
     @staticmethod

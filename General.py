@@ -74,3 +74,14 @@ class Mathamatics(object):
             total += diff
         total /= (len(array)-1)
         return math.sqrt(total)
+
+
+class DataStructures(object):
+    def __init__(self, SpectracType, Temperature, comparison):
+        self.comparison = dict()
+
+    @property
+    def spectralComp(self):
+        self.comparison = {'B0': 30000, 'B5': 16400, 'A0': 10800, 'A5': 8620, 'F0': 7240, 'F5': 6540, 'G0': 5920,
+                           'G5': 5610, 'K0': 5240, 'K5': 4410, 'M0': 3920, 'M5': 3120}
+        return self.comparison

@@ -436,7 +436,10 @@ class AdvancedPlotting(PlotFunctionality):
         RASunMinute = int(sunRA[3:5])
         RASunSecond = float(sunRA[6:])
         DecSunDegrees = int(sunDEC[:2])
-        DecSunMinute = int(sunDEC[4:6])
+        try:
+            DecSunMinute = int(sunDEC[4:6])
+        except ValueError:
+            DecSunMinute = int(sunDEC[4:5])
         DecSunSecond = float(sunDEC[7:])
         RASunDegrees = (RASunHour*15)+(RASunMinute/4) + (RASunSecond/240)
         RASunRadians = (RASunDegrees/360)*2*math.pi
@@ -463,7 +466,7 @@ class AdvancedPlotting(PlotFunctionality):
         vel_bary = [vel_bary[0], vel_bary[1], vel_bary[2]]
         mag_vel_helio = Mathamatics.mag3D(vel_helio)
         mag_vel_bary = Mathamatics.mag3D(vel_bary)
-        vhcorrectd = VelRef + mag_vel_helio*(math.sin(DecRadians)*math.sin(DecSunRadians)+math.cos(DecRadians) * math.cos(DecSunRadians)*math.cos(RARadians-RASunRadians))
+        vhcorrectd = VelRef + ((vel_helio[0] * math.cos(DecRadians)*math.cos(RARadians)) + (vel_helio[1] * (math.cos(DecRadians)*math.sin(RARadians))) + (vel_helio[2]*math.sin(DecRadians)))
         vbcorrectd = VelRef + mag_vel_bary*(math.sin(DecRadians)*math.sin(DecSunRadians)+math.cos(DecRadians) * math.cos(DecSunRadians)*math.cos(RARadians-RASunRadians))
         heliojd = Astrolib.helio_jd(MJD, RADegrees, DecDegrees)
         heliojd += 2400000.5
@@ -491,7 +494,7 @@ class AdvancedPlotting(PlotFunctionality):
             upper = min(range(len(x)), key=lambda k: abs(x[k]-selection[1]))
 
         for j in range(len(x)):   # gives the wavelength between the uper and lower bounds
-            if lower<j<upper:
+            if lower < j < upper:
                 wavenew.append(float(x[j]))
                 fluxnew.append(float(ynew[j]))
         plt.plot(x, ynew)
@@ -499,21 +502,21 @@ class AdvancedPlotting(PlotFunctionality):
         plt.pause(1000)
         plt.close()
 
-        def gaus(x,a,x0,sigma,offset):
+        def gaus(x, a, x0, sigma, offset):
             return (-a*exp(-(x-x0)**2/(2*sigma**2))) + offset   # where offset is the offset of the spectra
         try:
-            gaussy,gaussx = curve_fit(gaus,wavenew,fluxnew,p0=[.5,center,5,1],maxfev=6000)
+            gaussy, gaussx = curve_fit(gaus, wavenew, fluxnew, p0=[.5, center, 5, 1], maxfev=6000)
 
             wavevalue = gaussy[1]   # centroid of the gaussian in angstroms
-            offset = center-wavevalue
+            offset = center - wavevalue
             c = 299792458   # speed of light in a vacuum
             vobs = (c*offset)/center   # finds the velocity of the observed object
-            error =np.sqrt(gaussx[0,0])
+            error = np.sqrt(gaussx[0, 0])
 
             overall = plt.figure()
 
-            fignewton = overall.add_subplot(1,1,1)
-            figothernewton = fignewton.add_subplot(1, 1, 1)
+            # fignewton = overall.add_subplot(1, 1, 1)
+            figothernewton = overall.add_subplot(1, 1, 1)
             figothernewton.plot(wavenew, fluxnew)
             figothernewton.plot(wavenew, gaus(wavenew, *gaussy))
 
@@ -529,21 +532,25 @@ class AdvancedPlotting(PlotFunctionality):
 
             def plotcontrol(event):
                 keydown = event.key
-                if keydown == 'f' or keydown == 'F':
-                    thewoz = event.xdata
-                    AdvancedPlotting.gaussianfit(filename, upper, lower, thewoz, orderindex, 1)
-            fignewton.canvas.mpl_connect('key_press_event', plotcontrol)
+                if keydown == 'r' or keydown == 'R':
+                    xloc = event.xdata
+                    try:
+                        AdvancedPlotting.gaussianfit(filename, upper, lower, xloc, orderindex, 1)
+                        plt.close()
+                    except TypeError as e:
+                        print 'Error: ' + str(e) + ' | Please try another location'
+            overall.canvas.mpl_connect('key_press_event', plotcontrol)
 
-            correctedv = AdvancedPlotting.coordconvert(filename,vobs)
+            correctedv = AdvancedPlotting.coordconvert(filename, vobs)
             date = correctedv['HJD']
             themostcorrected = correctedv['HCV']
         except RuntimeError:
-            print 'The fitting tool has run and couldn''t find a fit. Your star might not be bright enough for this method.'
+            print 'The fitting tool has run and couldnt find a fit.Your star might not be bright enough for this method'
             date = None
             themostcorrected = None
             error = None
 
-        return {'HJD':date, 'actualv':themostcorrected, 'sigma':error}
+        return {'HJD': date, 'actualv': themostcorrected, 'sigma': error}
 
 
 
