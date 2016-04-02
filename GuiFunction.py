@@ -432,15 +432,24 @@ class AdvancedPlotting(PlotFunctionality):
         sun.compute(useDate)
         sunRA = str(sun.ra)
         sunDEC = str(sun.dec)
-        RASunHour = int(sunRA[:2])
-        RASunMinute = int(sunRA[3:5])
-        RASunSecond = float(sunRA[6:])
-        DecSunDegrees = int(sunDEC[:2])
-        try:
-            DecSunMinute = int(sunDEC[4:6])
-        except ValueError:
-            DecSunMinute = int(sunDEC[4:5])
-        DecSunSecond = float(sunDEC[7:])
+        RASunHour, RASunMinute, RASunSecond = sunRA.split(':')
+        RASunHour = float(RASunHour); RASunMinute = float(RASunMinute); RASunSecond = float(RASunSecond)
+        # try:
+        #     RASunHour = int(sunRA[:2])
+        #     RASunMinute = int(sunRA[3:5])
+        #     RASunSecond = float(sunRA[6:])
+        # except ValueError:
+        #     RASunHour = int(sunRA[:1])
+        #     RASunMinute = int(sunRA[2:4])
+        #     RASunSecond = float(sunRA[5:])
+        DecSunDegrees, DecSunMinute, DecSunSecond = sunDEC.split(':')
+        DecSunDegrees = float(DecSunDegrees); DecSunMinute = float(DecSunMinute); DecSunSecond = float(DecSunSecond)
+        # DecSunDegrees = int(sunDEC[:2])
+        # try:
+        #     DecSunMinute = int(sunDEC[4:6])
+        # except ValueError:
+        #     DecSunMinute = int(sunDEC[4:5])
+        # DecSunSecond = float(sunDEC[7:])
         RASunDegrees = (RASunHour*15)+(RASunMinute/4) + (RASunSecond/240)
         RASunRadians = (RASunDegrees/360)*2*math.pi
         DecSunTotalMin = DecSunMinute + (DecSunSecond/60)

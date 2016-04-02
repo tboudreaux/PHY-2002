@@ -616,7 +616,6 @@ class OrbitalFitter(QtGui.QMainWindow):
         self.saved = False
         period = self.ui.Period.text()
         period = float(period)
-        OrbitlPeriod = period
         pathfilename = self.ui.ListPath.text()
         pathfile = open(pathfilename, 'rb')
         pathfile = pathfile.readlines()
@@ -629,13 +628,22 @@ class OrbitalFitter(QtGui.QMainWindow):
             dates.append(float(element[0]))
             RVs.append(float(element[1]))
             Errs.append(float(element[2]))
-        # start = min(dates)
-        # dates = [(x - start) for x in dates]
-        # dates = [x/period for x in dates]
-        # for i in range(len(dates)):
-        #     if dates[i] > 1:
-        #         dates[i] -= math.floor(dates[i])
-        PlotData = Plotter.orbplot(dates, RVs, Errs, period)
+        if self.ui.ynPhaseFold.isChecked():
+            OrbitlPeriod = 1
+            start = min(dates)
+            print start
+            dates = [(x - start) for x in dates]
+            print 'dates first:', dates
+            dates = [x/period for x in dates]
+            print 'dates second:', dates
+            for i in range(len(dates)):
+                if dates[i] > 1:
+                    dates[i] -= math.floor(dates[i])
+            PlotData = Plotter.orbplot(dates, RVs, Errs, 1)
+        else:
+            OrbitlPeriod = period
+            PlotData = Plotter.orbplot(dates, RVs, Errs, period, foldphase=False)
+
         # print 'HERE'
         # self.ax.plot(PlotData['Xdata'], PlotData['Ydata'], 's')
         # self.ax.plot(PlotData['smooth'], PlotData['function'](PlotData['smooth'], *PlotData['fit']))
@@ -1056,26 +1064,26 @@ class CCWindow(QtGui.QMainWindow):
             showall = self.ui.multiplotshow.isChecked()
             allplots[0] = self.ui.multiplotshow.isChecked()
             allplots[0] = not allplots[0]
-            try:
-                if showall is False:
-                    Plotter.corplot(degree, templatename, objectname, 1, self.length, self.largerwaves, self.smallerwaves,
-                                    compare[0], value, True, True)
-                    self.ui.infobox.append('<font color ="green">Cross Correlating Orders, use "a" to advance</font><br>')
-                elif showall is True:
+            # try:
+            if showall is False:
+                Plotter.corplot(degree, templatename, objectname, 1, self.length, self.largerwaves, self.smallerwaves,
+                                compare[0], value, True, True)
+                self.ui.infobox.append('<font color ="green">Cross Correlating Orders, use "a" to advance</font><br>')
+            elif showall is True:
 
-                    self.ui.infobox.append('<font color = "green">Calculating Cross Correlation Coefficients for all '
-                                           'orders</font>')
-                    self.ui.infobox.append('<font color = "green">This can take some time, please be paitient</font>')
-                    Plotter.corplot(degree, templatename, objectname, 1, self.length, self.largerwaves, self.smallerwaves,compare[0], value, False, True)
-                    # thread1 = MultiCall(1, degree, templatename, objectname, 1, self.length, self.largerwaves, self.smallerwaves,compare[0], value, False, True)
-                    # thread1.start()
-                run = True
-            except ValueError as e:
-                self.ui.infobox.append('<font color ="red">Please Make sure that file names are entered in the boxs</font>')
-                self.ui.infobox.append('<font color = "purple">' + str(e) + '</font>')
-            except IOError as e:
-                self.ui.infobox.append('<font color ="red">Please Make sure that file names are spelled correctly</font>')
-                self.ui.infobox.append('<font color = "purple">' + str(e) + '</font>')
+                self.ui.infobox.append('<font color = "green">Calculating Cross Correlation Coefficients for all '
+                                       'orders</font>')
+                self.ui.infobox.append('<font color = "green">This can take some time, please be paitient</font>')
+                Plotter.corplot(degree, templatename, objectname, 1, self.length, self.largerwaves, self.smallerwaves,compare[0], value, False, True)
+                # thread1 = MultiCall(1, degree, templatename, objectname, 1, self.length, self.largerwaves, self.smallerwaves,compare[0], value, False, True)
+                # thread1.start()
+            run = True
+            # except ValueError as e:
+            #     self.ui.infobox.append('<font color ="red">Please Make sure that file names are entered in the boxs</font>')
+            #     self.ui.infobox.append('<font color = "purple">' + str(e) + '</font>')
+            # except IOError as e:
+            #     self.ui.infobox.append('<font color ="red">Please Make sure that file names are spelled correctly</font>')
+            #     self.ui.infobox.append('<font color = "purple">' + str(e) + '</font>')
             plotparm[4] = degree; plotparm[5] = templatename; plotparm[6] = objectname; plotparm[7] = self.length
             plotparm[8] = self.smallerwaves; plotparm[9] = self.largerwaves; plotparm[10] = value
             jumpcore[0] = True
@@ -1101,7 +1109,7 @@ class CCWindow(QtGui.QMainWindow):
 # of code to come)
 class Plotter(CCWindow):
     @staticmethod
-    def orbplot(TimeArray, RVArray, ErrorArray, period):
+    def orbplot(TimeArray, RVArray, ErrorArray, period, foldphase=True):
         residualArray = [None] * len(TimeArray)
         # def cosine(x, amp, per, phase, offset):
         #     return amp * np.sin((((2*math.pi)*x)/per) + phase) + offset
@@ -1110,10 +1118,11 @@ class Plotter(CCWindow):
             print OrbitlPeriod
             return amp * np.sin((((2*math.pi)*x)/OrbitlPeriod) + phase) + offset
         diff = max(RVArray) - min(RVArray)
-        meanTime = sum(TimeArray)/len(TimeArray)
-        for x in range(len(TimeArray)):
-            TimeArray[x] = TimeArray[x] - meanTime
-        OrbFig = plt.figure()
+        if foldphase is False:
+            meanTime = sum(TimeArray)/len(TimeArray)
+            for x in range(len(TimeArray)):
+                TimeArray[x] -= meanTime
+        OrbFig = plt.figure(figsize=(10, 10))
         RVplot = OrbFig.add_subplot(2, 1, 1)
         ResidualPlot = OrbFig.add_subplot(2, 1, 2)
         npTimeArray = np.array(TimeArray)
@@ -1121,9 +1130,16 @@ class Plotter(CCWindow):
         npRVArray = np.array(RVArray)
         # siny, covar = curve_fit(cosine, npTimeArray, npRVArray, p0=[float(diff/2), float(period), 0, -50])
         siny, covar = curve_fit(cosine, npTimeArray, npRVArray, p0=[float(diff/2), 0, -50])
-        clean = np.linspace(min(npTimeArray), max(npTimeArray), 1000)
+        if foldphase is False:
+            clean = np.linspace(min(npTimeArray)-10, max(npTimeArray)+10, 5000)
+        else:
+            clean = np.linspace(min(npTimeArray)-1, max(npTimeArray)+1, 5000)
+        print clean
         RVplot.plot(clean, cosine(clean, *siny))
-        RVplot.set_xlabel('Period (Phase)')
+        if foldphase is False:
+            RVplot.set_xlabel('Period (Days)')
+        else:
+            RVplot.set_xlabel('Period (Phase)')
         RVplot.set_ylabel('RV (Km*s^-1)')
         for i in range(len(RVArray)):
             fitValue = cosine(TimeArray[i], *siny)
@@ -1132,8 +1148,12 @@ class Plotter(CCWindow):
         ResidualPlot.plot(TimeArray, residualArray, 's')
         ResidualPlot.errorbar(TimeArray, residualArray, yerr=ErrorArray, fmt='s')
         ResidualPlot.set_title('Residuals')
-        ResidualPlot.set_xlabel('Time (Phase)')
+        if foldphase is False:
+            ResidualPlot.set_xlabel('Time (Days)')
+        else:
+            ResidualPlot.set_xlabel('Time (Phase)')
         ResidualPlot.set_ylabel('Function - Data Point')
+        ResidualPlot.axhline(0, color='black', linestyle='--')
         RVplot.set_title('RV vs Phase')
         plt.show()
         return {'Xdata': npTimeArray, 'Ydata': npRVArray, 'function': cosine, 'smooth': clean, 'fit': siny}
