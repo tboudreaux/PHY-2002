@@ -308,8 +308,15 @@ class MyForm(QtGui.QWidget):
             # clears the terminal window
             if string == '//clear':
                 self.ui.consol.clear()
+                print 'here'
                 string = None
 
+            elif string == '//PDC':
+                string = None
+
+            elif string == '//EIDP':
+                string = '<font color = "red">unable to display standard plot, please make sure all parameters are' \
+                         'correct, use -help or ? for assisnatnce</font>'
             # Brings up an ASCII Text editor
             elif string == '//edit':
                 self.window3 = Editor(self)
@@ -406,6 +413,7 @@ class MyForm(QtGui.QWidget):
             if string:
                 # appends the sting returnes from the routing function to the consol, if it has not been deinitialized
                 # in the command logic above
+                print string
                 self.ui.consol.append(string)
             self.ui.consolinput.clear()
             commands.append(command)
@@ -627,7 +635,10 @@ class OrbitalFitter(QtGui.QMainWindow):
         for element in pathfile:
             dates.append(float(element[0]))
             RVs.append(float(element[1]))
-            Errs.append(float(element[2]))
+            if element[2]:
+                Errs.append(float(element[2]))
+            else:
+                pass
         if self.ui.ynPhaseFold.isChecked():
             OrbitlPeriod = 1
             start = min(dates)
@@ -1115,7 +1126,6 @@ class Plotter(CCWindow):
         #     return amp * np.sin((((2*math.pi)*x)/per) + phase) + offset
         def cosine(x, amp, phase, offset):
             global OrbitlPeriod
-            print OrbitlPeriod
             return amp * np.sin((((2*math.pi)*x)/OrbitlPeriod) + phase) + offset
         diff = max(RVArray) - min(RVArray)
         if foldphase is False:
@@ -1134,7 +1144,6 @@ class Plotter(CCWindow):
             clean = np.linspace(min(npTimeArray)-10, max(npTimeArray)+10, 5000)
         else:
             clean = np.linspace(min(npTimeArray)-1, max(npTimeArray)+1, 5000)
-        print clean
         RVplot.plot(clean, cosine(clean, *siny))
         if foldphase is False:
             RVplot.set_xlabel('Period (Days)')
@@ -1156,6 +1165,9 @@ class Plotter(CCWindow):
         ResidualPlot.axhline(0, color='black', linestyle='--')
         RVplot.set_title('RV vs Phase')
         plt.show()
+        perr = np.sqrt(np.diag(covar))
+        print 'RV semiamplitude:', siny[0], '+-', perr[0]
+        print 'System Velocity:', siny[2], '+-', perr[2]
         return {'Xdata': npTimeArray, 'Ydata': npRVArray, 'function': cosine, 'smooth': clean, 'fit': siny}
 
     # Corplot function that calls the ccofig function from GUI function to extract the required data

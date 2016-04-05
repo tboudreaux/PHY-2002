@@ -16,7 +16,7 @@ class BSPS(object):
                        'clear': BSPSEss.clear, 'mkdir': BSPSEss.mkdir, 'edit': BSPSEss.edit, 'pyrun': BSPSEss.pyrun,
                        'tie': BSPSEss.tie, 'lfunc': BSPSEss.lfunc, 'reload': BSPSEss.reload, 'quit': BSPSEss.quit,
                        'answer': BSPSEss.answer, 'setHET': BSPSEss.setHET, 'setCHIRON': BSPSEss.setCHIRON,
-                       'comp': BSPSEss.comp}
+                       'comp': BSPSEss.comp, 'stanPlot': BSPSEss.stanPlot}
         if command in commandList:
             string = BSPSEss.strsend(command, paramter)
             return string
@@ -46,13 +46,13 @@ class BSPSEss(BSPS):
                        'clear': BSPSEss.clear, 'mkdir': BSPSEss.mkdir, 'edit': BSPSEss.edit, 'pyrun': BSPSEss.pyrun,
                        'tie': BSPSEss.tie, 'lfunc': BSPSEss.lfunc, 'reload': BSPSEss.reload, 'quit': BSPSEss.quit,
                        'answer': BSPSEss.answer, 'setHET': BSPSEss.setHET, 'setCHIRON': BSPSEss.setCHIRON,
-                       'comp': BSPSEss.comp}
+                       'comp': BSPSEss.comp, 'stanPlot': BSPSEss.stanPlot}
 
         # This basically checks if the function takes a parameter or not, because some like close do not need parameters
         try:
             string = commandlist[command](parameter)
         except TypeError:
-            string = commandlist[command](parameter)
+            string = commandlist[command]
 
         # Nothing, does not do anything, yup
         BSPSEss.stremit(BSPSEss())
@@ -60,6 +60,55 @@ class BSPSEss(BSPS):
         # Returns the sting
         return string
 
+    @staticmethod
+    def stanPlot(parameter):
+        print parameter[0]
+        if parameter[0] == '-help' or parameter[0] is'?':
+            string = 'standard Plot (stanPlot) opens an ascii delimited by whitespace file and plots the first ' \
+                     'as x values and the second colum as y values, if there is a third colume it will plot that ' \
+                     'as y errors, the syntax is [stanPlot filename xlabel ylabel]'
+            return string
+        else:
+            try:
+                datafile = open(parameter[0], 'rb')
+                datafile = datafile.readlines()
+                for i in range(len(datafile)):
+                   datafile[i] = datafile[i].rsplit()
+                first = []
+                second = []
+                third = []
+                for element in datafile:
+                    first.append(float(element[0]))
+                    second.append(float(element[1]))
+                    if len(element) is 3:
+                        third.append(float(element[2]))
+                    else:
+                        pass
+                plt.plot(first, second)
+                try:
+                    plt.xlabel(parameter[1])
+                    plt.ylabel(parameter[2])
+                except IndexError:
+                    try:
+                        plt.xlabel('x data')
+                        plt.ylabel(parameter[2])
+                    except IndexError:
+                        try:
+                            plt.xlabel(parameter[1])
+                            plt.ylabel('y data')
+                        except IndexError:
+                            plt.xlabel('x data')
+                            plt.ylabel('y data')
+                if len(third) is not 0:
+                    plt.errorbar(first, second, yerr=third, fmt='o')
+                else:
+                    pass
+                plt.show()
+                string = '//PDC'
+                return string
+            except IOError:
+                string = '//EIDP'
+                return string
     @staticmethod
     def comp(target):
         comfilename = 'CCorFitMetric' + target[0] + '.csv'
@@ -170,7 +219,8 @@ class BSPSEss(BSPS):
     # claears the terminal
     @staticmethod
     def clear():
-        return '//clear'
+        string = '//clear'
+        return string
 
     # changes directories, with some exception handeling
     @staticmethod
