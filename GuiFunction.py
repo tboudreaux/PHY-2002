@@ -14,6 +14,7 @@ import astropy.time as astrotime
 import astropy.coordinates as coords
 import astropy.units as unit
 import astropy.constants as const
+from scipy.stats.stats import pearsonr
 import Astrolib
 
 run = [False]
@@ -163,6 +164,7 @@ class AdvancedPlotting(PlotFunctionality):
         templateflux = []
         correlation = []
         correlationnp = []
+        testcor = []
         offset = []
 
         # These call the wfextract function to get the flux and wavelength for the target and template as a dictionary
@@ -277,11 +279,41 @@ class AdvancedPlotting(PlotFunctionality):
             z /= bottom
             correlation.append(z)
 
-            # plt.plot(templateflux, label=str(np.correlate(templateflux, shiftflux)))
+            # # Other correlation method
+            # n = len(shiftflux)
+            # productarray = []
+            # for i in range(n):
+            #     productarray.append(shiftflux[i]*templateflux[i])
+            # productarray = sum(productarray) * n
+            # sumproduct = sum(shiftflux) * sum(templateflux)
+            # numerator = productarray * sumproduct
+            # squarex = []
+            # squarey = []
+            # for i in range(n):
+            #     squarex.append(shiftflux[i]**2)
+            #     squarey.append(templateflux[i]**2)
+            # squarex = n*sum(squarex)
+            # squarey = n*sum(squarey)
+            # sumxsquare = sum(shiftflux)**2
+            # sumysquare = sum(templateflux)**2
+            # radicalone = squarex-sumxsquare
+            # radicaltwo = squarey-sumysquare
+            # denominator = radicalone*radicaltwo
+            # corcoef = numerator/denominator
+            # pearscor = pearsonr(shiftflux, templateflux)
+            # print pearscor
+            area = 0
+
+            for j in range(len(shiftflux)):
+                height = abs(shiftflux[j]-templateflux[j])
+                area += height
+            testcor.append(area)
+            # # Uncomment these lines to show a cross correlation annimation
+            # plt.plot(templateflux, label=str(area))
             # plt.plot(shiftflux)
             # plt.legend()
             # plt.show()
-            # plt.pause(0.1)
+            # plt.pause(0.01)
             # plt.close()
             # appends whatever the offset relative to 0 is (reconnizing that the offset is half on oneseid and half
             # on another)
@@ -296,10 +328,22 @@ class AdvancedPlotting(PlotFunctionality):
             return -a*exp(-(x-x0)**2/(2*sigma**2)) # + offset # where offset is the offset of the spectre
 
         waverange = (max(newtargetwave)) - (min(newtargetwave))
+        print 'first value in newtarget wave:', newtargetwave[0]
+        print 'smallest value in newtarget wave:', min(newtargetwave)
+        print 'last value in newtarget wave:', newtargetwave[-1]
+        print 'largest value in newtarget wave:', max(newtargetwave)
+        print 'waverange:', waverange
+        print 'length of newtargetwave:', len(newtargetwave)
         pixrange = len(newtargetwave)
+        print 'pixrange:', pixrange
         dispersion = waverange/pixrange
+        print 'dispersion in GuiFunction:', dispersion
+        print 'np', correlationnp
+        print 'test', testcor
         # return{'correlation': correlation, 'offset': offset, 'fit': gaus, 'dispersion': dispersion, 'meantemp': meantemp}
         return{'correlation': correlationnp, 'offset': offset, 'fit': gaus, 'dispersion': dispersion, 'meantemp': meantemp}
+
+        # return{'correlation': testcor, 'offset': offset, 'fit': gaus, 'dispersion': dispersion, 'meantemp': meantemp}
 
     # This method deals with showing the wavelengths in the cross correlation chart, basically it allows one to see
     # what is being cross correlated, which is helpful for you know...SCIENCE
@@ -434,22 +478,8 @@ class AdvancedPlotting(PlotFunctionality):
         sunDEC = str(sun.dec)
         RASunHour, RASunMinute, RASunSecond = sunRA.split(':')
         RASunHour = float(RASunHour); RASunMinute = float(RASunMinute); RASunSecond = float(RASunSecond)
-        # try:
-        #     RASunHour = int(sunRA[:2])
-        #     RASunMinute = int(sunRA[3:5])
-        #     RASunSecond = float(sunRA[6:])
-        # except ValueError:
-        #     RASunHour = int(sunRA[:1])
-        #     RASunMinute = int(sunRA[2:4])
-        #     RASunSecond = float(sunRA[5:])
         DecSunDegrees, DecSunMinute, DecSunSecond = sunDEC.split(':')
         DecSunDegrees = float(DecSunDegrees); DecSunMinute = float(DecSunMinute); DecSunSecond = float(DecSunSecond)
-        # DecSunDegrees = int(sunDEC[:2])
-        # try:
-        #     DecSunMinute = int(sunDEC[4:6])
-        # except ValueError:
-        #     DecSunMinute = int(sunDEC[4:5])
-        # DecSunSecond = float(sunDEC[7:])
         RASunDegrees = (RASunHour*15)+(RASunMinute/4) + (RASunSecond/240)
         RASunRadians = (RASunDegrees/360)*2*math.pi
         DecSunTotalMin = DecSunMinute + (DecSunSecond/60)
@@ -520,7 +550,7 @@ class AdvancedPlotting(PlotFunctionality):
             offset = center - wavevalue
             c = 299792458   # speed of light in a vacuum
             vobs = (c*offset)/center   # finds the velocity of the observed object
-            error = np.sqrt(gaussx[0, 0])
+            error = np.sqrt(np.diag(gaussx))
 
             overall = plt.figure()
 
@@ -561,13 +591,10 @@ class AdvancedPlotting(PlotFunctionality):
 
         return {'HJD': date, 'actualv': themostcorrected, 'sigma': error}
 
+    # TOUCH THE COW
+    # DO IT NOW
 
-
-
-    ## TOUCH THE COW
-    ## DO IT NOW
-
-    ## Code to pull from text file and run the gaussian fit thingy. ##
+    # Code to pull from text file and run the gaussian fit thingy
 
     @staticmethod
     def waveselection(filename,hydrogena,hydrogenb,helium75,helium85,helium21,helium15,AUR):
@@ -645,7 +672,7 @@ class AdvancedPlotting(PlotFunctionality):
 
        averagev = averagev/count
        averagev /= 1000
-       print averagev
+       #print averagev
 
        sigmaarray = []
        for j in range(len(globalerror)):
