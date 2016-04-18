@@ -1497,7 +1497,7 @@ class Plotter(CCWindow):
     def stackplot(stackfile, allimages, num, start, degree, shouldfit):
 
         # Initialized the matplotlib figure
-        fig = plt.figure(figsize=(10, 7))
+        fig = plt.figure(figsize=(25, 10))
 
         # Opens the file with the path to files list in it and reads that into an array, this code is ideentical more
         # or less to code that has been written earlier in BPlot and other classes for reading in data files
@@ -1572,7 +1572,7 @@ class Plotter(CCWindow):
     @staticmethod
     def nstackplot(name, start, degree, shouldfit):
         # same deal here as with stackplot above
-        fig = plt.figure(figsize=(10, 7))
+        fig = plt.figure(figsize=(25, 10))
         PlotFunctionality.plot(name, start, showfit[0], shouldfit, degree, fig, 0)
         # plt.tight_layout()
         plt.ion()

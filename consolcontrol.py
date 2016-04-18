@@ -51,8 +51,9 @@ class BSPSEss(BSPS):
         # This basically checks if the function takes a parameter or not, because some like close do not need parameters
         try:
             string = commandlist[command](parameter)
+            print string
         except TypeError:
-            string = commandlist[command]
+            string = commandlist[command]()
 
         # Nothing, does not do anything, yup
         BSPSEss.stremit(BSPSEss())

@@ -689,7 +689,7 @@ class AdvancedPlotting(PlotFunctionality):
        objectname = (hdu['OBJECT'])
 
        string = 'GaussianFitOutput' + objectname + '.csv'
-       hjdstr = str(lamp['HJD']) + '\t' + str(averagev) + '\t' + str(totalerror)
+       hjdstr = str(lamp['HJD']) + '\t' + str(averagev) + '\t' + str(totalerror[0]) + '\n'
        callitwhateveryouwant = open(string,'a')
        callitwhateveryouwant.write(hjdstr)
        callitwhateveryouwant.close()
