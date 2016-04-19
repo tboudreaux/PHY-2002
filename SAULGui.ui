@@ -1,0 +1,1538 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>SAUL</class>
+ <widget class="QMainWindow" name="SAUL">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1674</width>
+    <height>1107</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>SAUL</string>
+  </property>
+  <property name="toolTip">
+   <string>Spectral Analysis UtiLity (SAUL)</string>
+  </property>
+  <widget class="QWidget" name="Main">
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="2" column="0" colspan="2">
+     <widget class="QWidget" name="PlotViewer" native="true">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <layout class="QGridLayout" name="gridLayout_4">
+       <item row="2" column="1">
+        <widget class="QLineEdit" name="Command">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="font">
+          <font>
+           <family>Monaco</family>
+          </font>
+         </property>
+         <property name="placeholderText">
+          <string>&gt;</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QTextBrowser" name="Terminal">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="font">
+          <font>
+           <family>Monaco</family>
+          </font>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QLabel" name="TerminalLabel">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Maximum">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="font">
+          <font>
+           <family>Helvetica</family>
+           <pointsize>20</pointsize>
+          </font>
+         </property>
+         <property name="frameShape">
+          <enum>QFrame::StyledPanel</enum>
+         </property>
+         <property name="text">
+          <string>Terminal</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="2">
+        <widget class="QLabel" name="PlotControllabel">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="font">
+          <font>
+           <family>Helvetica</family>
+           <pointsize>20</pointsize>
+          </font>
+         </property>
+         <property name="frameShape">
+          <enum>QFrame::StyledPanel</enum>
+         </property>
+         <property name="text">
+          <string>Plot Controls</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="2" rowspan="2">
+        <widget class="QWidget" name="PlotControls" native="true">
+         <layout class="QGridLayout" name="gridLayout_16">
+          <item row="1" column="0">
+           <widget class="QLabel" name="PlotTwoShowingLabel">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="font">
+             <font>
+              <family>Helvetica</family>
+              <pointsize>15</pointsize>
+              <underline>true</underline>
+             </font>
+            </property>
+            <property name="text">
+             <string>Plot Two Showing:</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="2">
+           <widget class="QPushButton" name="SavePlotTwo">
+            <property name="text">
+             <string>Save Plot Two</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="2">
+           <widget class="QPushButton" name="SavePlotOne">
+            <property name="text">
+             <string>Save Plot One</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QLabel" name="WhatIsOnPlotOne">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string>N/A</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="1">
+           <widget class="QPushButton" name="JumpToOrder">
+            <property name="text">
+             <string>Jump to order</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QLabel" name="WhatIsOnePlotTwo">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string>N/A</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QPushButton" name="OrderAdvance">
+            <property name="text">
+             <string>Order Advance (d)</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <widget class="QLabel" name="PlotOneShowingLabel">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="font">
+             <font>
+              <family>Helvetica</family>
+              <pointsize>15</pointsize>
+              <underline>true</underline>
+             </font>
+            </property>
+            <property name="text">
+             <string>Plot one Showing:</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QPushButton" name="OrderRetreate">
+            <property name="text">
+             <string>Order Retreate (a)</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="0">
+           <widget class="QSpinBox" name="OrderToGoTo">
+            <property name="minimum">
+             <number>1</number>
+            </property>
+            <property name="maximum">
+             <number>62</number>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="0">
+           <widget class="QPushButton" name="ToggleSpectra">
+            <property name="text">
+             <string>Toggle Spectra on (c)</string>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="1">
+           <widget class="QPushButton" name="ReastFit">
+            <property name="text">
+             <string>Reset Fit (o)</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="2">
+           <widget class="QPushButton" name="RemoveSpectra">
+            <property name="text">
+             <string>Remove Spectra (q)</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="2">
+           <widget class="QPushButton" name="AddSpectra">
+            <property name="text">
+             <string> Add Spectra (e)</string>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="2">
+           <widget class="QPushButton" name="ClearPlots">
+            <property name="text">
+             <string>Clear Plots</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item row="0" column="0" rowspan="2">
+     <widget class="QWidget" name="GeneralFunctions" native="true">
+      <layout class="QGridLayout" name="gridLayout_2">
+       <item row="1" column="0" colspan="2">
+        <widget class="QPushButton" name="ChangeDirectory">
+         <property name="text">
+          <string>Change Directory</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="2">
+        <widget class="QPushButton" name="GeneratePathFile">
+         <property name="text">
+          <string>Generate Path Files</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="2">
+        <widget class="QPushButton" name="Quit">
+         <property name="text">
+          <string>Quit</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0" colspan="2">
+        <widget class="QPushButton" name="Reload">
+         <property name="text">
+          <string>Reload</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0" colspan="3">
+        <widget class="QLabel" name="GF">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="font">
+          <font>
+           <family>Helvetica</family>
+           <pointsize>20</pointsize>
+          </font>
+         </property>
+         <property name="frameShape">
+          <enum>QFrame::StyledPanel</enum>
+         </property>
+         <property name="text">
+          <string>General Control</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="0" colspan="3">
+        <widget class="QWidget" name="widget_3" native="true">
+         <layout class="QGridLayout" name="gridLayout_3">
+          <item row="1" column="0">
+           <widget class="QListWidget" name="PathFilesBrowser">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <widget class="QLabel" name="DataPathsLabel">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="font">
+             <font>
+              <family>Helvetica</family>
+              <pointsize>20</pointsize>
+             </font>
+            </property>
+            <property name="frameShape">
+             <enum>QFrame::StyledPanel</enum>
+            </property>
+            <property name="text">
+             <string>Data Paths:</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="3" column="0" colspan="3">
+        <widget class="QTextBrowser" name="GeneralInfo">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="font">
+          <font>
+           <family>Monaco</family>
+          </font>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item row="0" column="1" rowspan="2">
+     <widget class="QWidget" name="AdvancedFunctions" native="true">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <layout class="QGridLayout" name="gridLayout_6">
+       <item row="0" column="2">
+        <widget class="QTabWidget" name="Functions">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="currentIndex">
+          <number>0</number>
+         </property>
+         <widget class="QWidget" name="BSP">
+          <attribute name="title">
+           <string>Spectum Plot</string>
+          </attribute>
+          <layout class="QGridLayout" name="gridLayout_5">
+           <item row="5" column="1" colspan="5">
+            <widget class="Line" name="line">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="1">
+            <widget class="QCheckBox" name="Normalizeyn">
+             <property name="text">
+              <string>Normalize Spectra</string>
+             </property>
+             <property name="checked">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1" colspan="5">
+            <widget class="QLineEdit" name="BSPPath">
+             <property name="toolTip">
+              <string>Path to fits file, or a path to a path file, if you want to overllay exposures enter a path to a path file</string>
+             </property>
+             <property name="placeholderText">
+              <string>Path to fits file, or path to 'Path file'</string>
+             </property>
+            </widget>
+           </item>
+           <item row="6" column="2">
+            <widget class="Line" name="line_4">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+            </widget>
+           </item>
+           <item row="6" column="5">
+            <widget class="QSpinBox" name="NumToStack">
+             <property name="toolTip">
+              <string>Initial number of exposure to overlay</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1" colspan="5">
+            <widget class="QLabel" name="BSPLabel">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="font">
+              <font>
+               <family>Helvetica</family>
+               <pointsize>20</pointsize>
+              </font>
+             </property>
+             <property name="frameShape">
+              <enum>QFrame::StyledPanel</enum>
+             </property>
+             <property name="text">
+              <string>Basic Spectreal Plotter</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="6" column="3">
+            <widget class="QCheckBox" name="StackAll">
+             <property name="toolTip">
+              <string>Overlay all exposures inintally</string>
+             </property>
+             <property name="text">
+              <string>All</string>
+             </property>
+            </widget>
+           </item>
+           <item row="7" column="1" colspan="5">
+            <widget class="Line" name="line_3">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
+           </item>
+           <item row="6" column="1">
+            <widget class="QCheckBox" name="Stack">
+             <property name="toolTip">
+              <string>Overlay exposures with a y offset to see compare them quickly</string>
+             </property>
+             <property name="text">
+              <string>Overlay exposure</string>
+             </property>
+            </widget>
+           </item>
+           <item row="6" column="4">
+            <widget class="Line" name="line_5">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="1">
+            <widget class="QRadioButton" name="ShowBoth">
+             <property name="toolTip">
+              <string>Display both the Nomarlized spectra as well as the non normalized specra</string>
+             </property>
+             <property name="text">
+              <string>Both Plots</string>
+             </property>
+             <property name="checked">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="3">
+            <widget class="QRadioButton" name="ShowNormOnly">
+             <property name="toolTip">
+              <string>Only display the normalized spectra</string>
+             </property>
+             <property name="text">
+              <string>Only Notmalized</string>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="5">
+            <widget class="QRadioButton" name="ShowNonNorm">
+             <property name="toolTip">
+              <string>Only display the non normalized spectra</string>
+             </property>
+             <property name="text">
+              <string>Only NonNormalze</string>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="3" colspan="3">
+            <widget class="QSpinBox" name="DegreeBSP">
+             <property name="toolTip">
+              <string>Degree to normalize function to</string>
+             </property>
+             <property name="minimum">
+              <number>1</number>
+             </property>
+             <property name="value">
+              <number>4</number>
+             </property>
+            </widget>
+           </item>
+           <item row="8" column="1">
+            <widget class="QPushButton" name="BSPResetPlots">
+             <property name="toolTip">
+              <string>Reset the plot window</string>
+             </property>
+             <property name="text">
+              <string>Reset Plots</string>
+             </property>
+            </widget>
+           </item>
+           <item row="8" column="3" colspan="3">
+            <widget class="QPushButton" name="BSPPlot">
+             <property name="toolTip">
+              <string>Run Plot in plot window</string>
+             </property>
+             <property name="text">
+              <string>Run Plot</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="Ccor">
+          <attribute name="title">
+           <string>C-Cor</string>
+          </attribute>
+          <layout class="QGridLayout" name="gridLayout_7">
+           <item row="3" column="0" colspan="6">
+            <widget class="QLineEdit" name="CCorTarget">
+             <property name="placeholderText">
+              <string>Enter Target Path</string>
+             </property>
+            </widget>
+           </item>
+           <item row="5" column="0">
+            <widget class="QLabel" name="ShiftLabel">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="text">
+              <string>Shift Size</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QCheckBox" name="CCorUseList">
+             <property name="text">
+              <string>Use List</string>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="0" colspan="6">
+            <widget class="Line" name="line_6">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="0" colspan="6">
+            <widget class="QLabel" name="CorLabe">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="font">
+              <font>
+               <family>Helvetica</family>
+               <pointsize>20</pointsize>
+              </font>
+             </property>
+             <property name="frameShape">
+              <enum>QFrame::StyledPanel</enum>
+             </property>
+             <property name="text">
+              <string>Cross Correlation</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="5">
+            <widget class="QLineEdit" name="CCorList">
+             <property name="placeholderText">
+              <string>Enter Path to Path File</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="0" colspan="6">
+            <widget class="QLineEdit" name="CCorTemplate">
+             <property name="placeholderText">
+              <string>Enter Template Path</string>
+             </property>
+            </widget>
+           </item>
+           <item row="6" column="4">
+            <widget class="Line" name="line_10">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+            </widget>
+           </item>
+           <item row="6" column="3">
+            <widget class="Line" name="line_9">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+            </widget>
+           </item>
+           <item row="6" column="0">
+            <widget class="QSpinBox" name="ShiftSize">
+             <property name="minimum">
+              <number>50</number>
+             </property>
+             <property name="maximum">
+              <number>1000</number>
+             </property>
+             <property name="singleStep">
+              <number>2</number>
+             </property>
+             <property name="value">
+              <number>102</number>
+             </property>
+            </widget>
+           </item>
+           <item row="10" column="0">
+            <widget class="QCheckBox" name="ShowAll">
+             <property name="text">
+              <string>All Orders</string>
+             </property>
+            </widget>
+           </item>
+           <item row="10" column="1" colspan="5">
+            <widget class="QPushButton" name="CCorRun">
+             <property name="text">
+              <string>Run Correlation</string>
+             </property>
+            </widget>
+           </item>
+           <item row="5" column="5">
+            <widget class="QLabel" name="DegreeLabel">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="text">
+              <string>Normilization Degree</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="6" column="2">
+            <widget class="Line" name="line_8">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+            </widget>
+           </item>
+           <item row="6" column="5">
+            <widget class="QSpinBox" name="CCorDegree">
+             <property name="minimum">
+              <number>1</number>
+             </property>
+             <property name="value">
+              <number>4</number>
+             </property>
+            </widget>
+           </item>
+           <item row="6" column="1">
+            <widget class="Line" name="line_7">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+            </widget>
+           </item>
+           <item row="7" column="0" colspan="6">
+            <widget class="Line" name="line_11">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="GFit">
+          <attribute name="title">
+           <string>G-Fit</string>
+          </attribute>
+          <layout class="QGridLayout" name="gridLayout_8">
+           <item row="1" column="1">
+            <widget class="QWidget" name="UserLines" native="true">
+             <layout class="QGridLayout" name="gridLayout_11">
+              <item row="0" column="0">
+               <widget class="QLabel" name="UserLinesLabel">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="font">
+                 <font>
+                  <family>Helvetica</family>
+                  <pointsize>20</pointsize>
+                 </font>
+                </property>
+                <property name="frameShape">
+                 <enum>QFrame::StyledPanel</enum>
+                </property>
+                <property name="text">
+                 <string>User Lines</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignCenter</set>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QWidget" name="SystemLines" native="true">
+             <layout class="QGridLayout" name="gridLayout_9">
+              <item row="1" column="0">
+               <widget class="QCheckBox" name="HydrogenA">
+                <property name="text">
+                 <string>Hydrogen Alpha</string>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="0">
+               <widget class="QCheckBox" name="AtmoOx">
+                <property name="text">
+                 <string>Atmospheric Oxygen</string>
+                </property>
+               </widget>
+              </item>
+              <item row="5" column="0">
+               <widget class="QCheckBox" name="He4685">
+                <property name="text">
+                 <string>He 4685.92</string>
+                </property>
+               </widget>
+              </item>
+              <item row="7" column="0">
+               <widget class="QCheckBox" name="He5015">
+                <property name="text">
+                 <string>He 5015.68</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="0">
+               <widget class="QCheckBox" name="HydrogenB">
+                <property name="text">
+                 <string>Hydrogen Beta</string>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="0">
+               <widget class="QCheckBox" name="He5875">
+                <property name="text">
+                 <string>He 5875.62</string>
+                </property>
+               </widget>
+              </item>
+              <item row="6" column="0">
+               <widget class="QCheckBox" name="He4921">
+                <property name="text">
+                 <string>He 4921.93</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="0">
+               <widget class="QLabel" name="SystemLinesLabel">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="font">
+                 <font>
+                  <family>Helvetica</family>
+                  <pointsize>20</pointsize>
+                 </font>
+                </property>
+                <property name="frameShape">
+                 <enum>QFrame::StyledPanel</enum>
+                </property>
+                <property name="text">
+                 <string>System Lines</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignCenter</set>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item row="0" column="0" colspan="2">
+            <widget class="QLabel" name="GfitLabel">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="font">
+              <font>
+               <family>Helvetica</family>
+               <pointsize>20</pointsize>
+              </font>
+             </property>
+             <property name="frameShape">
+              <enum>QFrame::StyledPanel</enum>
+             </property>
+             <property name="text">
+              <string>Gaussian Fitting</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="1">
+            <widget class="QWidget" name="GFitPlotButtons" native="true">
+             <layout class="QGridLayout" name="gridLayout_12">
+              <item row="0" column="0">
+               <widget class="QPushButton" name="GFitRun">
+                <property name="text">
+                 <string>Fit and Plot</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+             <zorder>LineAdditions</zorder>
+             <zorder>GFitRun</zorder>
+            </widget>
+           </item>
+           <item row="2" column="0">
+            <widget class="QWidget" name="LineAdditions" native="true">
+             <layout class="QGridLayout" name="gridLayout_10">
+              <item row="4" column="0" colspan="2">
+               <widget class="QPushButton" name="AddLine">
+                <property name="text">
+                 <string>Add Line</string>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="0">
+               <widget class="QLineEdit" name="LineLocation">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="toolTip">
+                 <string>Actual Location of line on non shifted spectrum (Angstroms)</string>
+                </property>
+                <property name="placeholderText">
+                 <string>Line Location</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="0" colspan="2">
+               <widget class="QLabel" name="LineAdditionsLabel">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="font">
+                 <font>
+                  <family>Helvetica</family>
+                  <pointsize>20</pointsize>
+                 </font>
+                </property>
+                <property name="frameShape">
+                 <enum>QFrame::StyledPanel</enum>
+                </property>
+                <property name="text">
+                 <string>Line Additions</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="0" colspan="2">
+               <widget class="QLineEdit" name="LineName">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="toolTip">
+                 <string>Name of line that user will see</string>
+                </property>
+                <property name="placeholderText">
+                 <string>Line Label</string>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="1">
+               <widget class="QDoubleSpinBox" name="LineWindow">
+                <property name="toolTip">
+                 <string>Size Arond line (Angstroms)</string>
+                </property>
+                <property name="minimum">
+                 <double>0.050000000000000</double>
+                </property>
+                <property name="singleStep">
+                 <double>0.010000000000000</double>
+                </property>
+                <property name="value">
+                 <double>0.100000000000000</double>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="1">
+               <widget class="QLabel" name="LineWindowize">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string>Win Size</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="OrbitalFit">
+          <attribute name="title">
+           <string>Orb-Fit</string>
+          </attribute>
+          <layout class="QGridLayout" name="gridLayout_13">
+           <item row="1" column="2">
+            <widget class="QDoubleSpinBox" name="EccentricityValue">
+             <property name="toolTip">
+              <string>Eccentricity</string>
+             </property>
+             <property name="maximum">
+              <double>0.000000000000000</double>
+             </property>
+             <property name="singleStep">
+              <double>0.000000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item row="8" column="0" colspan="4">
+            <widget class="QPushButton" name="OrbFitRun">
+             <property name="text">
+              <string>Run Orbital fit</string>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="0" colspan="3">
+            <widget class="QLineEdit" name="lineEdit_8">
+             <property name="toolTip">
+              <string>Period in days</string>
+             </property>
+             <property name="placeholderText">
+              <string>Period (days)</string>
+             </property>
+            </widget>
+           </item>
+           <item row="6" column="1">
+            <widget class="QRadioButton" name="SinTrend">
+             <property name="text">
+              <string>Sin Trend</string>
+             </property>
+            </widget>
+           </item>
+           <item row="7" column="2" colspan="2">
+            <widget class="QPushButton" name="OrbClearAll">
+             <property name="text">
+              <string>Clear All Parameters</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="3">
+            <widget class="QCheckBox" name="FreeEccentricity">
+             <property name="toolTip">
+              <string>Make the Eccentricity a Free parameter</string>
+             </property>
+             <property name="text">
+              <string>Free</string>
+             </property>
+             <property name="checkable">
+              <bool>false</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="6" column="0">
+            <widget class="QRadioButton" name="Lineartrend">
+             <property name="text">
+              <string>Linear Trend</string>
+             </property>
+            </widget>
+           </item>
+           <item row="6" column="2">
+            <widget class="QCheckBox" name="PhaseFoldyn">
+             <property name="text">
+              <string>Phase Fold</string>
+             </property>
+            </widget>
+           </item>
+           <item row="7" column="0" colspan="2">
+            <widget class="QPushButton" name="OrbClearTrends">
+             <property name="text">
+              <string>Clear All Trends</string>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="3">
+            <widget class="QToolButton" name="OrbBrowse">
+             <property name="toolTip">
+              <string>Browse computer for RV files</string>
+             </property>
+             <property name="text">
+              <string>...</string>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="3">
+            <widget class="QCheckBox" name="FreePeriod">
+             <property name="toolTip">
+              <string>Make the period a free parameter</string>
+             </property>
+             <property name="text">
+              <string>Free</string>
+             </property>
+             <property name="checkable">
+              <bool>false</bool>
+             </property>
+             <property name="checked">
+              <bool>false</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="0" colspan="3">
+            <widget class="QLineEdit" name="lineEdit_9">
+             <property name="toolTip">
+              <string>Path to RV file</string>
+             </property>
+             <property name="placeholderText">
+              <string>RV file Path</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QLabel" name="EccentricityLabel">
+             <property name="text">
+              <string>Eccentricity:</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="0" colspan="4">
+            <widget class="QLabel" name="orbitalFitLabel">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="font">
+              <font>
+               <family>Helvetica</family>
+               <pointsize>20</pointsize>
+              </font>
+             </property>
+             <property name="frameShape">
+              <enum>QFrame::StyledPanel</enum>
+             </property>
+             <property name="text">
+              <string>Orbital Fitter</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="Settings">
+          <attribute name="title">
+           <string>Settings</string>
+          </attribute>
+          <layout class="QGridLayout" name="gridLayout_14">
+           <item row="1" column="0">
+            <widget class="QLabel" name="SAULinfo">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="font">
+              <font>
+               <family>Monaco</family>
+               <pointsize>15</pointsize>
+              </font>
+             </property>
+             <property name="frameShape">
+              <enum>QFrame::NoFrame</enum>
+             </property>
+             <property name="frameShadow">
+              <enum>QFrame::Plain</enum>
+             </property>
+             <property name="text">
+              <string>SAUL Alpha 0.8 
+Devloped at High Point Univerisy by 
+Thomas Boudreaux and Padraig Clancy</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="0">
+            <widget class="QLabel" name="SettingsLabel">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="font">
+              <font>
+               <family>Helvetica</family>
+               <pointsize>20</pointsize>
+              </font>
+             </property>
+             <property name="frameShape">
+              <enum>QFrame::StyledPanel</enum>
+             </property>
+             <property name="text">
+              <string>Settings</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="0">
+            <widget class="QWidget" name="SettingsBox" native="true">
+             <layout class="QGridLayout" name="gridLayout_15">
+              <item row="0" column="2">
+               <widget class="QLabel" name="PLACEHOLDER">
+                <property name="text">
+                 <string>Future home of settings</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="2">
+               <widget class="QPushButton" name="Secret">
+                <property name="text">
+                 <string>Answer</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </widget>
+       </item>
+      </layout>
+      <zorder>Terminal</zorder>
+      <zorder>Terminal</zorder>
+      <zorder>Functions</zorder>
+     </widget>
+    </item>
+    <item row="0" column="2" rowspan="3" colspan="2">
+     <widget class="QWidget" name="PlotArea" native="true">
+      <layout class="QGridLayout" name="gridLayout_19">
+       <item row="1" column="0">
+        <widget class="QWidget" name="PlotOne" native="true"/>
+       </item>
+       <item row="2" column="0">
+        <widget class="QWidget" name="PlotTwo" native="true"/>
+       </item>
+      </layout>
+      <zorder>PlotTwo</zorder>
+      <zorder>PlotOne</zorder>
+      <zorder>PlotTwo</zorder>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1674</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <widget class="QMenu" name="menuOpen_file">
+     <property name="title">
+      <string>open file</string>
+     </property>
+     <addaction name="actionOpen_RV_file"/>
+     <addaction name="actionOpen_Fits_File"/>
+     <addaction name="actionOpen_ASCII_file"/>
+    </widget>
+    <addaction name="actionSave_Plots_2"/>
+    <addaction name="actionSave_ASCII_Fit"/>
+    <addaction name="actionReload"/>
+    <addaction name="menuOpen_file"/>
+    <addaction name="actionSave_Plots"/>
+   </widget>
+   <widget class="QMenu" name="menuEdit">
+    <property name="title">
+     <string>Edit</string>
+    </property>
+    <addaction name="actionCopy"/>
+    <addaction name="actionPaste"/>
+    <addaction name="actionCut"/>
+   </widget>
+   <widget class="QMenu" name="menuWindow">
+    <property name="title">
+     <string>Window</string>
+    </property>
+    <addaction name="actionFull_Screen"/>
+    <addaction name="actionHide"/>
+    <addaction name="actionReset_Windows"/>
+   </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>Help</string>
+    </property>
+    <addaction name="actionREADME"/>
+    <addaction name="actionInfo"/>
+    <addaction name="actionCommand_List"/>
+   </widget>
+   <widget class="QMenu" name="menuSAUL">
+    <property name="title">
+     <string>SAUL</string>
+    </property>
+    <widget class="QMenu" name="menuSource_Code">
+     <property name="title">
+      <string>Source Code</string>
+     </property>
+     <widget class="QMenu" name="menuIndividual_File">
+      <property name="title">
+       <string>Individual File</string>
+      </property>
+      <widget class="QMenu" name="menuGuiFiles">
+       <property name="title">
+        <string>GuiFiles</string>
+       </property>
+       <addaction name="actionMainWindow_py"/>
+       <addaction name="actionCorrelation2_py"/>
+       <addaction name="actionYnadcanve_py"/>
+       <addaction name="actionJumptoorder_py"/>
+       <addaction name="actionGaussian_py"/>
+       <addaction name="actionMultiPlotViewr_py"/>
+      </widget>
+      <addaction name="actionBPlot_py"/>
+      <addaction name="actionGuiFunction_py"/>
+      <addaction name="actionGeneral_py"/>
+      <addaction name="actionConsollControl_py"/>
+      <addaction name="actionAstrolib_py"/>
+      <addaction name="menuGuiFiles"/>
+     </widget>
+     <addaction name="actionAll"/>
+     <addaction name="menuIndividual_File"/>
+    </widget>
+    <addaction name="menuSource_Code"/>
+    <addaction name="actionTerminal_Breakaway"/>
+    <addaction name="actionUse_Matplotlib_standard"/>
+    <addaction name="actionOpen_Cross_Correlation_BreakAway_settings"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuEdit"/>
+   <addaction name="menuWindow"/>
+   <addaction name="menuSAUL"/>
+   <addaction name="menuHelp"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionSave_Plots">
+   <property name="text">
+    <string>quit (command-q)</string>
+   </property>
+  </action>
+  <action name="actionSave_ASCII_Fit">
+   <property name="text">
+    <string>Save ASCII Fit</string>
+   </property>
+  </action>
+  <action name="actionReload">
+   <property name="text">
+    <string>reload (command-r)</string>
+   </property>
+  </action>
+  <action name="actionQuit_a">
+   <property name="text">
+    <string>quit (a)</string>
+   </property>
+  </action>
+  <action name="actionSave_Plots_2">
+   <property name="text">
+    <string>Save Plots</string>
+   </property>
+  </action>
+  <action name="actionOpen_RV_file">
+   <property name="text">
+    <string>Open RV file</string>
+   </property>
+  </action>
+  <action name="actionOpen_Fits_File">
+   <property name="text">
+    <string>Open Fits File</string>
+   </property>
+  </action>
+  <action name="actionOpen_ASCII_file">
+   <property name="text">
+    <string>Open ASCII file</string>
+   </property>
+  </action>
+  <action name="actionCopy">
+   <property name="text">
+    <string>Copy</string>
+   </property>
+  </action>
+  <action name="actionPaste">
+   <property name="text">
+    <string>Paste</string>
+   </property>
+  </action>
+  <action name="actionCut">
+   <property name="text">
+    <string>Cut</string>
+   </property>
+  </action>
+  <action name="actionFull_Screen">
+   <property name="text">
+    <string>Full Screen</string>
+   </property>
+  </action>
+  <action name="actionHide">
+   <property name="text">
+    <string>Hide</string>
+   </property>
+  </action>
+  <action name="actionReset_Windows">
+   <property name="text">
+    <string>Reset Windows</string>
+   </property>
+  </action>
+  <action name="actionREADME">
+   <property name="text">
+    <string>README</string>
+   </property>
+  </action>
+  <action name="actionInfo">
+   <property name="text">
+    <string>info</string>
+   </property>
+  </action>
+  <action name="actionCommand_List">
+   <property name="text">
+    <string>Command List</string>
+   </property>
+  </action>
+  <action name="actionAll">
+   <property name="text">
+    <string>All</string>
+   </property>
+  </action>
+  <action name="actionBPlot_py">
+   <property name="text">
+    <string>BPlot.py</string>
+   </property>
+  </action>
+  <action name="actionGuiFunction_py">
+   <property name="text">
+    <string>GuiFunction.py</string>
+   </property>
+  </action>
+  <action name="actionGeneral_py">
+   <property name="text">
+    <string>General.py</string>
+   </property>
+  </action>
+  <action name="actionConsollControl_py">
+   <property name="text">
+    <string>ConsollControl.py</string>
+   </property>
+  </action>
+  <action name="actionAstrolib_py">
+   <property name="text">
+    <string>Astrolib.py</string>
+   </property>
+  </action>
+  <action name="actionMainWindow_py">
+   <property name="text">
+    <string>MainWindow.py</string>
+   </property>
+  </action>
+  <action name="actionCorrelation2_py">
+   <property name="text">
+    <string>Correlation2.py</string>
+   </property>
+  </action>
+  <action name="actionYnadcanve_py">
+   <property name="text">
+    <string>ynadcanve.py</string>
+   </property>
+  </action>
+  <action name="actionJumptoorder_py">
+   <property name="text">
+    <string>jumptoorder.py</string>
+   </property>
+  </action>
+  <action name="actionGaussian_py">
+   <property name="text">
+    <string>Gaussian.py</string>
+   </property>
+  </action>
+  <action name="actionMultiPlotViewr_py">
+   <property name="text">
+    <string>MultiPlotViewr.py</string>
+   </property>
+  </action>
+  <action name="actionTerminal_Breakaway">
+   <property name="text">
+    <string>Terminal Breakaway</string>
+   </property>
+  </action>
+  <action name="actionUse_Matplotlib_standard">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Use Matplotlib standard</string>
+   </property>
+  </action>
+  <action name="actionOpen_Cross_Correlation_BreakAway_settings">
+   <property name="text">
+    <string>Open Cross Correlation BreakAway settings</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
