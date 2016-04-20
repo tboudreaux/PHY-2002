@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1674</width>
+    <width>1920</width>
     <height>1107</height>
    </rect>
   </property>
@@ -407,7 +407,7 @@
           </sizepolicy>
          </property>
          <property name="currentIndex">
-          <number>0</number>
+          <number>2</number>
          </property>
          <widget class="QWidget" name="BSP">
           <attribute name="title">
@@ -421,23 +421,10 @@
              </property>
             </widget>
            </item>
-           <item row="3" column="1">
-            <widget class="QCheckBox" name="Normalizeyn">
-             <property name="text">
-              <string>Normalize Spectra</string>
-             </property>
-             <property name="checked">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="1" colspan="5">
-            <widget class="QLineEdit" name="BSPPath">
+           <item row="6" column="5">
+            <widget class="QSpinBox" name="NumToStack">
              <property name="toolTip">
-              <string>Path to fits file, or a path to a path file, if you want to overllay exposures enter a path to a path file</string>
-             </property>
-             <property name="placeholderText">
-              <string>Path to fits file, or path to 'Path file'</string>
+              <string>Initial number of exposure to overlay</string>
              </property>
             </widget>
            </item>
@@ -448,10 +435,20 @@
              </property>
             </widget>
            </item>
-           <item row="6" column="5">
-            <widget class="QSpinBox" name="NumToStack">
+           <item row="6" column="1">
+            <widget class="QCheckBox" name="Stack">
              <property name="toolTip">
-              <string>Initial number of exposure to overlay</string>
+              <string>Overlay exposures with a y offset to see compare them quickly</string>
+             </property>
+             <property name="text">
+              <string>Overlay exposure</string>
+             </property>
+            </widget>
+           </item>
+           <item row="6" column="4">
+            <widget class="Line" name="line_5">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
              </property>
             </widget>
            </item>
@@ -480,6 +477,26 @@
              </property>
             </widget>
            </item>
+           <item row="1" column="1" colspan="5">
+            <widget class="QLineEdit" name="BSPPath">
+             <property name="toolTip">
+              <string>Path to fits file, or a path to a path file, if you want to overllay exposures enter a path to a path file</string>
+             </property>
+             <property name="placeholderText">
+              <string>Path to fits file, or path to 'Path file'</string>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="1">
+            <widget class="QCheckBox" name="Normalizeyn">
+             <property name="text">
+              <string>Normalize Spectra</string>
+             </property>
+             <property name="checked">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
            <item row="6" column="3">
             <widget class="QCheckBox" name="StackAll">
              <property name="toolTip">
@@ -494,23 +511,6 @@
             <widget class="Line" name="line_3">
              <property name="orientation">
               <enum>Qt::Horizontal</enum>
-             </property>
-            </widget>
-           </item>
-           <item row="6" column="1">
-            <widget class="QCheckBox" name="Stack">
-             <property name="toolTip">
-              <string>Overlay exposures with a y offset to see compare them quickly</string>
-             </property>
-             <property name="text">
-              <string>Overlay exposure</string>
-             </property>
-            </widget>
-           </item>
-           <item row="6" column="4">
-            <widget class="Line" name="line_5">
-             <property name="orientation">
-              <enum>Qt::Vertical</enum>
              </property>
             </widget>
            </item>
@@ -580,6 +580,13 @@
              </property>
             </widget>
            </item>
+           <item row="1" column="6">
+            <widget class="QToolButton" name="toolButton">
+             <property name="text">
+              <string>...</string>
+             </property>
+            </widget>
+           </item>
           </layout>
          </widget>
          <widget class="QWidget" name="Ccor">
@@ -587,30 +594,50 @@
            <string>C-Cor</string>
           </attribute>
           <layout class="QGridLayout" name="gridLayout_7">
-           <item row="3" column="0" colspan="6">
-            <widget class="QLineEdit" name="CCorTarget">
+           <item row="6" column="5">
+            <widget class="QSpinBox" name="CCorDegree">
+             <property name="minimum">
+              <number>1</number>
+             </property>
+             <property name="value">
+              <number>4</number>
+             </property>
+            </widget>
+           </item>
+           <item row="6" column="1">
+            <widget class="Line" name="line_7">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+            </widget>
+           </item>
+           <item row="7" column="0" colspan="6">
+            <widget class="Line" name="line_11">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="5">
+            <widget class="QLineEdit" name="CCorList">
              <property name="placeholderText">
-              <string>Enter Target Path</string>
+              <string>Enter Path to Path File</string>
              </property>
             </widget>
            </item>
-           <item row="5" column="0">
-            <widget class="QLabel" name="ShiftLabel">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
+           <item row="6" column="0">
+            <widget class="QSpinBox" name="ShiftSize">
+             <property name="minimum">
+              <number>50</number>
              </property>
-             <property name="text">
-              <string>Shift Size</string>
+             <property name="maximum">
+              <number>1000</number>
              </property>
-            </widget>
-           </item>
-           <item row="1" column="0">
-            <widget class="QCheckBox" name="CCorUseList">
-             <property name="text">
-              <string>Use List</string>
+             <property name="singleStep">
+              <number>2</number>
+             </property>
+             <property name="value">
+              <number>102</number>
              </property>
             </widget>
            </item>
@@ -618,6 +645,13 @@
             <widget class="Line" name="line_6">
              <property name="orientation">
               <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
+           </item>
+           <item row="10" column="0">
+            <widget class="QCheckBox" name="ShowAll">
+             <property name="text">
+              <string>All Orders</string>
              </property>
             </widget>
            </item>
@@ -646,10 +680,30 @@
              </property>
             </widget>
            </item>
-           <item row="1" column="5">
-            <widget class="QLineEdit" name="CCorList">
+           <item row="3" column="0" colspan="6">
+            <widget class="QLineEdit" name="CCorTarget">
              <property name="placeholderText">
-              <string>Enter Path to Path File</string>
+              <string>Enter Target Path</string>
+             </property>
+            </widget>
+           </item>
+           <item row="5" column="0">
+            <widget class="QLabel" name="ShiftLabel">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="text">
+              <string>Shift Size</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QCheckBox" name="CCorUseList">
+             <property name="text">
+              <string>Use List</string>
              </property>
             </widget>
            </item>
@@ -671,29 +725,6 @@
             <widget class="Line" name="line_9">
              <property name="orientation">
               <enum>Qt::Vertical</enum>
-             </property>
-            </widget>
-           </item>
-           <item row="6" column="0">
-            <widget class="QSpinBox" name="ShiftSize">
-             <property name="minimum">
-              <number>50</number>
-             </property>
-             <property name="maximum">
-              <number>1000</number>
-             </property>
-             <property name="singleStep">
-              <number>2</number>
-             </property>
-             <property name="value">
-              <number>102</number>
-             </property>
-            </widget>
-           </item>
-           <item row="10" column="0">
-            <widget class="QCheckBox" name="ShowAll">
-             <property name="text">
-              <string>All Orders</string>
              </property>
             </widget>
            </item>
@@ -727,27 +758,24 @@
              </property>
             </widget>
            </item>
-           <item row="6" column="5">
-            <widget class="QSpinBox" name="CCorDegree">
-             <property name="minimum">
-              <number>1</number>
-             </property>
-             <property name="value">
-              <number>4</number>
+           <item row="1" column="6">
+            <widget class="QToolButton" name="toolButton_2">
+             <property name="text">
+              <string>...</string>
              </property>
             </widget>
            </item>
-           <item row="6" column="1">
-            <widget class="Line" name="line_7">
-             <property name="orientation">
-              <enum>Qt::Vertical</enum>
+           <item row="2" column="6">
+            <widget class="QToolButton" name="toolButton_3">
+             <property name="text">
+              <string>...</string>
              </property>
             </widget>
            </item>
-           <item row="7" column="0" colspan="6">
-            <widget class="Line" name="line_11">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
+           <item row="3" column="6">
+            <widget class="QToolButton" name="toolButton_4">
+             <property name="text">
+              <string>...</string>
              </property>
             </widget>
            </item>
@@ -897,7 +925,21 @@
            <item row="2" column="1">
             <widget class="QWidget" name="GFitPlotButtons" native="true">
              <layout class="QGridLayout" name="gridLayout_12">
-              <item row="0" column="0">
+              <item row="1" column="0">
+               <widget class="QLineEdit" name="lineEdit">
+                <property name="placeholderText">
+                 <string>Enter the path to fits file</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <widget class="QToolButton" name="toolButton_5">
+                <property name="text">
+                 <string>...</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="0" colspan="2">
                <widget class="QPushButton" name="GFitRun">
                 <property name="text">
                  <string>Fit and Plot</string>
@@ -905,8 +947,6 @@
                </widget>
               </item>
              </layout>
-             <zorder>LineAdditions</zorder>
-             <zorder>GFitRun</zorder>
             </widget>
            </item>
            <item row="2" column="0">
@@ -1251,9 +1291,6 @@ Thomas Boudreaux and Padraig Clancy</string>
         </widget>
        </item>
       </layout>
-      <zorder>Terminal</zorder>
-      <zorder>Terminal</zorder>
-      <zorder>Functions</zorder>
      </widget>
     </item>
     <item row="0" column="2" rowspan="3" colspan="2">
@@ -1266,9 +1303,6 @@ Thomas Boudreaux and Padraig Clancy</string>
         <widget class="QWidget" name="PlotTwo" native="true"/>
        </item>
       </layout>
-      <zorder>PlotTwo</zorder>
-      <zorder>PlotOne</zorder>
-      <zorder>PlotTwo</zorder>
      </widget>
     </item>
    </layout>
@@ -1278,7 +1312,7 @@ Thomas Boudreaux and Padraig Clancy</string>
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1674</width>
+     <width>1920</width>
      <height>22</height>
     </rect>
    </property>
