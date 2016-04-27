@@ -251,6 +251,16 @@ class SAUL(QtGui.QMainWindow):
         self.window4 = None
         self.window5 = None
 
+        self.height1 = self.ui.PlotOne.height()
+        self.width1 = self.ui.PlotOne.width()
+        self.height2 = self.ui.PlotTwo.height()
+        self.width2 = self.ui.PlotTwo.width()
+        self.FigOne = Figure(figsize=(self.height1, self.width1), dpi=85, facecolor='w')
+        self.FigTwo = Figure(figsize=(self.height2, self.width2), dpi=85, facecolor='w')
+        self.CanvasOne = FigureCanvas(self.FigOne)
+        self.CanvasTwo = FigureCanvas(self.FigTwo)
+        self.CanvasOne.setParent(self.ui.PlotOne)
+        self.CanvasTwo.setParent(self.ui.PlotTwo)
     ###########################
     #   GUI tie in functions  #
     ###########################
@@ -446,7 +456,7 @@ class SAUL(QtGui.QMainWindow):
     # This grabs the infomration for the plot function and then passed it to the Plotter class to plot the function
     # This could probably be cleaned up a bit, however thats a relativly low priority given that its not super
     #   as is right now
-    def plot(self):
+    def plotold(self):
         # Closes whatever figure is open so that the screen is not overrun with windows everytime Plot is pressed
         # the effect of this is that one can modify parmaters in the GUI and then replot by pressing plot
         plt.close(1)
@@ -473,22 +483,43 @@ class SAUL(QtGui.QMainWindow):
 
         if normalize is True:
             if self.ui.ShowBoth.isChecked() is True:
-                plotType = 1
+                ax1 = self.FigOne.add_subplot(111, xlabel='wavelength' + '(' + u'\212B' + ')', ylabel='Flux', title='Spectrum')
+                ax2 = self.FigTwo.add_subplot(111, xlabel='wavelength' + '(' + u'\212B' + ')', ylabel='Normalize Flux', title='Spectrum')
             elif self.ui.ShowNormOnly.isChecked() is True:
-                plotType = 2
+                ax1 = self.FigOne.add_subplot(111, xlabel='wavelength' + '(' + u'\212B' + ')', ylabel='Normalize Flux', title='Spectrum')
             elif self.ui.ShowNonNorm.isChecked() is True:
-                plotType = 3
+                ax1 = self.FigOne.add_subplot(111, xlabel='wavelength' + '(' + u'\212B' + ')', ylabel='Flux', title='Spectrum')
             else:
                 self.ui.GeneralInfo.append("<font color='red'> An Unknown error has occured, please close SAUL and reopen </font>")
+                raise IOError('ERROR - 42: AN UNKNOWN ERROR HAS OCCURECD WHEN EXECUTIG SAUL')
 
         # Determins whether to use stack plot or nstack plot, would like to figure out a better way to to this
         # than arrays but that is currently not a super high priority
         if stack is True:
-            Plotter.stackplot(FilePath, usearray[1], numToStack, order, degree, fit[0])
+            # Plotter.stackplot(FilePath, usearray[1], numToStack, order, degree, fit[0])
+            offset = 0
+            files = open(FilePath, 'w').readlines()
+            for i in range(numToStack):
+                data = GUIPlotter.spectra(files[i],order, degree, offset)
+                ax1.plot(data['w'],data['f'])
+                ax2.plot(data['w'], data['yn'])
+                ax2.plot(data['w'], data['yp'])
+                offset += 0.1
         else:
-            Plotter.nstackplot(FilePath, order, degree, fit[0])
+            # Plotter.nstackplot(FilePath, order, degree, fit[0])
         jumpcore[0] = False
         # self.jumpTo()
+
+    def plot(self, xdat, ydat, metadata, plotnum=1, clear=True):
+        if plotnum == 1:
+            ax = self.FigOne.add_subplot(111, xlabel=metadata[0], ylabel=metadata[1], title=metadata[2])
+            ax.plot(xdat, ydat)
+        elif plotnum == 2:
+            ax = self.FigTwo.add_subplot(111, xlabel=metadata[0], ylabel=metadata[1], title=metadata[2])
+            ax.plot(xdat, ydat)
+        else:
+            raise ValueError('ERROR - 1: ONLY TWO PLOTS PRESENT IN THE SAUL GUI, DID YOU DO SOMETHING WRONG WHEN '
+                             'CALLING THE FUNCTION')
 
     # This controls the "show fit" button, its color and the boolean behind it. Again I would like to come up with
     # a better way to store the booleans behind buttons, but that is for a latter date
@@ -519,7 +550,7 @@ class SAUL(QtGui.QMainWindow):
         self.window3.show()
 
 
-class Plotter(CCWindow):
+class MPLPlotter():
     @staticmethod
     def orbplot(TimeArray, RVArray, ErrorArray, period, foldphase=True, linearT=False, SinT=False):
         residualArray = [None] * len(TimeArray)
@@ -987,6 +1018,395 @@ class Plotter(CCWindow):
                 MyForm.window3 = OrderJump()
                 MyForm.window3.show()
         fig.canvas.mpl_connect('key_press_event', plotcontrol)
+
+
+class GUIPlotter():
+
+    @staticmethod
+    def orbplot(TimeArray, RVArray, ErrorArray, period, foldphase=True, linearT=False, SinT=False):
+        residualArray = [None] * len(TimeArray)
+        gs = gridspec.GridSpec(2, 1, height_ratios=[3, 1])
+        if linearT is True:
+            # def cosine(x, amp, phase, offset):
+            #     global OrbitlPeriod
+            #     return amp * np.sin((((2*math.pi)*x)/OrbitlPeriod) + phase) + offset
+            def othercosine(x, amp, phase, offset, P1):
+                global OrbitlPeriod
+                return P1*x + amp * np.sin((((2*math.pi)*x)/OrbitlPeriod) + phase) + offset
+            diff = max(RVArray) - min(RVArray)
+            if foldphase is False:
+                meanTime = sum(TimeArray)/len(TimeArray)
+                for x in range(len(TimeArray)):
+                    TimeArray[x] -= meanTime
+            OrbFig = plt.figure(figsize=(10, 10))
+            RVplot = OrbFig.add_subplot(gs[0])
+            ResidualPlot = OrbFig.add_subplot(gs[1])
+            npTimeArray = np.array(TimeArray)
+            RVplot.plot(TimeArray, RVArray, 'o')
+            npRVArray = np.array(RVArray)
+            # siny, covar = curve_fit(cosine, npTimeArray, npRVArray, p0=[float(diff/2), float(period), 0, -50])
+            # siny, covar = curve_fit(cosine, npTimeArray, npRVArray, p0=[float(diff/2), 0, -50])
+            siny, covar = curve_fit(othercosine, npTimeArray, npRVArray, p0=[float(diff/2), 0, -50, 0])
+            perr = np.sqrt(np.diag(covar))
+            if foldphase is False:
+                clean = np.linspace(min(npTimeArray)-10, max(npTimeArray)+10, 5000)
+            else:
+                clean = np.linspace(min(npTimeArray)-1, max(npTimeArray)+1, 5000)
+            # RVplot.plot(clean, cosine(clean, *siny), label='RV semiamplitude: ' + str(siny[0]) + '+-' + str(perr[0]))
+            RVplot.plot(clean, othercosine(clean, *siny), label='RV semiamplitude: ' + str(siny[0]) + '+-' + str(perr[0]))
+            if foldphase is False:
+                RVplot.set_xlabel('Period (Days)')
+            else:
+                RVplot.set_xlabel('Period (Phase)')
+            RVplot.set_ylabel('RV (Km*s^-1)')
+            for i in range(len(RVArray)):
+                # fitValue = cosine(TimeArray[i], *siny)
+                fitValue = othercosine(TimeArray[i], *siny)
+                residualArray[i] = fitValue - RVArray[i]
+            RVplot.errorbar(npTimeArray, npRVArray, yerr=ErrorArray, fmt='o')
+            ResidualPlot.plot(TimeArray, residualArray, 's')
+            ResidualPlot.errorbar(TimeArray, residualArray, yerr=ErrorArray, fmt='s')
+            ResidualPlot.set_title('Residuals')
+            if foldphase is False:
+                ResidualPlot.set_xlabel('Time (Days)')
+            else:
+                ResidualPlot.set_xlabel('Time (Phase)')
+            ResidualPlot.set_ylabel('Function - Data Point')
+            ResidualPlot.axhline(0, color='black', linestyle='--')
+            RVplot.set_title('RV vs Phase')
+            RVplot.legend(loc="best")
+            RVplot.axhline(siny[2], color="grey", linestyle='--')
+            plt.show()
+
+            print 'RV semiamplitude:', siny[0], '+-', perr[0]
+            print 'System Velocity:', siny[2], '+-', perr[2]
+            # return {'Xdata': npTimeArray, 'Ydata': npRVArray, 'function': cosine, 'smooth': clean, 'fit': siny}
+            return {'Xdata': npTimeArray, 'Ydata': npRVArray, 'function': othercosine, 'smooth': clean, 'fit': siny}
+        elif SinT is True:
+            def SinTrendFit(x, amp1, phase1, offset1, LP, amp2, phase2):
+                global OrbitlPeriod
+                return amp2 * np.sin((((2*math.pi)*x)/LP) + phase2) + amp1 * np.sin((((2*math.pi)*x)/OrbitlPeriod) + phase1) + offset1
+            diff = max(RVArray) - min(RVArray)
+            if foldphase is False:
+                meanTime = sum(TimeArray)/len(TimeArray)
+                for x in range(len(TimeArray)):
+                    TimeArray[x] -= meanTime
+            OrbFig = plt.figure(figsize=(10, 10))
+            RVplot = OrbFig.add_subplot(gs[0])
+            ResidualPlot = OrbFig.add_subplot(gs[1])
+            npTimeArray = np.array(TimeArray)
+            RVplot.plot(TimeArray, RVArray, 'o')
+            npRVArray = np.array(RVArray)
+            # siny, covar = curve_fit(cosine, npTimeArray, npRVArray, p0=[float(diff/2), float(period), 0, -50])
+            # siny, covar = curve_fit(cosine, npTimeArray, npRVArray, p0=[float(diff/2), 0, -50])
+            siny, covar = curve_fit(SinTrendFit, npTimeArray, npRVArray, p0=[float(diff/2), 0, -50, 50, 10, 0])
+            perr = np.sqrt(np.diag(covar))
+            if foldphase is False:
+                clean = np.linspace(min(npTimeArray)-10, max(npTimeArray)+10, 5000)
+            else:
+                clean = np.linspace(min(npTimeArray)-1, max(npTimeArray)+1, 5000)
+            # RVplot.plot(clean, cosine(clean, *siny), label='RV semiamplitude: ' + str(siny[0]) + '+-' + str(perr[0]))
+            RVplot.plot(clean, SinTrendFit(clean, *siny), label='RV semiamplitude: ' + str(siny[0]) + '+-' + str(perr[0]))
+            if foldphase is False:
+                RVplot.set_xlabel('Period (Days)')
+            else:
+                RVplot.set_xlabel('Period (Phase)')
+            RVplot.set_ylabel('RV (Km*s^-1)')
+            for i in range(len(RVArray)):
+                # fitValue = cosine(TimeArray[i], *siny)
+                fitValue = SinTrendFit(TimeArray[i], *siny)
+                residualArray[i] = fitValue - RVArray[i]
+            RVplot.errorbar(npTimeArray, npRVArray, yerr=ErrorArray, fmt='o')
+            ResidualPlot.plot(TimeArray, residualArray, 's')
+            ResidualPlot.errorbar(TimeArray, residualArray, yerr=ErrorArray, fmt='s')
+            ResidualPlot.set_title('Residuals')
+            if foldphase is False:
+                ResidualPlot.set_xlabel('Time (Days)')
+            else:
+                ResidualPlot.set_xlabel('Time (Phase)')
+            ResidualPlot.set_ylabel('Function - Data Point')
+            ResidualPlot.axhline(0, color='black', linestyle='--')
+            RVplot.set_title('RV vs Phase')
+            RVplot.legend(loc="best")
+            RVplot.axhline(siny[2], color="grey", linestyle='--')
+            plt.show()
+
+            print 'RV semiamplitude:', siny[0], '+-', perr[0]
+            print 'System Velocity:', siny[2], '+-', perr[2]
+            # return {'Xdata': npTimeArray, 'Ydata': npRVArray, 'function': cosine, 'smooth': clean, 'fit': siny}
+            return {'Xdata': npTimeArray, 'Ydata': npRVArray, 'function': SinTrendFit, 'smooth': clean, 'fit': siny}
+        else:
+            def cosine(x, amp, phase, offset):
+                global OrbitlPeriod
+                return amp * np.sin((((2*math.pi)*x)/OrbitlPeriod) + phase) + offset
+            diff = max(RVArray) - min(RVArray)
+            if foldphase is False:
+                meanTime = sum(TimeArray)/len(TimeArray)
+                for x in range(len(TimeArray)):
+                    TimeArray[x] -= meanTime
+            OrbFig = plt.figure(figsize=(10, 10))
+            RVplot = OrbFig.add_subplot(gs[0])
+            ResidualPlot = OrbFig.add_subplot(gs[1])
+            npTimeArray = np.array(TimeArray)
+            RVplot.plot(TimeArray, RVArray, 'o')
+            npRVArray = np.array(RVArray)
+            # siny, covar = curve_fit(cosine, npTimeArray, npRVArray, p0=[float(diff/2), float(period), 0, -50])
+            # siny, covar = curve_fit(cosine, npTimeArray, npRVArray, p0=[float(diff/2), 0, -50])
+            siny, covar = curve_fit(cosine, npTimeArray, npRVArray, p0=[float(diff/2), 0, -50])
+            perr = np.sqrt(np.diag(covar))
+            if foldphase is False:
+                clean = np.linspace(min(npTimeArray)-10, max(npTimeArray)+10, 5000)
+            else:
+                clean = np.linspace(min(npTimeArray)-1, max(npTimeArray)+1, 5000)
+            # RVplot.plot(clean, cosine(clean, *siny), label='RV semiamplitude: ' + str(siny[0]) + '+-' + str(perr[0]))
+            RVplot.plot(clean, cosine(clean, *siny), label='RV semiamplitude: ' + str(siny[0]) + '+-' + str(perr[0]))
+            if foldphase is False:
+                RVplot.set_xlabel('Period (Days)')
+            else:
+                RVplot.set_xlabel('Period (Phase)')
+            RVplot.set_ylabel('RV (Km*s^-1)')
+            for i in range(len(RVArray)):
+                # fitValue = cosine(TimeArray[i], *siny)
+                fitValue = cosine(TimeArray[i], *siny)
+                residualArray[i] = fitValue - RVArray[i]
+            RVplot.errorbar(npTimeArray, npRVArray, yerr=ErrorArray, fmt='o')
+            ResidualPlot.plot(TimeArray, residualArray, 's')
+            ResidualPlot.errorbar(TimeArray, residualArray, yerr=ErrorArray, fmt='s')
+            ResidualPlot.set_title('Residuals')
+            if foldphase is False:
+                ResidualPlot.set_xlabel('Time (Days)')
+            else:
+                ResidualPlot.set_xlabel('Time (Phase)')
+            ResidualPlot.set_ylabel('Function - Data Point')
+            ResidualPlot.axhline(0, color='black', linestyle='--')
+            RVplot.set_title('RV vs Phase')
+            RVplot.legend(loc="best")
+            RVplot.axhline(siny[2], color="grey", linestyle='--')
+            plt.show()
+
+            print 'RV semiamplitude:', siny[0], '+-', perr[0]
+            print 'System Velocity:', siny[2], '+-', perr[2]
+            # return {'Xdata': npTimeArray, 'Ydata': npRVArray, 'function': cosine, 'smooth': clean, 'fit': siny}
+            return {'Xdata': npTimeArray, 'Ydata': npRVArray, 'function': cosine, 'smooth': clean, 'fit': siny}
+
+    # Corplot function that calls the ccofig function from GUI function to extract the required data
+    # incidentaly this will be completely reorganized in the great reorganization of code to come
+    # I wrote the comment like a week ago now and I have yet to begin the great reorganization of code
+    # as my younger naive self called it, rather it has been a slow logical change in the code base
+    # whatever, maybe one day.
+    @staticmethod
+    def corplot(degree, templatename, objectname, order, num, larger, smaller, show, value, doPlot, autofit, xcoord=None,
+                ycoord=None, x1bound=5, x2bound=5):
+        global FullHJD
+        fitsobject = str(objectname)
+        objectfits = fits.open(fitsobject)
+        starname = objectfits[0].header['OBJECT']
+        templatefits = fits.open(str(templatename))
+        namePass[1] = templatefits[0].header['OBJECT']
+        namePass[0] = starname
+        # Creates a matplotlib figure of given size (will at some point be configuarble in the forcoming settings menu)
+        # fig=plt.figure(figsize=(10, 7))
+        # Adds the ccorfig subplot
+        # ccorfig = fig.add_subplot(1, 1, 1)
+        # fetches the data from the ccor function in Advanced Plotting by calling the function, data is returnted as a
+        # 2 element dictionary, so then when its plotted below there its is called with the dictionaty nameing
+        userFit = [False]
+        if doPlot is True and order <= numorders[0]:
+            global gcount
+            gcount = 0
+            global gdata
+            gdata = [None, None]
+            finished = [False]
+            data = AdvancedPlotting.ccor(objectname, templatename, degree, order-1, num, larger, smaller, value)
+            fig = plt.figure(figsize=(10, 10))
+            if show is False:
+                ccorfig = fig.add_subplot(1, 1, 1)
+            else:
+                ccorfig = fig.add_subplot(2, 1, 1)
+                AdvancedPlotting.waveshower(fig, templatename, objectname, order, degree)
+            index = 0
+            maximum = data['correlation'][0]
+            center = 0
+            if autofit is True:
+                for count in range(len(data['correlation'])):
+                    if data['correlation'][count] > maximum:
+                        maximum = data['correlation'][count]
+                        center = data['offset'][count]
+                        index = count
+            else:
+                try:
+                    index = min(range(len(data['offset'])), key=lambda i: abs(data['offset'][i]-xcoord))
+                    index = int(index)
+                    center = data['offset'][index]
+                    maximum = data['correlation'][index]
+                except TypeError:
+                    # CCWindow.ui.infobox.append('Unable to refit')
+                    for count in range(len(data['correlation'])):
+                        if data['correlation'][count] > maximum:
+                            maximum = data['correlation'][count]
+                            center = data['offset'][count]
+                            index = count
+            clean = np.linspace(-(value/2), value/2, 10*len(data['offset']))
+            # print data['correlation']
+            FitX = data['offset'][index-3:index+3]
+            FitY = data['correlation'][index-3:index+3]
+            try:
+                gaussy, gaussx = curve_fit(data['fit'], FitX, FitY, p0=[maximum, center, 5, .05])
+                # print 'Fit SUCSSES'
+            except (RuntimeError, TypeError):
+                maximumfalback = 0
+                centerfallback = 0
+                indexfallback = 0
+                for count in range(len(data['correlation'])):
+                    if data['correlation'][count] > maximumfalback:
+                        maximumfalback = data['correlation'][count]
+                        centerfallback = data['offset'][count]
+                        indexfallback = count
+                        # print 'Here are the parameters:', maximum falback, centerfallback, indexfallback
+                FitXFallback = data['offset'][indexfallback-5:indexfallback+5]
+                FitYFallback = data['correlation'][indexfallback-5:indexfallback+5]
+                try:
+                    gaussy, gaussx = curve_fit(data['fit'], FitXFallback, FitYFallback, p0=[maximumfalback,
+                                                                                            centerfallback, 5, 0.05])
+                except RuntimeError:
+                    print 'Cross Correlation Failed'
+                    Plotter.corplot(degree, templatename, objectname, order + 1, num, larger, smaller, compare[0],
+                                    value, doPlot, not userFit[0])
+
+            tempvelocity = gaussy[1] * data['dispersion']
+            print 'centroid:', gaussy[1]
+            print 'dispersion:', data['dispersion']
+            print 'Converted to Angstrons (tempvelocity):', tempvelocity
+            print 'average wavelength:', data['meantemp']
+            print 'speed of light:', c
+            UseVel = (tempvelocity/data['meantemp'])*c
+            print 'Velocity Before Correction:', UseVel
+            HelioCorrectedData = AdvancedPlotting.coordconvert(objectname, UseVel)
+            print 'Velocity After Correction:', HelioCorrectedData['HCV']
+            FullHJD = HelioCorrectedData['HJD']
+            FullHCV[order-1] = HelioCorrectedData['HCV']
+            FullCC[order-1] = data['correlation']
+            FullO[order-1] = data['offset']
+            FullGaus[order-1] = gaussy
+            centroids[order-1] = gaussy[1]
+            FullAmp[order-1] = gaussy[0]
+            ccorfig.plot(data['offset'], data['correlation'], label='X-Cor Plot | Relative Velocity: ' + str(UseVel))
+            ccorfig.plot(clean, data['fit'](clean, *gaussy),
+                         label='Gaussian Fit | x at max: ' + str(gaussy[1]) + '\n Heliocentric Velocity: ' +
+                         str(HelioCorrectedData['HCV']))
+            ccorfig.set_xlabel('Offset')
+            ccorfig.set_ylabel('Correlation Coefficient')
+            ccorfig.set_title('Cross Correlation, order number: ' + str(order) + ' for star ' + starname)
+            plt.legend(loc='best')
+            # This allows one to move between orders in C
+
+            def plotcontrol(event):
+                keydown = event.key
+                # A advances in the cross correlation, nothing is printed out as of yet, it just produced the plot
+                # eventually this whole function if gonna be reorganized to allow for multiple figures to be displayed
+                # over
+                if keydown == 'a' or keydown == 'A':
+                    plt.close()
+                    userFit[0] = False
+                    Plotter.corplot(degree, templatename, objectname, order + 1, num, larger, smaller, compare[0],
+                                    value, doPlot, not userFit[0])
+                elif keydown == 'c' or keydown == 'C':
+                    plt.close()
+                    compare[0] = not compare[0]
+                    Plotter.corplot(degree, templatename, objectname, order, num, larger, smaller, compare[0], value,
+                                    doPlot, not userFit[0], xcoord=xcoord, ycoord=ycoord, x1bound=x1bound, x2bound=x2bound)
+                elif keydown == 'b' or keydown == 'b':
+                    plt.close()
+                    userFit[0] = False
+                    Plotter.corplot(degree, templatename, objectname, order - 1, num, larger, smaller, compare[0],
+                                    value, doPlot, not userFit[0])
+                elif keydown == 'r' or keydown == 'R':
+                    plt.close()
+                    xloc, yloc = event.xdata, event.ydata
+                    userFit[0] = True
+                    Plotter.corplot(degree, templatename, objectname, order, num, larger, smaller, compare[0], value,
+                                    doPlot, not userFit[0], xcoord=xloc, ycoord=yloc)
+                elif keydown == 'g' or keydown == 'G':
+                    if gdata[0] is None:
+                        gdata[0] = event.xdata
+                    elif gdata[1] is None:
+                        gdata[1] = event.xdata
+                    else:
+                        pass
+                    if gdata[0] is not None and gdata[1] is not None:
+                        plt.close()
+                        xdiff = abs(gdata[1] - gdata[0])
+                        bound = xdiff/2
+                        bound = int(bound)
+                        xloc, yloc = event.xdata, event.ydata
+                        Plotter.corplot(degree, templatename, objectname, order, num, larger, smaller, compare[0], value,
+                                    doPlot, not userFit[0], xcoord=xcoord, ycoord=ycoord, x1bound=bound, x2bound=bound)
+                    else:
+                        pass
+            # connects to the key press event function
+            fig.canvas.mpl_connect('key_press_event', plotcontrol)
+            plt.show()
+        elif doPlot is False:
+            del velocity[:]
+            for i in range(numorders[0]):
+                data = AdvancedPlotting.ccor(objectname, templatename, degree, i, num, larger, smaller, value)
+                index = 0
+                center = 0
+                maximum = data['correlation'][0]
+                for count in range(len(data['correlation'])):
+                    if data['correlation'][count] > maximum:
+                        maximum = data['correlation'][count]
+                        center = data['offset'][count]
+                        index = count
+                FitX = data['offset'][index-5:index+5]
+                FitY = data['correlation'][index-5:index+5]
+                try:
+                    gaussy,gaussx = curve_fit(data['fit'], FitX, FitY, p0=[maximum, center, 5, .05])
+                except(RuntimeError, TypeError):
+                    FullGaus[i] = 'UNABLE TO FIT GUASSIAN TO THIS ORDER'
+                    FullO[i] = 'UNABLE TO FIT GUASSIAN TO THIS ORDER'
+                    FullCC[i] = 'UNBALR TO FIT GUASSIAN TO THIS ORDER'
+                    FullHCV[i] = 'UNABLE TO FIT GUASSIAN TO THIS ORDER'
+                    FullHJD = 'UNABLE TO FIT GUASSIAN TO THIS ORDER'
+                tempvelocity = gaussy[1] * data['dispersion']
+                VelocityReal = (tempvelocity/data['meantemp'])*c
+                velocity.append(VelocityReal)
+                # print 'velocity at order number', i, 'is', VelocityReal
+                FullCC[i] = data['correlation']
+                FullO[i] = data['offset']
+                FullGaus[i] = gaussy
+                FullAmp[i] = gaussy[0]
+                tempvelocity = gaussy[1] * data['dispersion']
+                UseVel = (tempvelocity/data['meantemp'])*c
+                HelioCorrectedData = AdvancedPlotting.coordconvert(objectname, UseVel)
+                FullHJD = HelioCorrectedData['HJD']
+                FullHCV[i] = HelioCorrectedData['HCV']
+                centroids[i] = gaussy[1]
+            if allplots[0] is False:
+                CCWindow.window3 = MultiView()
+                CCWindow.window3.show()
+            order = 1
+        else:
+            order = 1
+            CCWindow.window3 = MultiView()
+            CCWindow.window3.show()
+
+    # The plot controller for the plot that plots (enough plots for you yet?) stacked plots (there we go)
+    @staticmethod
+    def spectra(path, order, degree, offset):
+        data = PlotFunctionality.wfextract(path, order)
+        flux = data['flux']
+        wavelength = data['wavelength']
+        fit = PlotFunctionality.fitfunction(degree, wavelength, flux, offset, False)
+        y_poly = fit['y_poly']
+        y_new = fit['y_new']
+
+        return {'f': flux, 'w': wavelength, 'yp': y_poly, 'yn': y_new}
+
+
+
+
+
 
 
 if __name__ == "__main__":

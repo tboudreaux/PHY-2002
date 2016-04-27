@@ -85,7 +85,7 @@ class BSPSEss(BSPS):
                         third.append(float(element[2]))
                     else:
                         pass
-                plt.plot(first, second, 'o')
+                plt.plot(first, second)
                 try:
                     plt.xlabel(parameter[1])
                     plt.ylabel(parameter[2])
