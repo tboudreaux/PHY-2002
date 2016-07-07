@@ -499,28 +499,43 @@ class SAUL(QtGui.QMainWindow):
             # Plotter.stackplot(FilePath, usearray[1], numToStack, order, degree, fit[0])
             offset = 0
             files = open(FilePath, 'w').readlines()
+            met1 = ['Wavelength', 'Flux', 'Spectrum with ' + str(numToStack) + ' orders shown']
+            met2 = ['Wavelength', 'Normalized Flux', 'Spectrum with ' + str(numToStack) + ' orders shown']
             for i in range(numToStack):
                 data = GUIPlotter.spectra(files[i],order, degree, offset)
-                ax1.plot(data['w'],data['f'])
-                ax2.plot(data['w'], data['yn'])
-                ax2.plot(data['w'], data['yp'])
+                data['f'] = [p + offset for p in data['f']]
+                data['ypoly'] = [p + offset for p in data['ypoly']]
+                data['ynew'] = [p + offset for p in data['ynew']]
                 offset += 0.1
+                self.plot(data['w'], data['f'], met1)
+                self.plot(data['w'], data['ynew'], met2)
+                self.plot(data['w'], data['ypoly'], None)
         else:
-            # Plotter.nstackplot(FilePath, order, degree, fit[0])
+
         jumpcore[0] = False
         # self.jumpTo()
 
     def plot(self, xdat, ydat, metadata, plotnum=1, clear=True):
-        if plotnum == 1:
-            ax = self.FigOne.add_subplot(111, xlabel=metadata[0], ylabel=metadata[1], title=metadata[2])
-            ax.plot(xdat, ydat)
-        elif plotnum == 2:
-            ax = self.FigTwo.add_subplot(111, xlabel=metadata[0], ylabel=metadata[1], title=metadata[2])
-            ax.plot(xdat, ydat)
+        if metadata is not None:
+            if plotnum == 1:
+                ax = self.FigOne.add_subplot(111, xlabel=metadata[0], ylabel=metadata[1], title=metadata[2])
+                ax.plot(xdat, ydat)
+            elif plotnum == 2:
+                ax = self.FigTwo.add_subplot(111, xlabel=metadata[0], ylabel=metadata[1], title=metadata[2])
+                ax.plot(xdat, ydat)
+            else:
+                raise ValueError('ERROR - 1: ONLY TWO PLOTS PRESENT IN THE SAUL GUI, DID YOU DO SOMETHING WRONG WHEN '
+                                 'CALLING THE FUNCTION')
         else:
-            raise ValueError('ERROR - 1: ONLY TWO PLOTS PRESENT IN THE SAUL GUI, DID YOU DO SOMETHING WRONG WHEN '
-                             'CALLING THE FUNCTION')
-
+            if plotnum == 1:
+                ax = self.FigOne.add_subplot(111)
+                ax.plot(xdat, ydat)
+            elif plotnum == 2:
+                ax = self.FigTwo.add_subplot(111)
+                ax.plot(xdat, ydat)
+            else:
+                raise ValueError('ERROR - 1: ONLY TWO PLOTS PRESENT IN THE SAUL GUI, DID YOU DO SOMETHING WRONG WHEN '
+                                 'CALLING THE FUNCTION')
     # This controls the "show fit" button, its color and the boolean behind it. Again I would like to come up with
     # a better way to store the booleans behind buttons, but that is for a latter date
     def showfit(self):
@@ -548,6 +563,7 @@ class SAUL(QtGui.QMainWindow):
         # order = self.ui.startOrd.value()
         self.window3 = OrderJump(self)
         self.window3.show()
+
 
 
 class MPLPlotter():
@@ -604,7 +620,7 @@ class MPLPlotter():
             ResidualPlot.axhline(0, color='black', linestyle='--')
             RVplot.set_title('RV vs Phase')
             RVplot.legend(loc="best")
-            RVplot.axhline(siny[2], color="grey", linestyle='--')
+            RVplot.axhline(siny[2], color="black", linestyle='--')
             plt.show()
 
             print 'RV semiamplitude:', siny[0], '+-', perr[0]

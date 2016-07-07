@@ -172,6 +172,9 @@ if len(simplefilearray) is not 0:
 
 # The main GUI Class that controlles the rest og the program
 class MyForm(QtGui.QWidget):
+    """
+    Main GUI window -- Soon to be depricated
+    """
     # I nitilazation of the GUI
     def __init__(self, parent=None):
         # Ininitlazation of the Widget
@@ -260,15 +263,27 @@ class MyForm(QtGui.QWidget):
     ###########################
 
     def orb(self):
+        """
+        Launch Orbital fitter window
+        :return: N/A
+        """
         self.window5 = OrbitalFitter()
         self.window5.show()
 
     def gaussian(self):
+        """
+        Launch Guassian Fitter Window
+        :return: N/A
+        """
         self.window4 = GaussianWindow(self)
         self.window4.show()
 
     # Easter Egg
     def secret(self):
+        """
+        Easter Egg
+        :return: N/A
+        """
         r = random.randrange(1, 5)
         if r == 1:
             self.ui.consol.append('<font color = "green"> Displaying a possible Answer to life - Credit: http://d.justpo'
@@ -289,6 +304,11 @@ class MyForm(QtGui.QWidget):
 
     # This function controls all keyPresses, it runs at all times in the main window and grabs keypress from that
     def keyPressEvent(self, e):
+        """
+        Key Press event controll method
+        :param e: Keyboard press event
+        :return: N/A
+        """
 
         # Return controller for consol input
         if e.key() == QtCore.Qt.Key_Return:
@@ -428,6 +448,10 @@ class MyForm(QtGui.QWidget):
 
     # Prints the info screen from the info.txt file in the directory tree to the consol
     def info(self):
+        """
+        Dump info text file onto terminal window
+        :return:
+        """
         infofile = open('info.txt', 'rb')
         infotxt = infofile.read()
         self.ui.consol.append(infotxt)
@@ -436,22 +460,42 @@ class MyForm(QtGui.QWidget):
     # This is due to be replaced when the language is implimented with the ls command built into the language
 
     def functiontie1(self):
+        """
+        Function tie in one -- depricated
+        :return:
+        """
         text = BSPSEss.pyrun(UserFunctions[0])
         self.ui.consol.append(text)
 
     def functiontie2(self):
+        """
+        Function tie in two -- depricated
+        :return:
+        """
         text = BSPSEss.pyrun(UserFunctions[1])
         self.ui.consol.append(text)
 
     def functiontie3(self):
+        """
+        Function tie in three -- depricated
+        :return:
+        """
         text = BSPSEss.pyrun(UserFunctions[2])
         self.ui.consol.append(text)
 
     def functiontie4(self):
+        """
+        Function tie in four -- depricated
+        :return:
+        """
         text = BSPSEss.pyrun(UserFunctions[3])
         self.ui.consol.append(text)
 
     def LS(self):
+        """
+        List directories on the terminal -- depricated
+        :return:
+        """
         dirs = os.listdir('.')
         for i in range(len(dirs)):
             self.ui.consol.append('<font color = "blue">' + dirs[i] + '</font>')
@@ -461,6 +505,10 @@ class MyForm(QtGui.QWidget):
 
     # controls the state of the fitting, also helps set the color of the "show fit" button
     def fitter(self):
+        """
+        toggle button for fitting a poloynominal to the spectra
+        :return:
+        """
         fit[0] = not fit[0]
         if fit[0] is False:
             self.ui.function1.setStyleSheet('background-color: red; color: black')
@@ -469,6 +517,12 @@ class MyForm(QtGui.QWidget):
     # This generates the Path Files by searching through the directory tree for stars with different names
     # This is due to be replaced by a command in the language when the language is implimented
     def generatepath(self):
+        """
+        generate path files recursivly for all fits files below the current working direcotry
+        :return:
+
+            Path Files are returned to the terminal
+        """
         count = 0
         namearray = []
         self.ui.listWidget.clear()
@@ -524,6 +578,10 @@ class MyForm(QtGui.QWidget):
     # This could probably be cleaned up a bit, however thats a relativly low priority given that its not super
     #   as is right now
     def plot(self):
+        """
+        Open the plot window
+        :return:
+        """
         # Closes whatever figure is open so that the screen is not overrun with windows everytime Plot is pressed
         # the effect of this is that one can modify parmaters in the GUI and then replot by pressing plot
         plt.close(1)
@@ -1158,12 +1216,12 @@ class Plotter(CCWindow):
             if foldphase is False:
                 RVplot.set_xlabel('Period (Days)')
             else:
-                RVplot.set_xlabel('Period (Phase)')
-            RVplot.set_ylabel('RV (Km*s^-1)')
+                RVplot.set_xlabel('Orbiral Phase')
+            RVplot.set_ylabel('RV (Km/s)')
             for i in range(len(RVArray)):
                 # fitValue = cosine(TimeArray[i], *siny)
                 fitValue = othercosine(TimeArray[i], *siny)
-                residualArray[i] = fitValue - RVArray[i]
+                residualArray[i] = RVArray[i] - fitValue
             RVplot.errorbar(npTimeArray, npRVArray, yerr=ErrorArray, fmt='o')
             ResidualPlot.plot(TimeArray, residualArray, 's')
             ResidualPlot.errorbar(TimeArray, residualArray, yerr=ErrorArray, fmt='s')
@@ -1171,12 +1229,12 @@ class Plotter(CCWindow):
             if foldphase is False:
                 ResidualPlot.set_xlabel('Time (Days)')
             else:
-                ResidualPlot.set_xlabel('Time (Phase)')
-            ResidualPlot.set_ylabel('Function - Data Point')
+                ResidualPlot.set_xlabel('Orbital Phase')
+            ResidualPlot.set_ylabel('Data point - Function')
             ResidualPlot.axhline(0, color='black', linestyle='--')
-            RVplot.set_title('RV vs Phase')
-            RVplot.legend(loc="best")
-            RVplot.axhline(siny[2], color="grey", linestyle='--')
+            # RVplot.set_title('RV vs Phase')
+            # RVplot.legend(loc="best")
+            # RVplot.axhline(siny[2], color="grey", linestyle='--')
             plt.show()
 
             print 'RV semiamplitude:', siny[0], '+-', perr[0]
@@ -1211,12 +1269,12 @@ class Plotter(CCWindow):
             if foldphase is False:
                 RVplot.set_xlabel('Period (Days)')
             else:
-                RVplot.set_xlabel('Period (Phase)')
-            RVplot.set_ylabel('RV (Km*s^-1)')
+                RVplot.set_xlabel('Orbital Phase')
+            RVplot.set_ylabel('RV (Km/s)')
             for i in range(len(RVArray)):
                 # fitValue = cosine(TimeArray[i], *siny)
                 fitValue = SinTrendFit(TimeArray[i], *siny)
-                residualArray[i] = fitValue - RVArray[i]
+                residualArray[i] = RVArray[i] - fitValue
             RVplot.errorbar(npTimeArray, npRVArray, yerr=ErrorArray, fmt='o')
             ResidualPlot.plot(TimeArray, residualArray, 's')
             ResidualPlot.errorbar(TimeArray, residualArray, yerr=ErrorArray, fmt='s')
@@ -1224,11 +1282,11 @@ class Plotter(CCWindow):
             if foldphase is False:
                 ResidualPlot.set_xlabel('Time (Days)')
             else:
-                ResidualPlot.set_xlabel('Time (Phase)')
-            ResidualPlot.set_ylabel('Function - Data Point')
+                ResidualPlot.set_xlabel('Orbital Phase')
+            ResidualPlot.set_ylabel('Data point - Function')
             ResidualPlot.axhline(0, color='black', linestyle='--')
-            RVplot.set_title('RV vs Phase')
-            RVplot.legend(loc="best")
+           # RVplot.set_title('RV vs Phase')
+            # RVplot.legend(loc="best")
             RVplot.axhline(siny[2], color="grey", linestyle='--')
             plt.show()
 
@@ -1264,12 +1322,12 @@ class Plotter(CCWindow):
             if foldphase is False:
                 RVplot.set_xlabel('Period (Days)')
             else:
-                RVplot.set_xlabel('Period (Phase)')
-            RVplot.set_ylabel('RV (Km*s^-1)')
+                RVplot.set_xlabel('Orbital Phase')
+            RVplot.set_ylabel('RV (Km/s)')
             for i in range(len(RVArray)):
                 # fitValue = cosine(TimeArray[i], *siny)
                 fitValue = cosine(TimeArray[i], *siny)
-                residualArray[i] = fitValue - RVArray[i]
+                residualArray[i] = RVArray[i] - fitValue
             RVplot.errorbar(npTimeArray, npRVArray, yerr=ErrorArray, fmt='o')
             ResidualPlot.plot(TimeArray, residualArray, 's')
             ResidualPlot.errorbar(TimeArray, residualArray, yerr=ErrorArray, fmt='s')
@@ -1277,11 +1335,11 @@ class Plotter(CCWindow):
             if foldphase is False:
                 ResidualPlot.set_xlabel('Time (Days)')
             else:
-                ResidualPlot.set_xlabel('Time (Phase)')
-            ResidualPlot.set_ylabel('Function - Data Point')
+                ResidualPlot.set_xlabel('Orbital Phase')
+            ResidualPlot.set_ylabel('Data point - Function')
             ResidualPlot.axhline(0, color='black', linestyle='--')
-            RVplot.set_title('RV vs Phase')
-            RVplot.legend(loc="best")
+           # RVplot.set_title('RV vs Phase')
+           # RVplot.legend(loc="best")
             RVplot.axhline(siny[2], color="grey", linestyle='--')
             plt.show()
 
