@@ -252,6 +252,7 @@ class AdvancedPlotting(PlotFunctionality):
         # same thing as above, wanting only the first element and whatnot
         templateflux = templateflux[0]
         templateflux = templateflux[(value/2):-(value/2)]
+        print 'VALUE: ', value
         templateflux[:] = [x - 1 for x in templateflux]
         meantemp = sum(newtemplatewave)/len(newtemplatewave)
 
@@ -324,8 +325,8 @@ class AdvancedPlotting(PlotFunctionality):
         # fit_g = fitting.LevMarLSQFitter()
         # g = fit_g(g_init, offset, correlation)
 
-        def gaus(x ,a , x0, sigma, offset):
-            return -a*exp(-(x-x0)**2/(2*sigma**2)) # + offset # where offset is the offset of the spectre
+        def gaus(x, a, x0, sigma, offset):
+            return -a*exp(-(x-x0)**2/(2*sigma**2))
 
         waverange = (max(newtargetwave)) - (min(newtargetwave))
         print 'first value in newtarget wave:', newtargetwave[0]

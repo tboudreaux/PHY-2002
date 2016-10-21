@@ -41,7 +41,7 @@ packages = ['import random', 'import matplotlib.pyplot as plt', 'import os', 'fr
             'import astropy.time as astrotime', 'import astropy.coordinates as coords', 'import astropy.units as unit',
             'import astropy.constants as const', 'from astropy.modeling import models,fitting',
             'from scipy import asarray as ar,exp', 'from scipy.optimize import curve_fit', 'import math',
-            'import numpy as np', 'import ephem', 'from matplotlib import gridspec']
+            'import numpy as np', 'import ephem', 'from matplotlib import gridspec', 'import pandas as pd']
 
 code = []
 for importer in range(len(packages)):
@@ -1232,9 +1232,9 @@ class Plotter(CCWindow):
                 ResidualPlot.set_xlabel('Orbital Phase')
             ResidualPlot.set_ylabel('Data point - Function')
             ResidualPlot.axhline(0, color='black', linestyle='--')
-            # RVplot.set_title('RV vs Phase')
-            # RVplot.legend(loc="best")
-            # RVplot.axhline(siny[2], color="grey", linestyle='--')
+            RVplot.set_title('RV vs Phase')
+            RVplot.legend(loc="best")
+            RVplot.axhline(siny[2], color="grey", linestyle='--')
             plt.show()
 
             print 'RV semiamplitude:', siny[0], '+-', perr[0]
@@ -1338,9 +1338,18 @@ class Plotter(CCWindow):
                 ResidualPlot.set_xlabel('Orbital Phase')
             ResidualPlot.set_ylabel('Data point - Function')
             ResidualPlot.axhline(0, color='black', linestyle='--')
-           # RVplot.set_title('RV vs Phase')
-           # RVplot.legend(loc="best")
+            RVplot.set_title('RV vs Phase')
+            RVplot.legend(loc="best")
             RVplot.axhline(siny[2], color="grey", linestyle='--')
+            data1 = {"Smooth Time": clean, "Model": cosine(clean, *siny)}
+            data2 = {"HJD": TimeArray, "RV": RVArray, "Error": ErrorArray, "Residuals": residualArray}
+
+            data1F = pd.DataFrame(data=data1)
+            data2F = pd.DataFrame(data=data2)
+
+            data1F.to_csv('Model.csv', sep=',')
+            data2F.to_csv('Data.csv', sep=',')
+
             plt.show()
 
             print 'RV semiamplitude:', siny[0], '+-', perr[0]
